@@ -1,0 +1,64 @@
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../cloud-data/cloud-data.html">
+<link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+<dom-module id="demo-signed-out">
+  <template>
+    <style is="custom-style" include="demo-pages-shared-styles">
+      :host
+      {
+        display: flex;
+        @apply(--layout-center-center);
+        @apply(--layout-fit);
+      }
+      :host>div
+      {
+        padding-top: 3em;
+        max-width: 30em;
+        text-align: justify;
+      }
+      cloud-data
+      {
+        padding-top: 30px;
+      }
+      @media(pointer:coarse)
+      {
+        :host>div
+        {
+          max-width: none;
+          padding: 10% 10%;
+        }
+      }
+      span
+      {
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      #welcome
+      {
+        padding-bottom: 1em;
+      }
+    </style>
+    <div>
+      <div id="welcome">
+      Welcome to the demo for the polymer element <span>cloud-data</span>. 
+      </div>
+      <demo-snippet class="centered-demo small-text">
+        <template is="dom-bind">
+          <cloud-data
+             google-client-id="793487175901-8rveek6c1t7di9er4q2d7l5d2937n4jm.apps.googleusercontent.com" 
+             google-sheets-api-key="AIzaSyDFgT8Oi4yLrMtbQJTQKUi7hFRlMXF8v0U"
+             google-sheets-file-id="19x5ZZQvjoRuUG9fRoEYlVvQqBv9Az0wPWKbHCFqyR8I"
+             google-signin-hide-selector="demo-signed-out" 
+             google-signin-show-selector="demo-signed-in">
+          </cloud-data>
+        </template>
+      </demo-snippet>
+    </div>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "demo-signed-out"
+  });
+</script>

@@ -1,0 +1,334 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-ajax/iron-request.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill-lite.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise.js"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-loader.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise-Statics.js"><link rel="prefetch" href="../../bower_components/google-chart/charts-loader.html"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-styles.html"></head><body><dom-module id="print-INPUT-faktoren">
+  <template>
+    <style is="custom-style">:host{display:none;}</style>
+    <google-chart id="chartbasal" hidden="" type="column"></google-chart>
+    <img id="input" src="resources/INPUT.png">
+    <img id="katheter" src="resources/katheter.png">
+    <img id="diamant" src="resources/background.png">
+    <img id="logomod4" src="resources/INPUTmodul4.png">
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "print-INPUT-faktoren",
+    getForm: function(vars)
+    {
+      colText = "#e74c51";
+      colLine = "#606060";
+      this.vars = vars;
+      var ret = 
+      {
+        pageSize: "a4"
+       ,pageOrientation: "landscape"
+       ,pageMargins: [cm(0),cm(0),cm(0),cm(0)]
+       ,content: []
+       ,defaultStyle:
+        {
+          fontSize: 8
+        }
+       ,images: 
+        {
+          INPUT: _.getBase64Image(this.$.input)
+         ,katheter: _.getBase64Image(this.$.katheter)
+         ,DIAMANT: _.getBase64Image(this.$.diamant)
+         ,logomod4: _.getBase64Image(this.$.logomod4)
+        }
+      };
+      
+      for(var i=0; i<vars.days.length; i++)
+      {
+        var page = this.getPage(vars.days[i]);
+        for(var j=0; j<page.length; j++)
+          ret.content.push(page[j]);
+        ret.content.push(this.getFooter(i<vars.days.length-1));
+      }
+      return ret;
+    },
+    getHeader: function()
+    {
+      var ret = { canvas:
+                  [
+                    {type: "rect",x:cm(0.0),y:0,w:cm(2.2),h:cm(0.55),color:"#d69a2e"}
+                   ,{type: "rect",x:cm(2.2),y:0,w:cm(2.3),h:cm(0.55),color:"#2e4736"}
+                   ,{type: "rect",x:cm(4.5),y:0,w:cm(2.3),h:cm(0.55),color:"#662c40"}
+                   ,{type: "rect",x:cm(6.8),y:0,w:cm(2.25),h:cm(0.55),color:"#343a49"}
+                   ,{type: "rect",x:cm(9.05),y:0,w:cm(2.3),h:cm(0.55),color:"#528c8e"}
+                   ,{type: "rect",x:cm(11.35),y:0,w:cm(2.25),h:cm(0.55),color:"#362946"}
+                   ,{type: "rect",x:cm(13.6),y:0,w:cm(2.3),h:cm(0.55),color:"#6b8133"}
+                   ,{type: "rect",x:cm(15.9),y:0,w:cm(2.25),h:cm(0.55),color:"#2a3b56"}
+                   ,{type: "rect",x:cm(18.15),y:0,w:cm(2.3),h:cm(0.55),color:"#862d2e"}
+                   ,{type: "rect",x:cm(20.45),y:0,w:cm(2.3),h:cm(0.55),color:"#607f6e"}
+                   ,{type: "rect",x:cm(22.75),y:0,w:cm(2.3),h:cm(0.55),color:"#273d3f"}
+                   ,{type: "rect",x:cm(25.05),y:0,w:cm(2.3),h:cm(0.55),color:"#a5916d"}
+                  ]
+                };
+      return ret;
+    },
+    getFooter: function(pageBreak)
+    {
+      var ret = 
+      {stack:
+       [
+        {absolutePosition:{x:cm(2.0),y:cm(18.0)},image:"DIAMANT",height:cm(2.0),width:cm(2.0)}
+       ,{absolutePosition:{x:cm(2.25),y:cm(18.5)},text:"DIAMANT",fontSize: 10,color: "#00f",bold: true}
+       ,{absolutePosition:{x:cm(23.4),y:cm(17.9)},image:"INPUT",width:cm(4.05)}
+       ,{absolutePosition:{x:cm(14.85),y:cm(20.1)},canvas: [{type:"line",x1:cm(0),y1:cm(0),x2:cm(0),y2:cm(0.5),lineWidth:cm(0.005),color:"#444"}]}
+       ]
+      };
+      
+      if(pageBreak)
+        ret.pageBreak = "after";
+        
+      return ret;
+    },
+    initTable: function(table,width,count)
+    {
+      table.body = [];
+      table.widths = [];
+      table.widths.push(cm(2.58));
+      for(var i=0; i<count; i++)
+        table.widths.push(cm(width));
+      table.widths.push(cm(2.08));
+      for(var i=0; i<count; i++)
+        table.widths.push(cm(width));
+    },
+    getBT: function(day,i,j)
+    {
+      var ret = {gluc:"",be:"",bolus:""};
+      if(day.times[i] && day.times[i].betest[j])
+      {
+        var data = day.times[i].betest[j];
+        var time = _.fmtTime(_.fmtNumber(Math.floor(data.time/60)*100+data.time%60,0,4));
+        ret.gluc = _.glucFromData(Number(data.gluc));
+        ret.bolus = _.fmtNumber(Number(data.bolusbe),1);
+        ret.be = _.calcBEValue(data.food,_.foodList);
+      }
+      return ret;
+    },
+    getAT: function(day,i,j)
+    {
+      var ret = {gluc:"",be:"",bolus:""};
+      if(day.times[i] && day.times[i].adjusttest[j])
+      {
+        var data = day.times[i].adjusttest[j];
+        var time = _.fmtTime(_.fmtNumber(Math.floor(data.time/60)*100+data.time%60,0,4));
+        ret.gluc = _.glucFromData(Number(data.gluc));
+        ret.bolus = _.fmtNumber(Number(data.bolusadjust),1);
+      }
+      return ret;
+    },
+    checkBT: function(day,i)
+    {
+      var ret = "n/a";
+      var data = day.times[i];
+      
+      if(data && data.betest[0] && data.betest.length >= 3)
+      {
+        var diff = Number(data.betest[0].gluc) - Number(data.betest[3].gluc);
+        if(diff >= -30 && diff <= 30)
+          ret = "Nein";
+        else
+          ret = "Ja";
+      }
+      else
+      {
+        ret = "";
+      }
+        
+      return ret;
+    },
+    checkAT: function(day,i)
+    {
+      var ret = "n/a";
+      var data = day.times[i];
+      
+      if(data && data.adjusttest.length >= 3)
+      {
+        var date = day.day.year*10000+day.day.month*100+day.day.day;
+        var time = _.fmtNumber(Math.floor(Number(data.time)/60),0,2) + _.fmtNumber(data.time%60,0,2);
+        var diff = _.checkZielbereich(data.adjusttest[3].gluc,date,time);
+        if(diff == 0)
+          ret = "Nein";
+        else
+          ret = "Ja";
+      }
+      else
+      {
+        ret = "";
+      }
+        
+      return ret;
+    },
+    getPage: function(day)
+    {
+      var colModule = "#343a49";
+      var colDivider = "#808080";
+      var colOdd = "#c0c0c0";
+      var colData = "#0000ff";
+      var dispDate = _.fmtNumber(day.day.day,0,2);
+      dispDate += "." + _.fmtNumber(day.day.month,0,2);
+      dispDate += "." + _.fmtNumber(day.day.year,0,4);
+      
+      var table = [{},{}];
+      var margins = [cm(0.1),0,cm(0.1),0];
+      var colCount = this.vars.config.zeiten.length;
+      var lineWidth = 0.01;
+      var colWidth = 10 / colCount - lineWidth - 0.28;
+      this.initTable(table[0],colWidth,colCount);
+      this.initTable(table[1],colWidth,colCount);
+      var row = [];
+      row.push({margin:margins,text:"",fillColor:colModule});
+      row.push({margin:margins,text:"Ursprünglicher KE-/BE-Faktor",bold:true,colSpan:colCount,color:"#fff",alignment:"center",fillColor:colModule});
+      for(var i=1; i<colCount; i++)row.push({margin:margins,text:""});
+      row.push({margin:margins,text:"",rowSpan:2,fillColor:colDivider});
+      row.push({margin:margins,text:"Korrekturregel - Zielwert",bold:true,colSpan:colCount,color:"#fff",alignment:"center",fillColor:colModule});
+      for(var i=1; i<colCount; i++)row.push({text:""});
+      table[0].body.push(row);
+      
+      row = [{margin:margins,text:"Definierte Zeiträume"}];
+      var row1 = [{margin:margins,text:"IE pro BE"}];
+      var lastTime = "0000";
+      for(var i=0; i<colCount; i++)
+      {
+        var item = this.vars.config.zeiten[i];
+        var time = _.fmtDataTime(lastTime) + "\n- " + _.fmtDataTime(item.time)
+        row.push({margin:margins,text:time,alignment:"center"});
+        lastTime = item.time;
+        row1.push({margin:margins,text:item.factor+"",alignment:"center",color:colData});
+      }
+      row.push({margin:margins,text:""});
+      row1.push({margin:[cm(0.05),cm(0.1),cm(0.05),0],text:"1 IE senkt um ...\nMin - Max " + _.getGlucInfo().unit,fontSize:6});
+      lastTime = "0000";
+      for(var i=0; i<colCount; i++)
+      {
+        var item = this.vars.config.zeiten[i];
+        var time = _.fmtDataTime(lastTime) + "\n- " + _.fmtDataTime(item.time)
+        row.push({margin:margins,text:time,alignment:"center"});
+        lastTime = item.time;
+        row1.push({margin:[cm(0.01),cm(0.05),cm(0.01),0],text:_.glucFromData(item.adjust) + " " + _.getGlucInfo().unit 
+                                                            + "\n" + _.glucFromData(item.min) + " - " + _.glucFromData(item.max)
+                                                        ,alignment:"center",fontSize:7,color:colData});
+      }
+      table[0].body.push(row);
+      table[0].body.push(row1);
+
+      var row = [];
+      row.push({margin:margins,text:"",fillColor:colOdd});
+      row.push({margin:margins,text:"Überprüfung des KE-/BE-Faktors",bold:true,colSpan:colCount,alignment:"center",fillColor:colOdd});
+      for(var i=1; i<colCount; i++)row.push({margin:margins,text:""});
+      row.push({margin:margins,text:"",rowSpan:2,fillColor:colDivider});
+      row.push({margin:margins,text:"Überprüfung der Korrekturregel",bold:true,colSpan:colCount,alignment:"center",fillColor:colOdd});
+      for(var i=1; i<colCount; i++)row.push({text:""});
+      table[0].body.push(row);
+      
+      row = [{margin:margins,text:"KE-BE-Menge"}];
+      var row1 = [{margin:margins,text:"Bolus für die Mahlzeit",fillColor:colOdd}];
+      var row2 = [{margin:margins,text:"Glukosewert\n... vor Beginn"}];
+      dataMargins = [cm(0.1),cm(0.17),cm(0.1),cm(0.17)];
+      var row3 = [{margin:dataMargins,text:"... nach 1 h",fillColor:colOdd}];
+      var row4 = [{margin:dataMargins,text:"... nach 2 h"}];
+      var row5 = [{margin:dataMargins,text:"... nach 3 h",fillColor:colOdd}];
+      var row6 = [{margin:dataMargins,text:"... nach 4 h"}];
+      var dataMargins = [cm(0.1),cm(0.17),cm(0.1),0];
+      for(var i=0; i<colCount; i++)
+      {
+        row.push({margin:margins,text:this.getBT(day,i,0).be,alignment:"center",color:colData});
+        row1.push({margin:dataMargins,text:this.getBT(day,i,0).bolus,alignment:"center",color:colData,fillColor:colOdd});
+        row2.push({margin:dataMargins,text:this.getBT(day,i,0).gluc,alignment:"center",color:colData});
+        row3.push({margin:dataMargins,text:this.getBT(day,i,1).gluc,alignment:"center",color:colData,fillColor:colOdd});
+        row4.push({margin:dataMargins,text:this.getBT(day,i,2).gluc,alignment:"center",color:colData});
+        row5.push({margin:dataMargins,text:this.getBT(day,i,3).gluc,alignment:"center",color:colData,fillColor:colOdd});
+        row6.push({margin:dataMargins,text:this.getBT(day,i,4).gluc,alignment:"center",color:colData});
+      }
+      row.push({margin:margins,text:""});
+      row.push({margin:margins,text:"Keine KE/BE essen",alignment:"center",colSpan:colCount});
+      row1.push({margin:margins,text:"Bolus für die Korrektur"});
+      row2.push({margin:dataMargins,text:"",rowSpan:5,fillColor:colDivider});
+      row3.push({margin:dataMargins,text:""});
+      row4.push({margin:dataMargins,text:""});
+      row5.push({margin:dataMargins,text:""});
+      row6.push({margin:dataMargins,text:""});
+      for(var i=0; i<colCount; i++)
+      {
+        row1.push({margin:dataMargins,text:this.getAT(day,i,0).bolus,alignment:"center",color:colData,fillColor:colOdd});
+        row2.push({margin:dataMargins,text:this.getAT(day,i,0).gluc,alignment:"center",color:colData});
+        row3.push({margin:dataMargins,text:this.getAT(day,i,1).gluc,alignment:"center",color:colData,fillColor:colOdd});
+        row4.push({margin:dataMargins,text:this.getAT(day,i,2).gluc,alignment:"center",color:colData});
+        row5.push({margin:dataMargins,text:this.getAT(day,i,3).gluc,alignment:"center",color:colData,fillColor:colOdd});
+        row6.push({margin:dataMargins,text:this.getAT(day,i,4).gluc,alignment:"center",color:colData});
+      }
+      table[0].body.push(row);
+      table[0].body.push(row1);
+      table[0].body.push(row2);
+      table[0].body.push(row3);
+      table[0].body.push(row4);
+      table[0].body.push(row5);
+      table[0].body.push(row6);
+
+      // Auswertungstabelle
+      margins = [cm(0.0),0,cm(0.01),0];
+      row = [{margin:margins,text:"",fillColor:colOdd}];
+      row1 = [{margin:margins,stack:[{text:"Nach 4 h weicht der Glukosewert um"}
+                                    ,{text:"mehr als " + _.glucFromData(30) + " " + _.getGlucInfo().unit,bold:true}
+                                    ,{text:"vom Ausgangswert ab"}
+                                   ]}];
+      row2 = [{margin:margins,text:"Falls ja, neuer\nKE-/BE-Faktor",fillColor:colOdd}];
+      var lastTime = "0000";
+      for(var i=0; i<colCount; i++)
+      {
+        var item = this.vars.config.zeiten[i];
+        var time = _.fmtDataTime(lastTime) + "\n- " + _.fmtDataTime(item.time)
+        row.push({margin:margins,text:time,alignment:"center",fillColor:colOdd});
+        lastTime = item.time;
+        row1.push({margin:margins,text:this.checkBT(day,i),alignment:"center",color:colData});
+        row2.push({margin:margins,text:this.checkBT(day,i)=="Ja"?"???":"",alignment:"center",color:colData,fillColor:colOdd});
+      }
+      row.push({margin:margins,text:"",fillColor:colDivider});
+      row1.push({margin:margins,stack:[{text:"Nach 4 h liegt der Glukosewert"}
+                                      ,{text:"nicht",bold:true}
+                                      ,{text:"im Zielbereich"}
+                                      ]});
+      row2.push({margin:margins,text:"Falls ja, neue\nKorrekturregel",fillColor:colOdd});
+      lastTime = "0000";
+      for(var i=0; i<colCount; i++)
+      {
+        var item = this.vars.config.zeiten[i];
+        var time = _.fmtDataTime(lastTime) + "\n- " + _.fmtDataTime(item.time)
+        row.push({margin:margins,text:time,alignment:"center",fillColor:colOdd});
+        lastTime = item.time;
+        row1.push({margin:margins,text:this.checkAT(day,i),alignment:"center",color:colData});
+        row2.push({margin:margins,text:this.checkAT(day,i)=="Ja"?"???":"",alignment:"center",color:colData,fillColor:colOdd});
+      }
+      table[1].body.push(row);
+      table[1].body.push(row1);
+      table[1].body.push(row2);
+      
+      var content =
+      [
+        this.getHeader()
+       ,{absolutePosition:{x:cm(2.2),y:cm(1.0)},text:"Überprüfung der KE-/BE-Faktoren und\nKorrekturregeln",fontSize:"28",color:colText,bold:true}
+       ,{absolutePosition:{x:cm(9.3),y:cm(2.8)},text:dispDate,fontSize:"10",color:"#c0c0c0",bold:true}
+       ,{absolutePosition:{x:cm(2.2),y:cm(3.65)},canvas:[{type:"line",x1:0,y1:0,x2:cm(25.2),y2:0,lineWidth:cm(0.2),lineColor:colModule}]}
+       ,{absolutePosition:{x:cm(27.5),y:cm(1.4)},image:"logomod4",height:cm(1.8),width:cm(1.8*187/221)}
+       ,{absolutePosition:{x:cm(2.2),y:cm(4.8)},table:table[0],margin:[0]
+                                               ,layout:{hLineWidth:function(i,node){return cm(lineWidth);}
+                                                       ,vLineWidth:function(i,node){return i===0||i===node.table.widths.length?0:cm(lineWidth);}
+                                                       ,hLineColor:function(i,node){return "#555";}
+                                                       ,vLineColor:function(i,node){return "#555";}}
+        }
+       ,{absolutePosition:{x:cm(15.3),y:cm(13.0)},text:"Auswertung",fontSize:"10",bold:true}
+       ,{absolutePosition:{x:cm(2.2),y:cm(13.6)},table:table[1],margin:[0]
+                                                ,layout:{hLineWidth:function(i,node){return i===node.table.body.length?cm(0.1):cm(lineWidth);}
+                                                        ,vLineWidth:function(i,node){return i===0||i===node.table.widths.length?0:cm(lineWidth);}
+                                                        ,hLineColor:function(i,node){return i===node.table.body.length?colModule:"#555";}
+                                                        ,vLineColor:function(i,node){return "#555";}}
+        }
+      ];
+        
+      return content;
+    }
+  });
+</script></body></html>

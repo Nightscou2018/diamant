@@ -1,0 +1,27 @@
+{
+  "name": "zreptil-time-picker",
+  "description": "a time picker element",
+  "main": "zreptil-time-picker.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "paper-dialog": "polymerelements/paper-dialog#^1.1.0",
+    "paper-dialog-scrollable": "polymerelements/paper-dialog-scrollable#^1.1.5"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/zreptil/zreptil-time-picker",
+  "_release": "565e675ad9",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "565e675ad9e4b0c12d61a1456d17fc37105dac70"
+  },
+  "_source": "git://github.com/zreptil/zreptil-time-picker.git",
+  "_target": "*",
+  "_originalSource": "zreptil/zreptil-time-picker",
+  "_direct": true
+}

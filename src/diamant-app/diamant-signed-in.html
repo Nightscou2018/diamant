@@ -1,0 +1,2195 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../bower_components/iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="resources/local-config.html">
+<link rel="import" href="dlg-foodlist.html">
+<link rel="import" href="dlg-input.html">
+<link rel="import" href="dlg-config.html">
+<link rel="import" href="dlg-print.html">
+<link rel="import" href="diamant-daydata.html">
+<link rel="import" href="diamant-monthdata.html">
+<link rel="import" href="diamant-yeardata.html">
+<link rel="import" href="diamant-tutorial.html">
+<link rel="import" href="diamant-tutor-sign.html">
+<link rel="import" href="diamant-welcome.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<dom-module id="diamant-signed-in">
+  <template>
+    <iron-iconset-svg name="myicons" size="64">
+      <svg>
+        <defs>
+          <g id="drop">
+            <path d="m 10.43143,48.293595 c 4.834839,20.596306 36.006734,20.128222 40.935046,0 C 53.869316,38.071481 45.783996,27.762022 30.916163,0.04800975 16.908196,27.854779 8.0846513,38.296365 10.43143,48.293595 z" />
+          </g>
+          <g id="katheter">
+            <path d="m 21.833025,37.629437 c 2.941964,-0.04404 2.124557,-0.05093 5.917645,-0.07407 0.976481,11.893373 0.218868,5.630681 0.691139,17.137513 0,0 0,0 1.549269,0.26424 0.230996,-11.32118 0.241148,-8.160016 0.733894,-17.437165 12.002179,-0.0712 28.044743,-0.03168 39.091463,0.03808 -0.08928,-24.104778 -0.08928,-4.492461 -0.214284,-20.512709 -8.84,0 -24.001268,-0.10602 -48.001269,-0.01912 0,15.913103 0.126268,8.5988 0.126268,8.5988 -7.999999,-0.176187 -11.9999987,-0.176187 -23.8928563,-0.142864 -0.1071424,3.966677 0.1607148,3.69882 -0.053571,8.000001 11.8571428,-0.122608 15.6938905,0.0298 23.9438905,0.134564 0.0025,1.832034 0.0025,-4.167966 0.108412,4.012731 z" />
+          </g>
+          <g id="ampulle">
+            <path d="m 14.865078,22.56527 0.01797,-7.550413 -9.877447,-0.03867 0.1770822,32.494416 9.7496818,-0.02909 0.08949,-7.58787 5.132311,-0.03062 -2.5e-4,7.647175 50.145966,-0.108147 -0.195911,-32.478629 -50.089682,0.143082 0.05593,7.518885" />
+          </g>
+          <g id="display">
+            <path d="m 59.571287,10.214944 -5.64,-5.6399997 -22.36,22.3599997 L 9.211288,4.5749443 3.571287,10.214944 l 22.36,22.36 -22.36,22.36 5.640001,5.64 22.359999,-22.36 22.36,22.36 5.64,-5.64 -22.36,-22.36 z" />
+          </g>
+          <g id="sensor">
+            <path d="m 36.562139,32.954476 c 0.06362,-0.571894 -0.13442,-1.156096 0.510699,-1.416363 0.266176,-0.251912 0.918926,-0.508702 0.562458,-0.946068 -0.340302,-0.567955 -0.646466,-1.159565 -1.007683,-1.713029 -0.404145,-0.131354 -0.796779,0.236139 -1.192243,0.332578 -0.435879,0.291201 -1.130561,-0.228906 -1.271694,-0.597965 -0.09554,-0.42477 -0.05775,-0.902142 -0.245149,-1.291252 -0.599,-0.138625 -1.255283,-0.02552 -1.877282,-0.06224 -0.478136,-0.135534 -0.722716,0.247566 -0.690918,0.684736 -0.119584,0.385242 0.06236,0.988137 -0.474455,1.067576 -0.403097,0.456198 -0.840318,0.262071 -1.302678,0.03414 -0.348345,-0.194194 -0.853787,-0.367286 -0.989604,0.159465 -0.301363,0.545049 -0.645806,1.070264 -0.920788,1.627457 0.07518,0.397115 0.570721,0.545075 0.836185,0.82524 0.53194,0.224735 0.397308,1.043011 0.217335,1.404771 -0.340241,0.310422 -0.791551,0.524217 -1.04963,0.906117 0.163526,0.572435 0.585116,1.066642 0.853492,1.607065 0.124479,0.45078 0.534162,0.606415 0.915308,0.324682 3.278514,-1.089502 3.278514,-1.050077 7.116275,0.155661 0.409237,-0.408832 0.615902,-1.007389 0.941967,-1.493779 0.326895,-0.34073 0.315097,-0.800221 -0.147917,-1.000904 z m -3.848082,1.047591 c -1.265058,0.06698 -2.054304,-1.61241 -1.201079,-2.546158 0.749273,-1.008836 2.535915,-0.567353 2.725366,0.676307 0.217159,0.933828 -0.564817,1.895808 -1.524287,1.869851 z" />
+            <path d="M 32.681779,1.0655991 A 31.348417,31.348417 0 0 0 1.3333898,32.413988 31.348417,31.348417 0 0 0 32.681779,63.762377 31.348417,31.348417 0 0 0 64.030169,32.413988 31.348417,31.348417 0 0 0 32.681779,1.0655991 Z m 0.244386,25.1286629 a 6.2208923,6.2208923 0 0 1 6.219725,6.219726 6.2208923,6.2208923 0 0 1 -6.219725,6.222413 6.2208923,6.2208923 0 0 1 -6.222413,-6.222413 6.2208923,6.2208923 0 0 1 6.222413,-6.219726 z" />
+          </g>
+          <g id="drive">
+            <path d="m 68.269008,39.459309 c -3.778141,6.545218 -7.55627,13.090434 -11.334412,19.635654 -15.112035,0 -30.224068,0 -45.336104,0 3.777796,-6.54522 7.555592,-13.090436 11.333388,-19.635654 15.112375,0 30.224752,0 45.337128,0 z" style="fill:#3777e3" />
+            <path d="m 45.601208,0.18800548 c -7.556442,0 -15.112884,0 -22.669328,0 C 30.488324,13.278442 38.044766,26.368875 45.601208,39.459309 c 7.555935,0 15.111861,0 22.6678,0 C 60.713069,26.368875 53.157143,13.278442 45.601208,0.18800548 z" style="fill:#ffcf63" />
+            <path d="M 34.266289,19.823657 C 30.488152,13.278442 26.710017,6.7332232 22.93188,0.18800548 15.375778,13.278442 7.819675,26.368875 0.26357249,39.459309 4.0418791,46.004527 7.8201857,52.549743 11.598492,59.094963 19.154426,46.004527 26.710357,32.914093 34.266289,19.823657 z" style="fill:#11a861" />
+          </g>
+          <g id="arrow-fastup">
+            <path d="M 32,0 C 21.333333,10.72375 10.666667,21.4475 0,32.17125 c 7.4666669,0 14.933333,0 22.4,0 0,10.609583 0,21.219167 0,31.82875 6.4,0 12.8,0 19.2,0 0,-10.609583 0,-21.219167 0,-31.82875 7.466667,0 14.933333,0 22.4,0 C 53.333333,21.4475 42.666667,10.72375 32,0 z"></path>
+          </g>
+          <g id="arrow-up" transform="translate(32,32) rotate(45)">
+            <path transform="translate(-32,-32)" d="M 32,0 C 21.333333,10.72375 10.666667,21.4475 0,32.17125 c 7.4666669,0 14.933333,0 22.4,0 0,10.609583 0,21.219167 0,31.82875 6.4,0 12.8,0 19.2,0 0,-10.609583 0,-21.219167 0,-31.82875 7.466667,0 14.933333,0 22.4,0 C 53.333333,21.4475 42.666667,10.72375 32,0 z"></path>
+          </g>
+          <g id="arrow-equal" transform="translate(32,32) rotate(90)">
+            <path transform="translate(-32,-32)" d="M 32,0 C 21.333333,10.72375 10.666667,21.4475 0,32.17125 c 7.4666669,0 14.933333,0 22.4,0 0,10.609583 0,21.219167 0,31.82875 6.4,0 12.8,0 19.2,0 0,-10.609583 0,-21.219167 0,-31.82875 7.466667,0 14.933333,0 22.4,0 C 53.333333,21.4475 42.666667,10.72375 32,0 z"></path>
+          </g>
+          <g id="arrow-down" transform="translate(32,32) rotate(135)">
+            <path transform="translate(-32,-32)" d="M 32,0 C 21.333333,10.72375 10.666667,21.4475 0,32.17125 c 7.4666669,0 14.933333,0 22.4,0 0,10.609583 0,21.219167 0,31.82875 6.4,0 12.8,0 19.2,0 0,-10.609583 0,-21.219167 0,-31.82875 7.466667,0 14.933333,0 22.4,0 C 53.333333,21.4475 42.666667,10.72375 32,0 z"></path>
+          </g>
+          <g id="arrow-fastdown" transform="translate(32,32) rotate(180)">
+            <path transform="translate(-32,-32)" d="M 32,0 C 21.333333,10.72375 10.666667,21.4475 0,32.17125 c 7.4666669,0 14.933333,0 22.4,0 0,10.609583 0,21.219167 0,31.82875 6.4,0 12.8,0 19.2,0 0,-10.609583 0,-21.219167 0,-31.82875 7.466667,0 14.933333,0 22.4,0 C 53.333333,21.4475 42.666667,10.72375 32,0 z"></path>
+          </g>
+          <g id="techdoc">
+            <path d="m 41.67899,37.682393 c 0.168679,-1.516273 -0.356386,-3.065181 1.354028,-3.755231 0.705718,-0.6679 2.436364,-1.348734 1.491254,-2.508331 -0.902247,-1.505833 -1.713987,-3.074381 -2.671689,-4.54179 -1.071518,-0.348248 -2.112518,0.626082 -3.161018,0.881773 -1.155655,0.772069 -2.997479,-0.606905 -3.371671,-1.585399 -0.253303,-1.126199 -0.153115,-2.391868 -0.649967,-3.423522 -1.58814,-0.367539 -3.32816,-0.06767 -4.97728,-0.165 -1.267691,-0.359352 -1.916152,0.656378 -1.831848,1.815456 -0.317068,1.021401 0.165341,2.61987 -1.257932,2.830486 -1.068738,1.209526 -2.227949,0.694835 -3.453816,0.09053 -0.923573,-0.514869 -2.263662,-0.973794 -2.623758,0.422792 -0.799008,1.445098 -1.712236,2.837616 -2.441303,4.314911 0.199324,1.052878 1.513164,1.445169 2.216996,2.187973 1.410342,0.595847 1.053391,2.76536 0.576223,3.724501 -0.902089,0.823028 -2.098654,1.389869 -2.782907,2.402409 0.433562,1.517708 1.55133,2.828009 2.262884,4.260842 0.330038,1.195163 1.416232,1.607801 2.426773,0.860834 0.977767,-0.16168 2.086668,-1.409249 2.942023,-0.569567 1.501929,0.483609 2.133329,1.416316 2.080067,2.963007 0.110315,0.975415 0.114207,2.561063 1.545798,2.195821 1.703111,-0.03006 3.417115,0.05963 5.113548,-0.04382 0.832572,-0.689 0.509117,-2.029414 0.804976,-3.009584 -0.183874,-1.50106 1.875347,-2.246854 2.911591,-2.327398 1.16213,0.360691 2.263468,1.125153 3.469528,1.204248 1.085021,-1.083941 1.632955,-2.670909 2.497457,-3.960488 0.866705,-0.903379 0.835423,-2.121636 -0.392175,-2.653712 -0.692594,-0.537245 -1.385188,-1.074492 -2.077782,-1.611737 z m -10.2025,2.7775 c -3.354077,0.177568 -5.446621,-4.275016 -3.184447,-6.75068 1.986565,-2.674751 6.723527,-1.504234 7.225819,1.793106 0.575759,2.475877 -1.497512,5.026393 -4.041372,4.957574 z"/>
+            <path d="m 51.080261,5.315825 c -3.831667,0 -7.663334,0 -11.495,0 C 38.109521,0.75936671 32.320653,-1.6137545 28.110027,0.71494611 25.71564,1.2903568 25.114324,4.5402726 23.449903,5.315825 19.460133,5.379834 15.45357,5.1810513 11.475427,5.4280809 8.4959646,5.9551942 6.7184287,9.0380187 7.0802613,11.9102 c 0.018967,14.488391 -0.03797,28.978715 0.028534,43.465896 0.2365379,3.223384 3.4999517,5.356515 6.5658417,4.939728 12.655058,-0.01897 25.312048,0.03797 37.965896,-0.02853 3.223383,-0.236537 5.356514,-3.499951 4.939728,-6.565841 -0.01897,-14.488396 0.03797,-28.978719 -0.02853,-43.4659 -0.23864,-2.7356428 -2.722453,-4.9854919 -5.47147,-4.939728 z m -19.25,0 c 4.707512,-0.00373 2.378905,7.671058 -1.534791,5.028686 -2.250291,-1.3905145 -1.103079,-5.1248548 1.534791,-5.028686 z m 19.25,49.499999 c -12.833334,0 -25.666667,0 -38.5,0 0,-14.666666 0,-29.333333 0,-43.999999 1.833333,0 3.666667,0 5.5,0 0,2.749999 0,5.499999 0,8.249999 9.166666,0 18.333333,0 27.5,0 0,-2.75 0,-5.5 0,-8.249999 1.833333,0 3.666666,0 5.5,0 0,14.666666 0,29.333333 0,43.999999 z" />
+          </g>
+        </defs>
+      </svg>
+    </iron-iconset-svg>
+    <style is="custom-style">
+    :root
+    {
+      --diamant-button:
+      {
+        font-size: 1em;
+        _background: var(--color-button-back);
+        --paper-button-ink-color: var(--color-button-ink);
+        _color: var(--color-button-font);
+      };
+      --diamant-dlgbutton:
+      {
+        font-size: 100%;
+        background: var(--paper-light-blue-100);
+        --paper-button-ink-color: var(--paper-blue-200);
+      };
+      --watermark:
+      {
+        background: var(--color-background);
+        background: url("resources/background.png");
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+      };
+    }
+    :host
+    {
+      @apply(--layout-center-center);
+      font-size: 1em;
+      background: var(--color-background);
+      @apply(--layout-fit);
+    }
+    paper-icon-button
+    {
+      padding: 0;
+      display: flex;
+      width: 0.75em;
+      height: 0.75em;
+    }
+    iron-icon[icon="open-in-new"]
+    {
+      width: 0.5em;
+      height: 0.5em;
+      color: white;
+    }
+    paper-menu
+    {
+      position: fixed;
+      top: 1.5em;
+      cursor: pointer;
+    }
+    paper-icon-item iron-icon
+    {
+      padding-right: 1em;
+    }
+    paper-icon-item
+    {
+      display: flex;
+      flex-direction: row;
+    }
+    paper-menu-button
+    {
+      padding: 0;
+    }
+    #maincontrols paper-fab
+    {
+      --paper-fab-background: var(--paper-light-blue-500);
+      --paper-fab-keyboard-focus-background: var(--paper-light-blue-500);
+    }
+    #admincontrols a[target="json"] paper-fab
+    {
+      --paper-fab-background: var(--paper-red-500);
+      --paper-fab-keyboard-focus-background: var(--paper-red-500);
+    }
+    #admincontrols a[target="drive"] paper-fab
+    {
+      --paper-fab-background: var(--paper-orange-700);
+      --paper-fab-keyboard-focus-background: var(--paper-orange-700);
+    }
+    #maincontrols
+    {
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+      position: fixed;
+      bottom: 0.5em;
+      left: 0.5em;
+      right: 0.5em;
+      z-index: 90;
+    }
+    #maincontrols div
+    {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    #admincontrols
+    {
+      display: flex;
+      flex-direction: row;
+    }
+    paper-header-panel
+    {
+      @apply(--layout-fit);
+      height: 100vh;
+      width: 100vw;
+    }
+    paper-toolbar
+    {
+      font-size: 2.0em;
+      font-weight: 200;
+			text-align: center;
+      background: var(--color-primary-back);
+      color: var(--color-primary-font);
+      align-items: center;
+    }
+    a
+    {
+      text-decoration: none;
+      color: #000000;
+    }
+    #google
+    {
+      margin-top: 2px;
+      @apply(--layout-horizontal);
+      padding-right: 0.2em;
+      align-items: center;
+    }
+    #drawer-drawer
+    {
+      @apply(--layout);
+      @apply(--layout-vertical);
+    }
+    #drawer
+    {
+      --paper-drawer-panel-left-drawer-container:
+      {
+        width: 19em!important;
+      };
+    }
+    google-signin
+    {
+      align-self: center;
+      padding: 3px;
+      background: transparent;
+      border-radius: 50%;
+      border: 1px solid var(--color-primary-back);
+    }
+    paper-button
+    {
+      @apply(--diamant-button);
+    }
+    paper-button:hover
+    {
+      background-color: var(--paper-indigo-100);
+    }
+    #config,#input,#foodlist,#daydata
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+    }
+    .stretch
+    {
+      @apply(--layout-self-stretch);
+    }
+    paper-button
+    {
+      display: flex;
+      min-width: auto;
+    }
+    @media(max-width:25em)
+    {
+      ._title
+      {
+        font-size: 0.5em;
+      }
+      #maincontrols
+      {
+        display: none;
+      }
+    }
+    #tooltip
+    {
+      --paper-tooltip:
+      {
+        font-size: 1.5em;
+      };
+    }
+    #tooltip.green
+    {
+    }
+    #tooltip.yellow
+    {
+      -_-paper-tooltip-background: #ff0;
+      -_-paper-tooltip-text-color: #000;
+    }
+    #tooltip.red
+    {
+      -_-paper-tooltip-background: #f00;
+      -_-paper-tooltip-text-color: #ff0;
+    }
+    paper-progress.green
+    {
+      --paper-progress-active-color: var(--google-green-500);
+      --paper-progress-secondary-color: var(--google-green-100);
+    }
+    paper-progress.yellow
+    {
+      --paper-progress-active-color: var(--google-yellow-500);
+      --paper-progress-secondary-color: var(--google-yellow-100);
+    }
+    paper-progress.red
+    {
+      --paper-progress-active-color: var(--google-red-500);
+      --paper-progress-secondary-color: var(--google-red-100);
+    }
+    #pnlTools div
+    {
+      display: flex;
+    }
+    #pnlInfo
+    {
+      display: flex;
+      flex-direction: row;
+      font-size: 0.3em;
+      margin-right: 1em;
+    }
+    #pnlInfo div
+    {
+      display: flex;
+      flex-direction: column;
+    }
+    #pnlInfo div paper-progress
+    {
+      width: 8em;
+    }
+    #pnlGraph
+    {
+      display: flex;
+      flex-direction: row;
+      margin-right: 0.5em;
+    }
+    [id^=tool3][active]
+    {
+      background: white;
+      color: var(--color-primary-back);
+      border: 1px solid white;
+      border-radius: 25%;
+    }
+    #tool0Gluc[active]
+    {
+      background: #ffffff;
+      color: var(--color-primary-back);
+      border: 1px solid var(--color-primary-back);
+    }
+    #tool0Basal[active]
+    {
+      background: var(--color-basal-back);
+      color: var(--color-basal-font);
+      border: 1px solid var(--color-primary-back);
+    }
+    #tool0Basal
+    {
+      color: var(--color-basal-back);
+      background: var(--color-primary-back);
+    }
+    #tool0IEBE[active]
+    {
+      background: #e61;
+      color: var(--color-primary-back);
+      border: 1px solid var(--color-primary-back);
+    }
+    #tool0IEBE
+    {
+      color: #e61;
+    }
+    #pnlTitle
+    {
+      cursor: pointer;
+    }
+    #prev,#next
+    {
+      margin: 0;
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
+      position: fixed;
+      height: 8em;
+      top: 50%;
+      margin-top: -4em;
+      padding: 0em;
+      background: transparent;
+      min-width: 3em;
+    }
+    #prev
+    {
+      left: 0em;
+    }
+    #next
+    {
+      right: 0em;
+    }
+    #prev iron-icon,#next iron-icon
+    {
+      size: 24;
+      fill: rgba(0,0,0,0.25);
+    }
+    #prev:hover,#next:hover
+    {
+      background: rgba(0,0,0,0.25);
+    }
+    #prev:hover iron-icon,#next:hover iron-icon
+    {
+      fill: #000;
+    }
+    #toast
+    {
+      cursor: pointer;
+      @apply(--layout-horizontal);
+      @apply(--layout-flex);
+      @apply(--layout-center);
+    }
+    *[type="notimplemented"]
+    {
+      --paper-toast-background-color: var(--paper-red-900);
+      --paper-toast-color: var(--paper-yellow-500);
+    }
+    paper-button
+    {
+      white-space: nowrap;
+    }
+    .whiteFab
+    {
+      background: #fff;
+      border: 1px solid #3f51b5;
+    }
+    #dlgConfirm div:first-child
+    {
+      font-size:1.5em;
+    }
+    #dlgConfirm div:nth-child(2)
+    {
+      font-size:1em;
+    }
+    #dlgConfirm div:nth-child(3)
+    {
+      display:flex;
+      flex-direction:row;
+      justify-content: space-between;
+    }
+    #userimg
+    {
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid black;
+      cursor: pointer;
+      margin: 0px 4px;
+    }
+    </style>
+    <paper-drawer-panel id="drawer" drawer-focus-selector="" force-narrow disable-edge-swipe>
+      <div id="drawer-drawer" drawer>
+        <paper-button raised on-tap="tapFoodlist" id="btnFoodlist"><paper-icon-item><iron-icon icon="maps:local-dining"></iron-icon>Nahrungsmittel</paper-icon-item></paper-button>
+        <paper-button raised on-tap="tapPrint" id="btnPrint"><paper-icon-item><iron-icon icon="print"></iron-icon>Drucken</paper-icon-item></paper-button>
+        <paper-button raised on-tap="tapMonth"><paper-icon-item><iron-icon icon="date-range" ></iron-icon>Monatsübersicht</paper-icon-item></paper-button>
+        <paper-button raised on-tap="tapYear"><paper-icon-item><iron-icon icon="apps" ></iron-icon>Jahresübersicht</paper-icon-item></paper-button>
+        <paper-button raised on-tap="tapConfig"><paper-icon-item><iron-icon icon="settings"></iron-icon>Einstellungen</paper-icon-item></paper-button>
+        <paper-button raised on-tap="tapTutor" id="btnTutor"><paper-icon-item><iron-icon icon="social:school"></iron-icon>Informationen</paper-icon-item></paper-button>
+        <paper-button raised on-tap="tapBackup" id="btnBackup"><paper-icon-item><iron-icon icon="save"></iron-icon>Backup herunterladen</paper-icon-item></paper-button>
+        <paper-button raised on-tap="tapGlucUnit"><paper-icon-item><iron-icon icon="label"></iron-icon>BZ-Werte in {{glucUnit}}</paper-icon-item></paper-button>
+        <div id="maincontrols">
+          <div>
+            <div class="horz">
+              <google-signin id="logout" brand="google" width="iconOnly" theme="none"></google-signin>
+              <paper-tooltip for="logout" position="right">Vom Google-Konto abmelden</paper-tooltip>
+              <a id="gdrive" href="https://drive.google.com/drive/u/0/my-drive" target="drive"><paper-fab class="whiteFab" mini icon="myicons:drive"></paper-fab></a>
+              <paper-tooltip for="gdrive" position="right">Google-Drive anzeigen</paper-tooltip>
+              <img id="userimg" on-tap="tapPermissions" src="{{getGoogleUserImg()}}">
+              <paper-tooltip for="userimg" position="right">Mit Konto {{driveData.googleUserName}} verbundene Anwendungen</paper-tooltip>
+            </div>
+          </div>
+
+          <div id="admincontrols">
+            <a href="../../bower_components/google-chart/demo/test.html" target="chart">
+              <paper-fab mini icon="timeline"></paper-fab>
+            </a>
+            <a href="http://jsonviewer.stack.hu/" target="json">
+              <paper-fab mini label="{}"></paper-fab>
+            </a>
+            <a href="https://github.com/bpampuch/pdfmake" target="json">
+              <paper-fab mini icon="image:picture-as-pdf"></paper-fab>
+            </a>
+            <a href="https://console.developers.google.com/apis/library?project=diamant-1195" target="google">
+              <paper-fab mini icon="google"></paper-fab>
+            </a>
+<!--
+            <paper-button raised on-tap="tapDonate"><paper-icon-item><iron-icon icon="editor:attach-money"></iron-icon><img src="https://www.paypalobjects.com/de_DE/DE/i/btn/btn_donate_SM.gif"><paper-icon-item></paper-button>
+-->
+            <a href="https://developers.google.com/drive/v3/web/quickstart/js" target="drive">
+              <paper-fab mini icon="myicons:drive"></paper-fab>
+            </a>
+            <a href="https://developers.google.com/drive/v3/web/quickstart/js" target="drive">
+              <paper-fab mini icon="myicons:drive"></paper-fab>
+            </a>
+            <a href="https://elements.polymer-project.org/" target="polymer">
+              <paper-fab mini icon="polymer"></paper-fab>
+            </a>
+          </div>
+        </div>
+      </div>
+      <paper-header-panel main>
+        <paper-toolbar>
+          <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
+          <paper-icon-button id="btnQuick" on-tap="tapQuick" icon="settings"></paper-icon-button>
+          <a href="{{printURL}}" hidden="{{showPrintOpen(printURL)}}" target="_blank"><iron-icon icon="open-in-new"></iron-icon></a>
+          <div class="title">
+            <span>DIA</span>betes&nbsp;<span>MAN</span>agemen<span>T</span>
+          </div>
+          <div id="pnlTools">
+            <div>
+              <div id="pnlInfo" on-tap="showTip">
+                <div id="katheter">
+                  Katheterwechsel
+                  <paper-progress hidden="[[hideProgress(katheterProgress,-1,60)]]" value="[[katheterProgress]]" class="green"></paper-progress>
+                  <paper-progress hidden="[[hideProgress(katheterProgress,60,90)]]" value="[[katheterProgress]]" class="yellow"></paper-progress>
+                  <paper-progress hidden="[[hideProgress(katheterProgress,90,1000)]]" value="[[katheterProgress]]" class="red"></paper-progress>
+                  <paper-tooltip id="tooltip" class$="{{progressClass}}">{{progressTipText}}</paper-tooltip>
+                </div>
+                <div hidden>
+                  Ampullenwechsel
+                  <paper-progress hidden="[[hideProgress(ampulleProgress,-1,60)]]" value="[[ampulleProgress]]" class="green"></paper-progress>
+                  <paper-progress hidden="[[hideProgress(ampulleProgress,60,90)]]" value="[[ampulleProgress]]" class="yellow"></paper-progress>
+                  <paper-progress hidden="[[hideProgress(ampulleProgress,90,1000)]]" value="[[ampulleProgress]]" class="red"></paper-progress>
+                </div>
+              </div>
+              <div id="pnlGraph" hidden>
+                <paper-icon-button id="tool0Gluc" on-tap="tapTool" toggles icon="timeline"></paper-icon-button>
+                <paper-icon-button id="tool0Basal" on-tap="tapTool" toggles icon="av:equalizer"></paper-icon-button>
+                <paper-icon-button id="tool0IEBE" on-tap="tapTool" toggles icon="maps:local-dining"></paper-icon-button>
+              </div>
+              <paper-icon-button id="tool0Display" on-tap="tapTool" icon="timeline"></paper-icon-button>
+            </div>
+            <div hidden>
+              <paper-icon-button id="tool1Display" on-tap="tapTool" toggles icon="myicons:display"></paper-icon-button>
+            </div>
+            <div hidden>
+              <paper-icon-button id="tool2Display" on-tap="tapTool" toggles icon="myicons:display"></paper-icon-button>
+            </div>
+            <div hidden>
+              <paper-icon-button id="tool3Welcome" on-tap="tapTool" toggles icon="info"></paper-icon-button>
+              <paper-icon-button id="tool3Impressum" on-tap="tapTool" toggles icon="account-balance"></paper-icon-button>
+              <paper-icon-button id="tool3Techdoc" on-tap="tapTool" toggles icon="myicons:techdoc"></paper-icon-button>
+            </div>
+            <div hidden></div>
+          </div>
+        </paper-toolbar>
+        <div id="content">
+          <iron-pages id="pages" selected="4" class="layout flex scroll" on-iron-select="pageChanged">
+            <diamant-daydata id="daydata"></diamant-daydata>
+            <diamant-monthdata id="monthdata"></diamant-monthdata>
+            <diamant-yeardata id="yeardata"></diamant-yeardata>
+            <diamant-tutorial id="tutorial"></diamant-tutorial>
+            <diamant-welcome id="welcome"></diamant-welcome>
+          </iron-pages>
+          <dlg-input id="dlgInput" on-save="saveDlgInput" on-delete="deleteDlgInput" on-cancel="cancelDlgInput"></dlg-input>
+          <dlg-foodlist id="dlgFood" on-save-marked="saveMarkedFood"></dlg-foodlist>
+          <dlg-config id="dlgConfig" on-save="saveDlgConfig"></dlg-config>
+          <dlg-print id="dlgPrint"></dlg-print>
+          <paper-dialog id="dlgConfirm" modal entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+            <div>Bitte bestätigen</div>
+            <div id="confirmMsg"></div>
+            <div class="horz">
+              <template is="dom-repeat" items="{{confirmButtons}}">
+                <paper-button on-tap="tapConfirmButton">{{item.title}}</paper-button>
+              </template>
+            </div>
+          </paper-dialog>
+        </div>
+        <paper-button on-tap="tapPrev" id="prev"><iron-icon icon="chevron-left"></iron-icon></paper-button>
+        <paper-button on-tap="tapNext" id="next"><iron-icon icon="chevron-right"></iron-icon></paper-button>
+      </paper-header-panel>
+    </paper-drawer-panel>
+    <paper-toast id="toast" on-tap="hideToast" type=""></paper-toast>
+    <iron-media-query query="(max-width:50em)" query-matches="{{isSmall}}"></iron-media-query>
+    <iron-media-query query="(max-width:40em)" query-matches="{{isMicro}}"></iron-media-query>
+    <local-config id="localcfg"></local-config>
+    <diamant-tutor-sign id="sign"></diamant-tutor-sign>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "diamant-signed-in",
+    properties:
+    {
+       isSmall: {type: Boolean, value: false}
+      ,isMicro: {type: Boolean, value: false}
+      ,dateData: {type: Object, value:{}}
+      ,yearData: {type: Array, value: []}
+      ,monthData: {type: Object, value: {}}
+      ,driveData: {type: Object, value: {}, observer: "driveDataAttached"}
+      ,config: {type: Object, value: {}}
+      ,foodList: {type: Array, value: []}
+      ,katheterProgress: {type: Number, value:0}
+      ,ampulleProgress: {type: Number, value:0}
+      ,katheterTime: {type: Number, value:0}
+      ,ampulleTime: {type: Number, value:0}
+      ,progressClass: {type: String, value:"red"}
+      ,glucUnit: {type: String, value:"mg/dl"}
+      ,confirmButtons: {type:Array,value:[]}
+      ,printURL: {type:String,value:""}
+      ,storage: {type: Object, value:
+                 {
+                   setItem: function(k,v){this.k = v;},
+                   getItem: function(k){return this.k;},
+                   hastem: function(k){return this.k != undefined;},
+                 }
+                }
+      ,theme: {type:Object, value:
+              {
+                "--color-background":"var(--paper-gray-50)"
+               ,"--color-font":"rgba(0,0,0,var(--light-primary-opacity))"
+               ,"--color-gluc":"rgba(0,0,0,var(--light-primary-opacity))"
+               ,"--color-libre":"rgba(0,0,0,var(--light-secondary-opacity))"
+               ,"--color-primary-back":"var(--paper-indigo-500)"
+               ,"--color-primary-font":"rgba(255,255,255,var(--light-primary-opacity))"
+               ,"--color-secondary-back":"var(--paper-indigo-400)"
+               ,"--color-secondary-font":"rgba(255,255,255,var(--light-primary-opacity))"
+               ,"--color-accent-back":"var(--paper-red-500)"
+               ,"--color-accent-font":"rgba(255,255,255,var(--light-primary-opacity))"
+               ,"--color-button-back":"var(--paper-indigo-400)"
+               ,"--color-button-font":"rgba(255,255,255,var(--light-primary-opacity))"
+               ,"--color-basal-back":"var(--paper-cyan-700)"
+               ,"--color-basal-font":"#fff"
+               ,"--color-fab-second-back":"var(--paper-green-500)"
+               ,"--color-fab-second-fron":"var(--paper-green-100)"
+              }
+             }
+    },
+    ready: function()
+    {
+      _ = this;
+      colorBasal = "#0097a7";
+      colorBasalFont = "#fff";
+      this.yearData = [];
+      for(var i=0; i<12; i++)
+        this.yearData.push([]);
+      this.$.daydata.initCharts();
+      if(typeof(localStorage) != "undefined")
+        this.storage = localStorage;
+      if(this.storage.getItem("glucmgdl") == null)
+        this.storage.setItem("glucmgdl","1");
+      if(this.storage.getItem("quick") == null)
+        this.storage.setItem("quick","settings");
+      this.glucUnit = this.getGlucInfo().unit;
+      this.setQuick(this.storage.getItem("quick"));
+      this.switchTheme(this.theme);
+    },
+    showPrintOpen: function(printURL)
+    {
+      return printURL === "" || printURL === undefined;
+    },
+    getGoogleUserImg: function()
+    {
+      if(this.driveData)
+        return this.driveData.googleUserImg;
+
+      return "";
+    },
+    confirm: function(msg,action)
+    {
+      if(action && action.constructor === Array)
+        this.confirmButtons = action
+      else
+        this.confirmButtons = [{title:"Nein"},{title:"Ja",action:action}];
+      this.$.confirmMsg.innerHTML = msg;
+      this.$.dlgConfirm.toggle();
+    },
+    tapConfirmButton: function(e)
+    {
+      this.$.dlgConfirm.close();
+      var action = this.confirmButtons[e.model.index].action;
+      if(action)
+        action();
+    },
+    switchTheme: function(theme)
+    {
+			if(this.theme && theme)
+			{
+				this.customStyle = {};
+				var list = Object.keys(this.theme);
+				for(var i=0; i<list.length; i++)
+					this.customStyle[list[i]] = theme[list[i]]?theme[list[i]]:this.theme[list[i]];
+				this.updateStyles();
+			}
+			else
+			{
+				setTimeout(function(){this.switchTheme(theme?theme:this.theme)}.bind(this),50);
+			}
+    },
+    showTip: function()
+    {
+      this.$.tooltip.show();
+    },
+    tapGlucUnit: function()
+    {
+      this.storage.setItem("glucmgdl",this.storage.getItem("glucmgdl")=="1"?"0":"1");
+      this.glucUnit = this.getGlucInfo().unit;
+      if(this.$.pages.selectedItem.refreshDisplay)
+        this.$.pages.selectedItem.refreshDisplay();
+    },
+    tapDonate: function()
+    {
+      window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8TY7KFGW2C9XQ");
+    },
+    hideProgress: function(value,min,max)
+    {
+      return value == undefined || value <= min || value > max;
+    },
+    updateProgress: function(katheter,ampulle)
+    {
+      var text = this.fmtNumber(this.katheterTime,0);
+      text += " Stunde" + (text == "1" ? "" : "n");
+      this.progressTipText = "Der Katheter sollte in " + text + " gewechselt werden.";
+
+      this.progressClass = "green";
+      if(katheter >= 100)
+      {
+        this.progressTipText = "Der letzte Katheter wurde vor mehr als zwei Tagen gesetzt und sollte dringend ersetzt werden!";
+        this.progressClass = "red";
+        this.animKatheter = this.$.katheter.animate
+        (
+          [
+           {opacity: 1.0, transform: "scale(" + 0.5 + ")"},
+           {opacity: 1.0, transform: "scale(" + 1 + ")"}
+          ]
+         ,{
+           direction: "alternate",
+           duration: 500,
+           iterations: 5
+          }
+        );
+      }
+      else if(katheter > 60)
+      {
+        this.progressClass = "yellow";
+      }
+      this.katheterProgress = katheter;
+      this.ampulleProgress = ampulle;
+
+      if(this.dateData.isToday())
+      {
+        var day = this.findDayData(this.dateData.day);
+        if(day && day.times.length > 0)
+        {
+          var typ = day.times[day.times.length-1].typ;
+          if(typ == "brtest"||typ == "betest"||typ == "adjusttest")
+          {
+            var msg = "Blutzucker für " + _typeList[typ] + " testen";
+            var time = Number(day.times[day.times.length-1].time);
+            time = Math.floor(time/100)*60 + (time%100);
+            time += 60;
+            var now = new Date();
+            now = now.getHours()*60 + now.getMinutes();
+            if(time > now)
+            {
+              var date = new Date();
+              date.setHours(Math.floor(time/60));
+              date.setMinutes(time%60-1);
+              this.driveData.addNotification(this,this.config.calendarId,this.config.events,this.fmtDateForProfile(date),msg,this.onNotificationSet);
+              //setTimeout(function(){this.brtestAlert()}.bind(this),(time - now - 1)*60000);
+            }
+          }
+        }
+      }
+    },
+    onNotificationSet: function(self,date)
+    {
+      if(date)
+        self.msg("Es wurde eine Erinnerung für " + self.fmtDateTime(date,"d.m.y, h:M") + " Uhr im Kalender eingetragen.", 6000);
+    },
+    _getProgress: function(today,funcCheck,funcGet)
+    {
+      var time, day, month;
+      var found = false;
+
+      for(var k=_.dateData.month-1; k>=0 && !found; k--)
+      {
+        var data = _.yearData[k];
+        month = k;
+        for(var i=data.length-1; i>=0 && !found; i--)
+        {
+          day = data[i];
+          for(var j=day.times.length-1; j>=0 && !found; j--)
+          {
+            time = day.times[j];
+            found = funcCheck(time);
+          }
+        }
+      }
+      return funcGet(this,today,found,day,month,_.dateData.year,time);
+    },
+    calcProgress: function()
+    {
+      var today = new Date();
+      var check = this.getDateData(today);
+      var ret = {isToday:check.dataId == this.dateData.dataId};
+      if(ret.isToday)
+      {
+        ret.katProgress = this._getProgress(today,function(t){return t.katheter=="1";},this._getKatheterTime);
+        ret.ampProgress = this._getProgress(today,function(t){return t.ampulle && t.ampulle>0;},this._getAmpulleTime);
+      }
+      return ret;
+    },
+    updateKatheterProgress: function()
+    {
+      var calc = this.calcProgress();
+      if(calc.isToday)
+        this.updateProgress(Math.floor(calc.katProgress),Math.floor(calc.ampProgress));
+    },
+    _getKatheterTime: function(self,today,found,day,month,year,time)
+    {
+      var ret = 100;
+      if(found)
+      {
+        var d = new Date(year,month,day.day,Number(time.time.substr(0,2)),Number(time.time.substr(2,2)));
+        var diff = (today - d) / 60000 / 60;
+        ret = diff / 0.48;
+        if(ret < 0)
+          ret = 100;
+
+        _.katheterTime = 48 - diff;
+      }
+      else
+      {
+        _.katheterTime = 48;
+        ret = 100;
+      }
+
+      return ret;
+    },
+    _getAmpulleTime: function(today,found,day,month,year,time)
+    {
+      return 50;
+    },
+    tapMonth: function()
+    {
+      this.setQuick("date-range");
+      this.$.pages.selected = 1;
+      this.$.drawer.closeDrawer();
+    },
+    tapYear: function()
+    {
+      this.setQuick("apps");
+      this.$.pages.selected = 2;
+      this.$.drawer.closeDrawer();
+    },
+    tapTutor: function()
+    {
+      this.$.pages.selected = 3;
+      this.$.drawer.closeDrawer();
+    },
+    tapPermissions: function()
+    {
+      window.open("https://security.google.com/settings/security/permissions","google");
+    },
+    tapBackup: function()
+    {
+      this.driveData.getBackupFile(this.dateData.idPrefix + "*.json", "diamant.backup.zip");
+      this.$.drawer.closeDrawer();
+    },
+    pageChanged: function()
+    {
+      var list = document.querySelectorAll("#pnlTools>div");
+      for(var i=0; i<list.length; i++)
+        list[i].hidden = true;
+      var idx = Number(this.$.pages.selected);
+      document.querySelector("#pnlTools>div:nth-of-type(" + (idx+1) + ")").hidden = false;
+      this.$.pages.selectedItem.activated();
+    },
+    configLoaded: function(self,status,data)
+    {
+      switch(status)
+      {
+        case "ok":
+          break;
+      }
+      if(data._fileId == "")
+        self.$.localcfg.initConfig(data);
+
+      self.config = self.adjustConfig(data);
+      self.driveData.requestData(self.dateData.idPrefix + "food","json",self,self.foodLoaded);
+    },
+    foodLoaded: function(self,status,data)
+    {
+      switch(status)
+      {
+        case "ok":
+          break;
+      }
+      if(data._fileId == "")
+        data = self.$.localcfg.initFoodList(data);
+      self.foodList = data;
+      self.driveData.requestData(self.dateData.dataId,"json",self,self.currentMonthLoaded);
+//self.$.dlgPrint.tapINPUT();
+    },
+    currentMonthLoaded: function(self,status,data)
+    {
+      switch(status)
+      {
+        case "ok":
+        break;
+      }
+      if(!data)
+        return;
+
+      if( Object.prototype.toString.call(data) !== "[object Array]")
+      {
+        var temp = [];
+        temp._id = data._id;
+        temp._fileId = data._fileId;
+        data = temp;
+      }
+
+      self.setMonthData(data,true);
+      self.yearData[self.dateData.month-1] = data;
+      if(self.dateData.month > 1)
+      {
+        self.dateData.addMonth(-1);
+        self.driveData.requestData(self.dateData.dataId,"json",self,self.lastMonthLoaded);
+      }
+      else
+      {
+        self.allLoaded();
+      }
+    },
+    lastMonthLoaded: function(self,status,data)
+    {
+      switch(status)
+      {
+        case "ok":
+          break;
+      }
+      if(!data)
+        return;
+
+      self.yearData[self.dateData.month-1] = data;
+      self.dateData = self.getDateData(new Date());
+      self.allLoaded();
+    },
+    allLoaded: function()
+    {
+      if(this.config._fileId == "")
+        this.$.pages.selected = 3;
+      else
+        this.$.pages.selected = 0;
+    },
+    monthLoaded: function(self,status,data)
+    {
+      if(!data)
+        return;
+
+      if( Object.prototype.toString.call(data) !== "[object Array]" )
+      {
+        var temp = [];
+        temp._id = data._id;
+        temp._fileId = data._fileId;
+        data = temp;
+      }
+
+      self.setMonthData(data,false);
+      self.yearData[self.dateData.month-1] = data;
+      self.dateData.setDataIdx(data);
+      self.$.pages.selectedItem.activated();
+    },
+    setMonthData: function(data,saveIfChanged)
+    {
+      this.monthData = data;
+      var dataChanged = false;
+      for(var i=0; i<this.monthData.length; i++)
+      {
+        var day = this.monthData[i];
+        if(day.times)
+        {
+          for(var j=0; j<day.times.length; j++)
+          {
+            var time = day.times[j];
+            if(time.food)
+            {
+              for(var k=0; k<time.food.length; k++)
+              {
+                if(time.food[k].food)
+                {
+                  dataChanged = true;
+                  delete time.food[k].food;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if(saveIfChanged && dataChanged)
+        this.driveData.saveData(this,this.monthData,"json");
+    },
+    driveDataAttached: function()
+    {
+      this.driveData.isDebug = this.$.localcfg.isDebug;
+      this.driveData.showControl = this;
+    },
+    debug: function(obj)
+    {
+      if(!this.driveData.isDebug)
+        return;
+      var win = window.open("","_blank");
+      var urlCreator = window.URL || window.webkitURL;
+      var blob = new Blob([JSON.stringify(obj)],{type:"plain/text"});
+      win.location.href = urlCreator.createObjectURL(blob);
+    },
+    changeFlagDisplay: function(flag,ctrl)
+    {
+      switch(flag)
+      {
+        case "katheter":
+          flag = "sensor";
+          break;
+        case "sensor":
+          flag = "display";
+          break;
+        case "display":
+          flag = "katheter";
+          break;
+      }
+      ctrl.icon = "myicons:" + flag;
+      return flag;
+    },
+    adjustConfig: function(config)
+    {
+      if(config.zeiten)
+      {
+        var item = {date:this.fmtDateForProfile(new Date()),values:""};
+        for(var i=0; i<config.zeiten.length; i++)
+        {
+          item.values += _.fmtNumber(Number(config.zeiten[i].time),0,4)
+                        +_.fmtNumber(Number(config.zeiten[i].min),0,3)
+                        +_.fmtNumber(Number(config.zeiten[i].max),0,3)
+                        +_.fmtNumber(Number(config.zeiten[i].factor)*100,0,3)
+                        +_.fmtNumber(Number(config.zeiten[i].adjust),0,3);
+        }
+        config.times = [item];
+      }
+
+      if(!config.zeiten)config.zeiten = [];
+      if(config.zeiten.length == 0)config.zeiten.push({min:80,max:150,factor:1,adjust:60,time:"1439"});
+
+      if(!config.times)config.times = [];
+      if(config.times.length == 0)config.times.push({date:this.fmtDateForProfile(new Date()),values:"0000080150100060"});
+      for(var i=0;i<config.times.length;i++)
+      {
+        var v = config.times[i].values;
+        v = v.substr(0,v.length - 16) + "1439" + v.substr(v.length - 12);
+        config.times[i].values = v;
+      }
+      config.zeiten[config.zeiten.length-1].time = "1439";
+      return config;
+    },
+    tapTool: function(e)
+    {
+      var id = e.currentTarget.id.substr(5);
+      this.$.pages.selectedItem.execTool(id);
+    },
+    showDlgInput: function(timeData)
+    {
+      this.$.dlgInput.show(timeData);
+    },
+    saveMarkedFood: function(e,markedData)
+    {
+      this.$.dlgInput.saveMarkedFood(markedData.data);
+    },
+    findDayDataIdx: function(day)
+    {
+      for(var i=0; i<this.monthData.length; i++)
+      {
+        if(Number(this.monthData[i].day) == day)
+          return i;
+      }
+      return -1;
+    },
+    findDayData: function(day)
+    {
+      var idx = this.findDayDataIdx(Number(day));
+      if(idx < 0)
+        return undefined;
+
+      return this.monthData[idx];
+    },
+    saveDlgConfig: function(e,cfgData)
+    {
+      this._saveDlgConfigData = cfgData;
+      this.driveData.saveData(this,cfgData.data,"json",this.saveDlgConfigDone);
+    },
+    saveDlgConfigDone: function(self,status,data)
+    {
+      switch(status)
+      {
+        case "ok":
+          if(data._fileId == "")
+          {
+            data.zeiten = [];
+            data.pumps = [];
+            self.$.pages.selected = 3;
+          }
+          else
+          {
+            self.$.pages.selected = 0;
+          }
+          self.config = data;
+          break;
+        case "modified":
+          self.confirm("Die Konfiguration wurde auf dem Server inzwischen geändert.<br>"
+                      +"Welche Daten soll ich verwenden?"
+                      ,[{action:self.saveDlgConfigOverwrite.bind(self),title:"Eingegebene Daten"}
+                       ,{action:self.saveDlgConfigDiscard.bind(self),title:"Daten vom Server"}]);
+          break;
+      }
+    },
+    saveDlgConfigOverwrite: function()
+    {
+      this.driveData.requestData(this.$.localcfg.dataPrefix + "config","json",this,this.dlgConfigOverwrite,"Lade Daten ...", true);
+    },
+    dlgConfigOverwrite: function(self,status,data)
+    {
+      self._saveDlgConfigData.data._modified = data._modified;
+      if(self._saveDlgConfigData.data._fileId == "")
+        self.$.localcfg.initConfig(self._saveDlgConfigData.data);
+
+      self.saveDlgConfig(undefined,self._saveDlgConfigData);
+    },
+    saveDlgConfigDiscard: function()
+    {
+      this.driveData.requestData(this.$.localcfg.dataPrefix + "config","json",this,this.dlgConfigDiscard,"Lade Daten ...", true);
+    },
+    dlgConfigDiscard: function(self,status,data)
+    {
+     if(data._fileId == "")
+       self.$.localcfg.initConfig(data);
+
+     self.config = self.adjustConfig(data);
+    },
+    saveDlgInput: function(e,timeData)
+    {
+      if(e)
+        e.stopImmediatePropagation();
+
+      this._saveDlgInputData = timeData;
+      var day = Number(this.dateData.day);
+      var time = Number(timeData.data.time);
+      var dayFound = this.findDayData(day);
+
+      if(dayFound == undefined)
+      {
+        dayFound = {day:day,times:[]};
+        this.monthData.push(dayFound);
+      }
+
+      var timeFound = undefined;
+      for(var i=0; i<dayFound.times.length && !timeFound; i++)
+      {
+        if(Number(dayFound.times[i].time) == time)
+        {
+          dayFound.times[i] = timeData.data;
+          timeFound = timeData.data;
+        }
+      }
+
+      if(!timeFound)
+        dayFound.times.push(timeData.data);
+      this.sortMonthData();
+      this.driveData.saveData(this,this.monthData,"json",this.saveDlgInputDone);
+    },
+    saveDlgInputDone: function(self,status,data)
+    {
+      switch(status)
+      {
+        case "ok":
+          self.setMonthData(data,false);
+          self.yearData[self.dateData.month-1] = data;
+          self.$.pages.selectedItem.activated();
+          break;
+        case "modified":
+          self.driveData.requestData(self.dateData.dataId,"json",self,self.saveDlgInputModified);
+          break;
+      }
+    },
+    saveDlgInputModified: function(self,status,data)
+    {
+      switch(status)
+      {
+        case "ok":
+          self.setMonthData(data,false);
+          self.yearData[self.dateData.month-1] = data;
+          self.saveDlgInput(undefined,self._saveDlgInputData);
+          break;
+      }
+    },
+    sortMonthData: function()
+    {
+      this.monthData.sort(function(a,b){return Number(a.day)<Number(b.day)?-1:1});
+      for(var i=0; i<this.monthData.length; i++)
+      {
+        if(this.monthData[i].times)
+          this.monthData[i].times.sort(function(a,b){return Number(a.time)<Number(b.time)?-1:1});
+      }
+    },
+    deleteDlgInput: function(e,timeData)
+    {
+      if(e)
+        e.stopImmediatePropagation();
+
+      var day = Number(this.dateData.day);
+      var time = Number(timeData.data.time);
+      var dayIdx = this.findDayDataIdx(day);
+
+      if(dayIdx < 0)
+        return;
+
+      var timeFound = undefined;
+      for(var i=0; i<this.monthData[dayIdx].times.length && !timeFound; i++)
+      {
+        if(Number(this.monthData[dayIdx].times[i].time) == time)
+        {
+          this.splice("monthData.#" + dayIdx + ".times", i, 1);
+          this.sortMonthData();
+          this.driveData.saveData(this,this.monthData,"json",this.saveDlgInputDone);
+          return;
+        }
+      }
+
+      this.msg("Der Datensatz wurde nicht gelöscht.");
+    },
+    cancelDlgInput: function()
+    {
+    },
+    tapConfig: function()
+    {
+      this.setQuick("settings");
+      this.$.drawer.closeDrawer();
+      this.$.dlgConfig.show();
+    },
+    setQuick: function(id,idSub)
+    {
+      this.storage.setItem("quick",id);
+      this.$.btnQuick.icon = id;
+    },
+    tapFoodlist: function()
+    {
+      this.setQuick("maps:local-dining");
+      this.$.drawer.closeDrawer();
+      this.$.dlgFood.editable = true;
+      this.$.dlgFood.title = "Nahrungmittel Liste";
+      this.$.dlgFood.show([],true);
+    },
+    tapOpenPrint: function()
+    {
+      window.open(this.printURL, "_blank");
+    },
+    tapQuick: function()
+    {
+      switch(this.$.btnQuick.icon)
+      {
+        case "print":
+          this.$.drawer.closeDrawer();
+          this.$.dlgPrint.show(true);
+          break;
+        case "maps:local-dining":
+          this.tapFoodlist();
+          break;
+        case "date-range":
+          this.tapMonth();
+          break;
+        case "apps":
+          this.tapYear();
+          break;
+        case "settings":
+        default:
+          this.tapConfig();
+          break;
+      }
+    },
+    tapPrint: function()
+    {
+      this.setQuick("print");
+      this.$.drawer.closeDrawer();
+      this.$.dlgPrint.show(false);
+    },
+    tapPrev: function()
+    {
+      this.$.pages.selectedItem.tapPrev();
+    },
+    tapNext: function()
+    {
+      this.$.pages.selectedItem.tapNext();
+    },
+    signoutDone: function()
+    {
+      this.driveData = undefined;
+      this.yearData = [];
+      this.monthData = [];
+      this.switchTheme(this.theme);
+    },
+    hideToast: function()
+    {
+      this.$.toast.toggle();
+    },
+    msg: function(text,duration)
+    {
+			if(!duration)
+				duration = 0;
+      this.$.toast.text = text;
+      this.$.toast.duration = duration;
+      this.$.toast.open();
+    },
+    signinDone: function(driveData)
+    {
+      this.dateData = this.getDateData(new Date());
+      this.hidden = false;
+      this.driveData = driveData;
+      this.driveData.requestData(this.dateData.idPrefix + "config","json",this,this.configLoaded);
+      this.$.admincontrols.hidden = !this.$.localcfg.isAdmin;
+    },
+    findDataIdx: function(data,dateData)
+    {
+      var day = Number(dateData.day);
+      var month = Number(dateData.month);
+      for(var i=0; i<data.length; i++)
+      {
+        if(Number(data[i].day) == day && (data[i].month == undefined || Number(data[i].month == month)))
+          return i;
+      }
+
+      return -1;
+    },
+    findDayIdx: function(data,day)
+    {
+      day = Number(day);
+      for(var i=0; i<data.length; i++)
+      {
+        if(Number(data[i].day) == day)
+          return i;
+      }
+
+      return -1;
+    },
+    getDateData: function(date,checkLoadedData)
+    {
+      if(checkLoadedData == undefined)
+        checkLoadedData = false;
+
+      var ret = {};
+      var d = date.getDate();
+      var M = date.getMonth()+1; //Januar ist 0!
+      ret.year = date.getFullYear();
+      var h = date.getHours();
+      var m = date.getMinutes();
+
+      ret.day = d;
+      ret.month = M;
+      if(d<10)d="0"+d;
+      if(M<10)M="0"+M;
+      if(h<10)h="0"+h;
+      if(m<10)m="0"+m;
+      ret.time = "" + h + m;
+      ret.dateSuffix = "." + M + "." + ret.year;
+      ret.date = d + ret.dateSuffix;
+      ret.idPrefix = this.$.localcfg.dataPrefix;
+      ret.dataId = ret.idPrefix + ret.year + M;
+      ret.idDate = "" + ret.year + M + d;
+      ret.isToday = function()
+      {
+        var today = new Date();
+        return this.year == today.getFullYear() && this.month == today.getMonth() + 1 && this.day == today.getDate();
+      },
+      ret.addDay = function(diff)
+      {
+        this.day = Number(this.day) + diff;
+        while(this.day < 1)
+        {
+          this.addMonth(-1);
+          this.day += new Date(this.year,this.month,0).getDate();
+        }
+        while(this.day > new Date(this.year,this.month,0).getDate())
+        {
+          this.day -= new Date(this.year,this.month,0).getDate();
+          this.addMonth(1);
+        }
+        this.setDate(this.year,this.month,this.day);
+      },
+      ret.addMonth = function(diff)
+      {
+        this.month = Number(this.month) + diff;
+        while(this.month < 1)
+        {
+          this.year--;
+          this.month += 12;
+        }
+        while(this.month > 12)
+        {
+          this.year++;
+          this.month -= 12;
+        }
+        this.setDate(this.year,this.month,this.day);
+      },
+      ret.setYear = function(year)
+      {
+        this.setDate(year,this.month,this.day);
+      };
+      ret.setMonth = function(month)
+      {
+        this.setDate(this.year,month,this.day);
+      };
+      ret.setDay = function(day)
+      {
+        this.setDate(this.year,this.month,day);
+      };
+      ret.setDateId = function(dateId)
+      {
+        dateId += "";
+        if(dateId.length == 6)
+          this.setDate(dateId.substr(0,4),dateId.substr(4,2),dateId.substr(6,2));
+      };
+      ret.asDate = function()
+      {
+        return new Date(this.year,this.month-1,this.day);
+      };
+      ret.setDate = function(year,month,day)
+      {
+        this.year = Number(year);
+        this.month = Number(month);
+        this.day = Number(day);
+        if(day<10)day = "0"+day;
+        this.date = day + this.dateSuffix;
+        var m = (this.month<10?"0":"") + this.month;
+        this.dataId = this.idPrefix + this.year + m;
+        this.idDate = "" + this.year + m + day;
+        this.dateSuffix = "." + m + "." + this.year;
+        this.date = day + this.dateSuffix;
+      };
+      ret.setDataIdx = function(data)
+      {
+        var idx = _.findDataIdx(data,this);
+        if(idx < 0)
+        {
+          data.push({day:this.day,times:[]});
+          idx = data.length-1;
+        }
+        this.dataIdx = idx;
+      };
+      ret.getLoadMsg = function(month,year)
+      {
+        var ret = "Lade Daten für ";
+        if(!month)
+          month = this.month;
+        if(!year)
+          year = this.year;
+
+        ret += month + " / " + year;
+
+        return ret + "...";
+      };
+
+      if(checkLoadedData)
+        this.checkLoadedData(ret);
+
+      return ret;
+    },
+    checkLoadedData: function(dateData)
+    {
+      for(var i=0; i<this.yearData.length; i++)
+      {
+        if(!this.yearData[i]._id || Number(this.yearData[i]._id.substr(this.$.localcfg.dataPrefix.length,4)) != dateData.year)
+          this.yearData[i] = [];
+      }
+      if(!this.yearData[dateData.month-1]._id)
+      {
+        this.$.yeardata.yearData = [];
+        this.driveData.requestData(dateData.dataId,this,"json",this.currentMonthLoaded);
+      }
+    },
+    getEinheit: function(einheit,count)
+    {
+      return count == 1 ? _unit[einheit] : _units[einheit];
+    },
+    fmtDataTime: function(time)
+    {
+      var hours = Math.floor(Number(time)/60);
+      var minutes = Number(time)%60;
+      return this.fmtNumber(hours,0) + ":" + this.fmtNumber(minutes,0,2);
+    },
+    fmtTime: function(time)
+    {
+      time = time + "";
+      return time.substr(0,2)+":"+time.substr(2,2);
+    },
+    fmtNumber: function(value,decimals,fillfront0)
+    {
+      var ret;
+
+      if(decimals < 0)
+      {
+        ret = Number(value).toFixed(5)+"";
+        var len = ret.indexOf(".") - decimals;
+        while(ret.substr(ret.length-1) == "0" && ret.length > len)
+          ret = ret.substr(0,ret.length-1);
+      }
+      else
+      {
+        ret = Number(value).toFixed(decimals);
+      }
+
+      if(fillfront0)
+      {
+        while(ret.length < fillfront0)
+          ret = "0" + ret;
+      }
+      return ret;
+    },
+    fmtDate: function(date,def)
+    {
+			if(!def)
+				def = "";
+      if(!date)
+        return def;
+
+      if(date instanceof Date)
+      {
+        var ret = (date.getDate()<10?"0":"") + date.getDate();
+        ret += "." + (date.getMonth()<9?"0":"") + (date.getMonth()+1);
+        ret += "." + date.getFullYear();
+        return ret;
+      }
+
+      if(date.length >= 8)
+        return date.substr(6,2) + "." + date.substr(4,2) + "." + date.substr(0,4);
+
+      return date;
+    },
+    fmtDateForProfile: function(date)
+    {
+      var ret = "";
+      if(date instanceof Date)
+      {
+        ret = date.getFullYear()
+             +this.fmtNumber(date.getMonth()+1,0,2)
+             +this.fmtNumber(date.getDate(),0,2)
+             +this.fmtNumber(date.getHours(),0,2)
+             +this.fmtNumber(date.getMinutes(),0,2);
+      }
+      else if(date.indexOf(".") > 0)
+      {
+        ret = date.substr(6,4)
+             +date.substr(3,2)
+             +date.substr(0,2)
+             +"0000";
+      }
+      return ret;
+    },
+    fmtDateTime: function(date,ret)
+    {
+      if(!(date instanceof Date))
+      {
+        this.msg("fmtDateTime muss mit einem JavaScript Date aufgerufen werden.");
+        return;
+      }
+
+      ret = ret.replace("d", this.fmtNumber(date.getDate(),0,2));
+      ret = ret.replace("m", this.fmtNumber(date.getMonth()+1,0,2));
+      ret = ret.replace("y", this.fmtNumber(date.getFullYear(),0,4));
+      ret = ret.replace("h", this.fmtNumber(date.getHours(),0,2));
+      ret = ret.replace("M", this.fmtNumber(date.getMinutes(),0,2));
+      ret = ret.replace("s", this.fmtNumber(date.getSeconds(),0,2));
+      if(ret.indexOf("%w") > 0)
+      {
+        var now = new Date(date);
+        now.setHours(12);
+        var beg = new Date(now.getFullYear(),0,1,0,0,0);
+        var diff = beg.getDay()-1;
+        if(diff < 0)
+          diff = 6;
+        var kw = Math.ceil((((now-beg+1)/86400000)+diff)/7)-1;
+        if(diff >= 3)
+          kw++;
+        ret = ret.replace("%w", kw);
+      }
+      ret = ret.replace("%%", "%");
+
+      return ret;
+    },
+    fmtFullDate: function(date,fmt)
+    {
+      var weekdays = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+      var ret = "";
+      if(!(date instanceof Date) && date.length >= 8)
+        date = new Date(Number(date.substr(0,4)),Number(date.substr(4,2))-1,Number(date.substr(6,2)));
+
+      if(date instanceof Date)
+      {
+        ret = fmt.replace("D", this.fmtDate(date));
+        ret = ret.replace("W", weekdays[date.getDay()]);
+      }
+
+      return ret;
+    },
+    calcBEValue: function(food,foodList)
+    {
+      var ret = this.calcBE(food,foodList);
+      if(ret == 0)
+        return "";
+      return(this.fmtNumber(ret,1));
+    },
+    // Berechnet die Anzahl an BE fuer eine Liste von Nahrungsmitteln
+    calcBE: function(food,foodList)
+    {
+      var ret = 0.0;
+      if(food == undefined)
+        return 0.0;
+
+      for(var i=0; i<foodList.length; i++)
+      {
+        for(var j=0; j<food.length; j++)
+        {
+          if(food[j].id == foodList[i].id)
+            ret += Num(food[j].menge) * Num(foodList[i].kh) / Num(foodList[i].menge) / 12.0;
+        }
+      }
+
+      if(isNaN(ret))
+      {
+        for(var i=0; i<foodList.length; i++)
+        {
+          for(var j=0; j<food.length; j++)
+          {
+            if(food[j].id == foodList[i].id)
+            {
+              var v1 = Number(food[j].menge);
+              var v2 = Number(foodList[i].kh);
+              var v3 = Number(foodList[i].menge);
+              ret += v1 * v2 / v3 / 12.0;
+            }
+          }
+        }
+      }
+
+      return ret;
+    },
+    getProfileData: function(date)
+    {
+      var ret = this.getProfileForDate(date);
+      ret.times = [];
+      ret.sum = 0;
+      for(var i=0; i<ret.profile.length; i+=4)
+      {
+        var v = Number(ret.profile.substr(i,4)) / 100;
+        ret.sum += v;
+        ret.times.push(v);
+      }
+      return ret;
+    },
+    // Ermittelt das Profil fuer die angegebene Zeit
+    getProfileForDate: function(date)
+    {
+      var ret = {profile:[],since:"",ieSum:0};
+
+      if(!this.config || !this.config.profiles)
+        return ret;
+
+      for(var i=this.config.profiles.length-1; i>=0; i--)
+      {
+        if(this.config.profiles[i].time/10000 <= date)
+        {
+          ret = this.driveData.cloneOf(this.config.profiles[i]);
+          if(i > 0)
+            ret.since = ret.time+"";
+          else
+            ret.since = this.config.pumpeseit+"";
+
+          ret.since = ret.since.substr(6,2) + "." + ret.since.substr(4,2) + "." + ret.since.substr(0,4);
+          ret.ieSum = 0;
+          for(var j=0; j<ret.profile.length; j+=4)
+          {
+            var v = Number(ret.profile.substr(j,4));
+            ret.ieSum += v/100;
+          }
+          return ret;
+        }
+      }
+
+      return ret;
+    },
+    /**
+     * checks if the glucose value is in the targetarea
+     * @param gluc   glucose value
+     * @param date   date in format yyyymmdd
+     * @param time   time in format hhmm
+     * @return 0 if in targetarea, else difference to targetarea
+     */
+    checkZielbereich: function(gluc,date,time)
+    {
+      if(!gluc || !time)
+        return 0;
+
+      time = Number(time.substr(0,2))*60 + Number(time.substr(2,2));
+      for(var i=0; i<this.config.zeiten.length; i++)
+      {
+        if(time <= Number(this.config.zeiten[i].time))
+        {
+          if(gluc <= Number(this.config.zeiten[i].min))
+            return gluc - Number(this.config.zeiten[i].min);
+          if(gluc >= Number(this.config.zeiten[i].max))
+            return gluc - Number(this.config.zeiten[i].max);
+          return 0;
+        }
+      }
+
+      return 0;
+    },
+    drawChartBasal: function(chart, type)
+    {
+      var ret = { ieSum:0,title:"",date:this.dateData.date };
+      var icon = "list";
+      var temp = _;
+      chart.options = {chartArea:{left:"auto",top:"10%",width:"90%",height:"60%"}
+                      ,bar:{groupWidth:"100%"}
+                      ,colors:[colorBasal]//"#ff0000"] // f48fb1
+                      ,backgroundColor: "transparent"
+                      ,hAxis: {viewWindow:{"min":0,"max":24}}
+                      ,legend: {position:type=="print"?"none":"top",alignment:"center"}
+                      ,dataOpacity: 1.0
+                      ,vAxis: {gridlines:{count:0}}
+                      };
+
+      chart.options.hAxis.ticks = [];
+      for(var i=0; i<24; i+=2)
+        chart.options.hAxis.ticks.push({v:i,f:i+":00"});
+
+      switch(type)
+      {
+        case "small":
+        case "micro":
+          chart.options.annotations = {textStyle:{fontSize:(type=="micro"?6:8)}};
+          if(type=="micro")
+            chart.options.chartArea.height = "80%";
+          break;
+        case "print":
+          chart.options.annotations = {textStyle:{fontName:"Arial",fontSize:9,opacity:1,bold:true}};
+          chart.options.chartArea = {left:"0px",top:"0px",width:"80%",height:"80%"};
+          chart.options.hAxis.ticks = [];
+          chart.options.hAxis.gridlines = {color: "transparent"};
+          chart.options.height = 200;
+          chart.options.width = 500;
+          for(var i=0; i<24; i++)
+            chart.options.hAxis.ticks.push({v:i,f:i});
+          break;
+      }
+
+      chart.cols = [{label:"Zeit",type:"number"}
+                   ,{label:"Basalrate",type:"number"}
+                   ,{role:"tooltip",type:"string"}
+                   ,{role:"annotation",type:"string"}
+                   ,{role:"style",type:"string"}];
+
+      var rows = [];
+      var date = this.dateData.year*10000 + this.dateData.month*100 + Number(this.dateData.day);
+      var profile = this.getProfileForDate(date);
+      var day = this.findDayData(this.dateData.day);
+      var lastTB = undefined;
+      var timeIdx = 0;
+      var tbList = [];
+      var tb = undefined;
+      if(day)
+      {
+        for(var i=0; i < day.times.length; i++)
+        {
+          var t = Number(day.times[i].time);
+          t = Math.floor(t/100)*60 + t%100;
+          if(day.times[i].basal != lastTB)
+          {
+            if(tb)
+            {
+              tb.end = t;
+              tbList.push(tb);
+              if(day.times[i].basal && day.times[i].basal>0 && day.times[i].basal<100)
+                tb = {beg: t,tb: day.times[i].basal};
+              else
+                tb = undefined;
+            }
+            else
+            {
+              tb = {beg: t,tb: day.times[i].basal};
+            }
+          }
+          lastTB = day.times[i].basal;
+        }
+      }
+
+      if(tb)
+      {
+        tb.end = 24*60;
+        tbList.push(tb);
+      }
+
+      var tbIdx = 0;
+      var info = "";
+      for(var i=0; i<profile.profile.length; i+=4)
+      {
+        var time = i/4*60;
+        var v = Number(profile.profile.substr(i,4));
+        var l = (i/4) + ":00 - " + ((i/4)+1) + ":00";
+        var s = "";
+        var info = "";
+
+        if(tbIdx < tbList.length && time+60 >= tbList[tbIdx].beg)
+        {
+          v *= tbList[tbIdx].tb / 100;
+          info = "\n\n" + Math.floor(tbList[tbIdx].beg/60)+":"+(this.fmtNumber(tbList[tbIdx].beg%60,0,2)) + " - ";
+          info += Math.floor(tbList[tbIdx].end/60)+":"+(this.fmtNumber(tbList[tbIdx].end%60,0,2));
+          info += "\nTBR " + tbList[tbIdx].tb + "%\n";
+          s = "color:red";
+          if(time + 60 > tbList[tbIdx].end)
+            tbIdx++;
+        }
+
+        rows.push([(i/4)+0.5, v/100, l + "\n" + this.fmtNumber(v/100,1) + " IE" + info, this.fmtNumber(v/100,1),s]);
+      }
+
+      if(rows.length > 0)
+      {
+        chart.rows = rows;
+        chart.redraw();
+      }
+
+      ret.since = profile.since;
+      ret.ieSum = profile.ieSum;
+      ret.title ="Basalprofil am " + ret.date + ": <b style=\"white-space:nowrap\">" + this.fmtNumber(ret.ieSum,2) + " IE</b>"
+               + "<br><div style=\"font-size:0.5em\">seit " + ret.since + "</div>";
+
+      return ret;
+    },
+    blendColor: function(from,to,factor)
+    {
+      if(from.length == 7)from=from.substr(1);
+      if(to.length == 7)to=to.substr(1);
+      var rf = parseInt(from.substr(0,2),16);
+      var gf = parseInt(from.substr(2,2),16);
+      var bf = parseInt(from.substr(4,2),16);
+      var rt = parseInt(to.substr(0,2),16);
+      var gt = parseInt(to.substr(2,2),16);
+      var bt = parseInt(to.substr(4,2),16);
+
+      var r = Math.floor(rf + (rt-rf)*factor);
+      var g = Math.floor(gf + (gt-gf)*factor);
+      var b = Math.floor(bf + (bt-bf)*factor);
+
+      return "#" + r.toString(16) + g.toString(16) + b.toString(16);
+    },
+    getGlucInfo: function()
+    {
+      var ret = {step:1,unit:"mg/dl"};
+      if(this.storage.getItem("glucmgdl") != "1")
+        ret = {step:0.1,unit:"mmol/l"};
+
+      return ret;
+    },
+    glucFromData: function(gluc)
+    {
+      gluc = Number(gluc);
+      if(isNaN(gluc) || gluc == 0)
+        return "";
+
+      if(this.storage.getItem("glucmgdl") != "1")
+        return _.fmtNumber(gluc / 18.02,1);
+
+      return _.fmtNumber(gluc,0);
+    },
+    glucToData: function(gluc)
+    {
+      if(isNaN(gluc))
+        gluc = 0;
+
+      if(this.storage.getItem("glucmgdl") != "1")
+        gluc = Math.floor(Number(gluc) * 18.02);
+
+      return gluc;
+    },
+    /**
+     * retrieves the color for a time
+     * @param gluc   glucose value
+     * @param date   date in format yyyymmdd
+     * @param time   time in format
+     * @param max    values higher than this will get the full color
+     * @param color  color for the highest value
+     */
+    glucColor: function(gluc,date,time,max,color)
+    {
+      var ret = {rgba: "", color: ""};
+      var dst = {r:255,g:255,b:255};
+      var empty = "#ffffff";
+      var src = undefined;
+      var factor = 1;
+      if(gluc == undefined)
+        return ret;
+
+      if(color && color.length >= 7)
+      {
+        empty = color;
+        dst = {r:parseInt(color.substr(1,2),16),g:parseInt(color.substr(3,2),16),b:parseInt(color.substr(5,2),16)};
+      }
+
+      var inZielbereich = this.checkZielbereich(gluc,date,time);
+      if(gluc <= 60)
+      {
+        src = {r:255,g:255,b:100};
+        if(gluc > 40)
+          factor = (-inZielbereich / (gluc - inZielbereich - 40));
+      }
+      else
+      {
+        if(inZielbereich < 0)
+        {
+          ret.rgba = empty;
+          ret.color = empty;
+          ret.opacity = 1.0;
+        }
+        else if(inZielbereich > 0)
+        {
+          src = {r:255,g:100,b:100};
+          if(gluc < max)
+            factor = (inZielbereich / (max - gluc + inZielbereich));
+/*
+          colorFade({r:255,g:100,b:100},{255,255,255},a);
+
+          var r = 255;
+          var g = 100;
+          var b = 100;
+
+          ret.rgba = "rgba(" + r + "," + g + "," + b + "," + a + ")";
+          r = Math.floor(r+(255-r)*(1-a));
+          g = Math.floor(g+(255-g)*(1-a));
+          b = Math.floor(b+(255-b)*(1-a));
+          ret.color = "#" + r.toString(16) + g.toString(16) + b.toString(16);
+          ret.opacity = a;
+*/
+        }
+      }
+
+      if(src)
+        ret = this.colorFade(src,dst,factor);
+
+      if(ret.color=="" && color)
+      {
+        ret.color = color;
+        ret.rgba = color;
+      }
+
+      return ret;
+    },
+    /**
+     * calculates the targetvalue
+     * @param date   date in format yyyymmdd
+     */
+    getZielwert: function(date)
+    {
+      var sum = 0;
+      for(var i=0; i<this.config.zeiten.length; i++)
+      {
+        var time = this.config.zeiten[i];
+        sum += Number(time.min)+Number(time.max);
+      }
+      return sum/(this.config.zeiten.length*2);
+    },
+    colorFade: function(src,dst,factor)
+    {
+      var ret = {rgba: "", color: ""};
+
+      ret.rgba = "rgba(" + src.r + "," + src.g + "," + src.b + "," + factor + ")";
+      var r = Math.floor(src.r+(dst.r-src.r)*(1-factor));
+      var g = Math.floor(src.g+(dst.g-src.g)*(1-factor));
+      var b = Math.floor(src.b+(dst.b-src.b)*(1-factor));
+      ret.color = "#" + r.toString(16) + g.toString(16) + b.toString(16);
+      ret.rgba = "rgba(" + r + "," + g + "," + b + ",1)";
+      ret.opacity = factor;
+
+      return ret;
+    },
+    adjustMonth: function(data,month)
+    {
+      var date = new Date(this.dateData.year,month,1);
+      var idx = 0;
+      var months = ["Januar","Februar","März","April","Mai","Juni","Juli"
+                   ,"August","September","Oktober","November","Dezember"];
+      var ret = {year:this.dateData.year,days:[],month:month,name:months[month],loadData:data};
+      for(var day=1; date.getMonth() == month; day++)
+      {
+        if(data._fileId == "" || !data.length || idx >= data.length || data[idx].day != day)
+          ret.days.push({day:day,times:[]});
+        else
+          ret.days.push(data[idx++]);
+        date = new Date(this.dateData.year,month,day+1);
+      }
+      return ret;
+    },
+    findNextTime: function(data,check)
+    {
+      var idx = check.idx;
+      check.lasttime = check.time + check.timediff;
+      check.lastgluc = check.gluc;
+      check.lastgluclibre = check.gluclibre;
+      while(idx < check.day.times.length)
+      {
+        idx++;
+        if(idx == check.day.times.length)
+        {
+          if(check.dataIdx < data.length - 1)
+          {
+            check.day = data[check.dataIdx+1];
+            idx = 0;
+            check.dataIdx++;
+            check.timediff += 24*60;
+          }
+          else
+          {
+            check.time = 0;
+            check.timediff += 24*60;
+            check.dataIdx++;
+            return check;
+          }
+        }
+        if(check.day.times.length > idx && check.day.times[idx].gluc > 0)
+        {
+          this.fillCheck(check,idx);
+          return check;
+        }
+      }
+      idx = check.day.times.length - 1;
+      if(idx >= 0)
+        this.fillCheck(check,idx);
+      else
+        check = {idx:0,gluc:0,time:0,lastgluc:0,lastgluclibre:0,lasttime:0};
+      return check;
+    },
+    fillCheck: function(check,idx)
+    {
+      check.idx = idx;
+      check.gluc = Number(check.day.times[idx].gluc);
+      check.gluclibre = Number(check.day.times[idx].gluclibre);
+      check.time = Number(check.day.times[idx].time);
+      check.time = Math.floor(check.time/100)*60 + (check.time%100);
+      check.katheter |= check.day.times[idx].katheter;
+      check.ampulle |= check.day.times[idx].ampulle;
+      check.sensor |= check.day.times[idx].sensor;
+    },
+    getCheck: function(data,dataIdx)
+    {
+      var check = {dataIdx:dataIdx-1,timediff:-24*60};
+      if(dataIdx == 0)
+      {
+        check.day = data[0];
+        check.idx = -1;
+        check = this.findNextTime(data,check);
+      }
+      else
+      {
+        check.day = data[check.dataIdx];
+        if(check.day)
+        {
+          for(var i=check.day.times.length-1; i>=0 && !check.time; i--)
+          {
+            if(check.day.times[i].gluc > 0)
+            {
+              check.lastgluc = 0;
+              check.lastgluclibre = 0;
+              this.fillCheck(check,i);
+            }
+          }
+        }
+      }
+      return check;
+    },
+    calcDay: function(data,dataIdx,useCGM)
+    {
+      var check = this.getCheck(data,dataIdx);
+      var list = this.getGlucList(data,check,0,24*60,30,useCGM);
+      var ret = {katheter:false,sensor:false,avg:undefined,abw:undefined};
+      for(var i=0; i<data[dataIdx].times.length; i++)
+      {
+        if(data[dataIdx].times[i].katheter)
+          ret.katheter = true;
+        if(data[dataIdx].times[i].sensor)
+          ret.sensor = true;
+      }
+//      this.msg(JSON.stringify(list));
+
+      if(list.length > 0)
+      {
+        var zaehler = 0;
+        ret.avg = list.sum/list.length;
+        for(var i=0; i<list.length; i++)
+        {
+          zaehler += (list[i].gluc - 140) ^ 2;
+        }
+        ret.abw = Math.sqrt(zaehler/(list.length-1));
+      }
+
+      return ret;
+    },
+    /**
+     * creates a list of gluc-values with entries for a given interval beginning at a given time
+     * @param data   list of entries like monthData
+     * @param date   date in format yyyymmdd
+     * @param time   start time as number hh*60+mm
+     * @param count  required number of entries in the list
+     * @param diff   minutes between the entries in the list
+     * @return list of dataitems
+     */
+    getTimeList: function(data,date,time,count,diff)
+    {
+      var d = new Date();
+      d.setYear(Number(date.substr(0,4)));
+      d.setMonth(Number(date.substr(4,2)-1));
+      d.setDate(Number(date.substr(6,2)));
+      var dataIdx = this.findDataIdx(data,this.getDateData(d));
+      time = Number(time);
+      var list = this.getGlucList(data,this.getCheck(data,dataIdx),time,time+diff*count,diff);
+      return list;
+    },
+    /**
+     * calculates a list of gluc-values for a given timespan.
+     * @param data   list of dataentries as in monthlist
+     * @param check  dataset for checking the times
+     * @param beg    starttime as number hh*60+mm
+     * @param end    endtime as number hh*60+mm
+     * @param diff   minutes between the entries in the list
+     * @param useCGM if true, then use CGM-Values instead of bloodsugar values
+     * @return list of gluc-values
+     */
+    getGlucList: function(data,check,beg,end,diff,useCGM)
+    {
+      var list = [];
+      list.sum = 0;
+      if(check.time != undefined)
+      {
+        var addFlags = true;
+        for(var i=beg; i<=end; i+=diff)
+        {
+          while(i > check.time + check.timediff)
+          {
+            check = this.findNextTime(data,check);
+            addFlags = true;
+          }
+
+          if(check.time != check.lasttime)
+          {
+            var max = useCGM?check.gluclibre-check.lastgluclibre:check.gluc-check.lastgluc;
+            var factor = (i-check.lasttime)/(check.time-check.lasttime+check.timediff);
+            var gluc = (useCGM?check.lastgluclibre:check.lastgluc) + max*factor;
+            var entry = {time:i,gluc:gluc};
+            entry.katheter = check.katheter;
+            delete check.katheter;
+            list.push(entry);
+            list.sum += gluc;
+          }
+        }
+      }
+
+      return list;
+    },
+    inDateRange: function(day,month,year,begDate,endDate)
+    {
+      var check = Number(year) * 10000 + Number(month-1) * 100 + Number(day);
+      var beg = Number(begDate.getFullYear()) * 10000 + Number(begDate.getMonth()) * 100 + Number(begDate.getDate());
+      var end = Number(endDate.getFullYear()) * 10000 + Number(endDate.getMonth()) * 100 + Number(endDate.getDate());
+
+      return check >= beg && check <= end;
+    },
+    getBase64Image: function(img)
+    {
+      img.crossOrigin = "anonymous";
+      // Create an empty canvas element
+      var canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      // Copy the image contents to the canvas
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+
+      // Get the data-URL formatted image
+      // Firefox supports PNG and JPEG. You could check img.src to
+      // guess the original format, but be aware the using "image/jpg"
+      // will re-encode the image.
+      var dataURL = canvas.toDataURL("image/png");
+
+      return dataURL;//dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    }
+    ,tapTest: function()
+    {
+      chrome.nfc.findDevices(function(devices) {
+        var device = devices[0];
+        chrome.nfc.read(device, {}, function(type, ndef) {
+          console.log(ndef);
+          var uri = ndef.ndef[0]["uri"];
+          console.log(uri);
+          var text = ndef.ndef[1]["text"];
+          console.log(text);
+        });
+      });
+    }
+  });
+</script>

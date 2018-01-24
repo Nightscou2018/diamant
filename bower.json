@@ -1,0 +1,35 @@
+{
+  "name": "diamant",
+  "description": "DIAbetes MANagemenT - an app to manage diabetes-data.",
+  "main": "index.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "cloud-data": "zreptil/cloud-data",
+    "paper-fab": "Polymerelements/paper-fab#^1.2.0",
+    "paper-dialog": "Polymerelements/paper-dialog#^1.1.0",
+    "paper-tooltip": "Polymerelements/paper-tooltip#^1.1.2",
+    "paper-drawer-panel": "Polymerelements/paper-drawer-panel#^1.0.10",
+    "iron-pages": "Polymerelements/iron-pages#^1.0.8",
+    "paper-input": "Polymerelements/paper-input#^1.1.18",
+    "paper-dialog-scrollable": "Polymerelements/paper-dialog-scrollable#^1.1.5",
+    "paper-listbox": "Polymerelements/paper-listbox#^1.1.2",
+    "paper-dropdown-menu": "Polymerelements/paper-dropdown-menu#^1.3.5",
+    "paper-slider": "Polymerelements/paper-slider#^1.0.11",
+    "paper-checkbox": "Polymerelements/paper-checkbox#^1.4.0",
+    "paper-item": "Polymerelements/paper-item#^1.2.1",
+    "paper-tabs": "Polymerelements/paper-tabs#^1.6.2",
+    "google-chart": "GoogleWebComponents/google-chart#^1.1.0",
+    "responsive-table": "zreptil/responsive-table",
+    "pdfmake": "bpampuch/pdfmake#^0.1.20",
+    "paper-radio-button": "polymerelements/paper-radio-button#^1.2.1",
+    "paper-radio-group": "polymerelements/paper-radio-group#^1.2.0",
+    "zreptil-date-picker": "zreptil/zreptil-date-picker",
+    "zreptil-time-picker": "zreptil/zreptil-time-picker"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}

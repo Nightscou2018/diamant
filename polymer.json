@@ -1,0 +1,14 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/diamant-app/diamant-app.html",
+  "builds": [
+  {
+    "js": {"minify": false, "compile": false},
+    "css": {"minify": true},
+    "html": {"minify": false},
+    "bundle": false,
+    "addServiceWorker": true,
+    "addPushManifest": true,
+    "insertPrefetchLinks": true
+  }]
+}

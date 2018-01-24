@@ -1,0 +1,42 @@
+{
+    "short_name": "DIAMANT",
+    "name": "DIAMANT",
+    "icons": [
+        {
+            "src": "launcher-icon-96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "launcher-icon-144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "launcher-icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }
+    ],
+    "permissions": [
+      "usb",
+      {
+        "usbDevices": [ 
+          { "vendorId": 0, "productId": 0 },
+          { "vendorId": 1254, "productId": 21905 },
+          { "vendorId": 1839, "productId": 8704 }
+        ] 
+      }
+    ],
+    "app": {
+      "background": {
+        "scripts": [ "background.js" ]
+      }
+    },
+    "start_url": "/index.html",
+    "url": "http://diamant.zreptil.de/",
+    "display": "fullscreen",
+    "prefer_related_applications": true,
+    "related_applications": [
+    ]
+}

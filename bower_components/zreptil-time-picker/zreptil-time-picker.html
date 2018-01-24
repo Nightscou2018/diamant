@@ -1,0 +1,182 @@
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<!--
+@demo demo/index.html
+-->
+<dom-module id="zreptil-time-picker">
+  <template>
+    <style is="custom-style">
+    section
+    {
+      display: flex;
+    }
+    .btn
+    {
+      display: flex;
+      margin: 0;
+      align-items: flex-start;
+      flex-direction: column;
+      @apply(--time-button);
+    }
+    .label
+    {
+      font-size: 0.5em;
+      color: #555;
+      align-self: start;
+      padding-right: 1em;
+      text-transform: none;
+      @apply(--time-label);
+    }
+    paper-button[hour],paper-button[minute]
+    {
+      padding: 0.4em;
+      min-width: 3em;
+      margin: 0.3em;
+      border: 1px solid transparent;
+    }
+    paper-button[active]
+    {
+      border: 1px solid black;
+    }
+    #hours
+    {
+      font-size: 1em;
+      max-width: 23em;
+      justify-content: center;
+    }
+    #minutes
+    {
+      font-size: 0.75em;
+      max-width: 37em;
+    }
+    #hours,#minutes
+    {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    #display
+    {
+      display: flex;
+      justify-content: center;
+      font-size: 4em;
+    }
+    #footer
+    {
+      @apply(--layout-horizontal);
+      @apply(--layout-end-justified);
+    }
+    </style>
+    <section>
+      <paper-button class="btn" on-tap="showDialog"><div class="label">{{label}}</div><div>{{display}} Uhr</div></paper-button>
+      <paper-dialog id="dialog" modal on-iron-overlay-closed="dismissDialog">
+        <div id="hours">
+          <template is="dom-repeat" items="{{hours}}">
+            <paper-button hour on-tap="tapHour">{{item}}</paper-button>
+          </template>
+        </div>
+        <div id="display">
+          {{hour}}:{{minute}} Uhr
+        </div>
+        <paper-dialog-scrollable>
+          <div id="minutes">
+            <template is="dom-repeat" items="{{minutes}}">
+              <paper-button minute on-tap="tapMinute">{{item}}</paper-button>
+            </template>
+          </div>
+        </paper-dialog-scrollable>
+        <div id="footer">
+          <paper-button dialog-dismiss>Abbruch</paper-button>
+          <paper-button dialog-confirm>OK</paper-button>
+        </div>
+      </paper-dialog>
+    </section>
+  </template>
+</dom-module>
+
+<script>
+  Polymer(
+  {
+    is: "zreptil-time-picker",
+    properties: 
+    {
+      label: {type: String},
+      time: {type: String, value: undefined, observer: "timeChanged"},
+      display: {type: String, value: ""},
+      hour: {type: String},
+      minute: {type: String},
+      hours: {type: Array, value: []},
+      minutes: {type: Array, value: []}
+    },
+    ready: function()
+    {
+      for(var i=0; i<24; i++)
+        this.push("hours", i);
+      for(var i=0; i<60; i++)
+        this.push("minutes", i);
+      this.time = "0000";
+    },
+    hourstyle: function(hour)
+    {
+      return hour==this.hour?"active":"";
+    },
+    tapHour: function(e)
+    {
+      this.hour = e.model.item;
+      var list = document.querySelectorAll("paper-button[hour]");
+      for(var i=0; i<list.length; i++)
+        list[i].active = (this.hour == list[i].innerText);
+    },
+    tapMinute: function(e)
+    {
+      this.minute = (e.model.item<10?"0":"")+e.model.item;
+      var list = document.querySelectorAll("paper-button[minute]");
+      for(var i=0; i<list.length; i++)
+        list[i].active = (Number(this.minute) == Number(list[i].innerText));
+    },
+    timeChanged: function()
+    {
+      var time = this.time;
+      if(!time)
+      {
+        var now = new Date();
+        var hour = now.getHours();
+        var minute = now.getMinutes();
+        time = (hour<10?"0":"") + hour + (minute<10?"0":"") + minute;
+      }
+      
+      while(time.length < 4)
+        time = "0" + time;
+       
+      if(time.length > 4)
+      {
+        time = time.substr(0,4);
+        this.time = time;
+      }
+      
+      var hour = time.substr(0,2);
+      var minute = time.substr(2,2);
+      this.display = hour + ":" + minute;
+    },
+    showDialog: function()
+    {
+      this.hour = this.time.substr(0,2);
+      this.minute = this.time.substr(2,2);
+      this.tapHour({model:{item:Number(this.hour)}});
+      this.tapMinute({model:{item:Number(this.minute)}});
+      this.$.dialog.toggle();
+    },
+    dismissDialog: function(e)
+    {
+      if(e)
+        e.stopImmediatePropagation();
+        
+      if (e.detail.confirmed)
+      {
+        this.time = (Number(this.hour)<10?"0":"") + Number(this.hour) + (Number(this.minute)<10?"0":"") + Number(this.minute);
+        this.fire("time-selected");
+      }
+    }
+  });
+</script>

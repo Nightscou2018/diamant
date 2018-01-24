@@ -1,0 +1,280 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<dom-module id="diamant-monthdata">
+  <template>
+    <style is="custom-style">
+    :host
+    {
+      font-size: 0.75em;
+      --paper-tab-ink: var(--paper-light-blue-500);
+      --paper-tabs-selection-bar-color: var(--paper-light-blue-600);
+    }
+    .title
+    {
+      background: var(--color-primary-back);
+      color: var(--color-primary-font);
+    }
+    table
+    {
+      border: 1px solid black;
+    }
+    td
+    {
+      padding: 0.5em 0em;
+      text-align: center;
+      min-width: 3.5em;
+      height: 2.25em;
+      border-radius: 15%;
+      cursor: pointer;
+    }
+    .container
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-center);
+    }
+    td div:first-child
+    {
+    font-weight: bold;
+    }
+    td div:nth-child(2)
+    {
+      font-size: 0.75em;
+    }
+    iron-icon
+    {
+      width: 1em;
+    }
+    .katheter
+    {
+      background-image: url("resources/katheter.png");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 2em auto;
+    }
+    .sensor
+    {
+      background-image: url("resources/sensor.png");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 2em auto;
+    }
+    </style>
+    <div class="container">
+      <table>
+        <thead>
+          <tr>
+            <th class="title" colspan="7">{{data.name}}</th>
+          </tr>
+          <tr>
+            <th>Mo</th>
+            <th>Di</th>
+            <th>Mi</th>
+            <th>Do</th>
+            <th>Fr</th>
+            <th>Sa</th>
+            <th>So</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template id="weeks" is="dom-repeat" items="{{weeks}}" as="week">
+            <tr>
+              <template is="dom-repeat" items="{{week.days}}" as="day">
+                <td on-tap="tapDay" class$="{{dayClass(flagDisplay,day.day,rnd)}}" style="background-color:{{color(day.day,rnd)}}">
+                  <div>
+                    {{dayOfMonth(day.day)}}
+                  </div>
+                  <div>{{gluc(day.day,rnd)}}</div>
+                </td>
+              </template>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "diamant-monthdata",
+    properties:
+    {
+      data: {type: Object,value:{days:[]},observer:"dataChanged"}
+     ,weeks: {type: Array,value:[]}
+     ,flagDisplay: {type:String,value:"display"}
+     ,rnd: {type:Number,value:0}
+    },
+    activated: function()
+    {
+      this.data = _.adjustMonth(_.monthData,_.dateData.month-1);
+      document.querySelector(".title").innerHTML = this.data.name + " " + this.data.year;
+      this.refreshDisplay();
+    },
+    refreshDisplay: function()
+    {
+      this.rnd = Math.random();
+    },
+    tapDay: function(e)
+    {
+      if(!e.model.day.day)
+        return;
+        
+      var gluc = _.calcDay(this.data.days,e.model.day.day-1).avg;
+      _.dateData.setDate(this.data.year,this.data.month+1,e.model.day.day);
+      _.monthData = this.data.loadData;
+      _.$.pages.selected = 0;
+      _.$.pages.selectedItem.activated();
+      this.refreshDisplay();
+    },
+    dayOfMonth: function(day)
+    {
+      return day<1?"":day;
+    },
+    hasKatheter: function(day)
+    {
+      if(day<1)return false;
+      var idx = _.findDayIdx(this.data.days,day);
+      if(idx<0)
+        return false;
+
+      return _.calcDay(this.data.days,idx).katheter;
+    },
+    hasSensor: function(day)
+    {
+      if(day<1)return false;
+      var idx = _.findDayIdx(this.data.days,day);
+      if(idx<0)
+        return false;
+
+      return _.calcDay(this.data.days,idx).sensor;
+    },
+    dayClass: function(flag,day,rnd)
+    {
+      if(day<1)return "";
+      var ret = "";
+      var show = false;
+      switch(flag)
+      {
+        case "katheter":
+          show = this.hasKatheter(day);
+          break;
+        case "sensor":
+          show = this.hasSensor(day);
+          break;
+      }
+      
+      if(show)
+        ret = flag;
+      
+      return ret;
+    },
+    color: function(day,rnd)
+    {
+      var idx = _.findDayIdx(this.data.days,day);
+      if(idx<0)
+        return "";
+      var date = _.fmtNumber(this.data.year,0,4)+_.fmtNumber(this.data.month+1,0,2)+_.fmtNumber(day,0,2);
+      return _.glucColor(_.calcDay(this.data.days,idx).avg,date,"1200",250).color;
+    },
+    gluc: function(day,rnd)
+    {
+      var idx = _.findDayIdx(this.data.days,day);
+      if(idx<0)
+        return "";
+        
+      var gluc = _.calcDay(this.data.days,idx).avg;
+      if(isNaN(gluc) || gluc == 0)
+        return "";
+      return _.glucFromData(gluc);
+    },
+    dataChanged: function()
+    {
+      if(!this.data.days)
+        return;
+                
+      var date = new Date(this.data.year,this.data.month,1);
+      var day = date.getDay() - 1;
+      var empty = {day:-1,times:[]};
+      if(day < 0)day = 6;
+      var days = [];
+      for(var i=0; i<day; i++)
+        days.push(empty);
+      var weeks = [];
+      for(var i=0; i<this.data.days.length; i++)
+      {
+        days.push(this.data.days[i]);
+        day++;
+        if(day == 7)
+        {
+          weeks.push({days:days});
+          day = 0;
+          days = [];
+        }
+      }
+      if(days.length > 0)
+      {
+        while(days.length < 7)
+          days.push(empty);
+        weeks.push({days:days});
+      }
+      
+//      alert(JSON.stringify(weeks));
+      
+      this.weeks = weeks;
+      this.refreshDisplay();
+/*
+      this.weeks = [];
+      this.splice("weeks",0,10000);
+      for(var i=0; i<weeks.length; i++)
+      {
+        this.push("weeks", {days:[]});
+        for(var j=0; j<weeks[i].days.length; j++)
+        {
+          this.push("weeks."+i+".days", weeks[i].days[j]);
+        }
+      }
+*/
+    },
+    verifyData: function()
+    {
+      if(_.yearData[_.dateData.month-1].length == 0)
+        _.driveData.requestData(_.dateData.dataId,"json",_,_.monthLoaded);
+      else
+        _.monthLoaded(_,"ok",_.yearData[_.dateData.month-1]);
+    },
+    execTool: function(id)
+    {
+      switch(id)
+      {
+        case "Display":
+        {
+          this.flagDisplay = _.changeFlagDisplay(this.flagDisplay,_.$.tool1Display);
+          break;
+        }
+      }
+    },
+    tapPrev: function()
+    {
+      var year = _.dateData.year;
+      _.dateData.addMonth(-1);
+      if(year != _.dateData.year)
+      {
+        _.dateData.addMonth(1);
+        return;
+      }
+      this.verifyData();
+    },
+    tapNext: function()
+    {
+      var year = _.dateData.year;
+      _.dateData.addMonth(1);
+      if(year != _.dateData.year)
+      {
+        _.dateData.addMonth(-1);
+        return;
+      }
+      this.verifyData();
+    }
+  });
+</script>

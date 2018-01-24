@@ -1,0 +1,40 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/font-roboto/roboto.html">
+<link rel="import" href="diamant-signed-out.html">
+<link rel="import" href="diamant-signed-in.html">
+<script src="resources/globals.js"></script>
+<dom-module id="diamant-app">
+  <template>
+    <style is="custom-style">
+    diamant-signed-in
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+    }
+    </style>
+    <diamant-signed-out id="out"></diamant-signed-out>
+    <diamant-signed-in id="in" hidden></diamant-signed-in>
+  </template>
+  <script>
+    Polymer(
+    {
+      is: "diamant-app",
+			statusChange: function(cloudData)
+			{
+				switch(cloudData.googleStatus)
+				{
+					case "signin granted":
+						this.$.out.hidden = true;
+						this.$.in.hidden = false;
+						this.$.in.signinDone(cloudData);
+						break;
+					default:
+						this.$.in.hidden = true;
+						this.$.out.hidden = false;
+						this.$.in.signoutDone(cloudData);
+						break;
+				}
+			}
+    });
+  </script>
+</dom-module>

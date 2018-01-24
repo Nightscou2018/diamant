@@ -1,0 +1,72 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/cloud-data/cloud-data.html">
+<dom-module id="diamant-signed-out">
+  <template>
+    <style is="custom-style">
+    :host
+    {
+      display: flex;
+      @apply(--layout-center-center);
+      @apply(--layout-fit);
+    }
+    :host>div
+    {
+      padding-top: 3em;
+      max-width: 30em;
+      text-align: justify;
+    }
+    cloud-data
+    {
+      padding-top: 30px;
+    }
+    @media(pointer:coarse)
+    {
+      :host>div
+      {
+        max-width: none;
+        padding: 10% 10%;
+      }
+    }
+    #drive
+    {
+      @apply(--layout-horizontal);
+      @apply(--layout-flex);
+      @apply(--layout-center-justified);
+    }
+    span
+    {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    </style>
+    <div>
+      Willkommen bei Diamant, dem <span>Dia</span>betes <span>Man</span>agemen<span>t</span>. Auf dieser Webseite können Daten erfasst und ausgewertet werden, die
+      es einem Diabetiker erleichtern den Überblick über seinen Blutzuckerverlauf zu behalten.
+      <br><br>
+      Für die Datenhaltung wird Google Drive verwendet, weshalb es nötig ist, sich dort anzumelden.
+      Ohne eine Anmeldung am eigenen Google Konto können Daten weder gespeichert noch geladen werden.
+      Zur Anmeldung einfach den Sign in Button betätigen. Wenn die Anmeldung erfolgt ist, kann
+      diese Seite verwendet werden.
+      <div id="drive">
+        <cloud-data id="cloudData"
+          google-client-id="64295298707-r0gl8n8skteopiulflqo04fbi0qbd00h.apps.googleusercontent.com"
+          google-signin-hide-selector="diamant-app diamant-signed-out"
+          google-signin-show-selector="diamant-app diamant-signed-in"
+					on-status-change="statusChange"
+          disconnect-on-signout="true">
+        </cloud-data>
+      </div>
+    </div>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "diamant-signed-out",
+    statusChange: function()
+    {
+      document.querySelector("diamant-app").statusChange(this.$.cloudData);
+    }
+  });
+</script>

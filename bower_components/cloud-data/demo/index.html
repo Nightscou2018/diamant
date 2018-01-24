@@ -1,0 +1,50 @@
+﻿<!doctype html>
+<html>
+<head>
+  <title>cloud-data demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+  <link rel="import" href="demo-signed-out.html">
+  <link rel="import" href="demo-signed-in.html">
+  <style is="custom-style" include="demo-pages-shared-styles">
+    body
+    {
+      font-family: 'RobotoDraft', 'Roboto', sans-serif;
+      line-height:1.2;
+      vertical-align:middle;
+      color: black;
+      font-size: 1em;
+      padding: 0px!important;
+      height: 100vh;
+      @apply(--layout-vertical);
+      @apply(--layout-fullbleed);
+    }
+    demo-signed-in,_demo-signed-out
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+    }
+    demo-snippet 
+    {
+      --demo-snippet-demo: 
+      {
+        background: var(--paper-grey-200);
+        padding: 8px;
+      };
+      --demo-snippet-code: 
+      {
+        max-height: 300px;
+      };
+    }  
+    #welcome
+    {
+      padding-bottom: 1em;
+    }
+  </style>
+</head>
+<body>
+  <demo-signed-out></demo-signed-out>
+  <demo-signed-in hidden></demo-signed-in>
+</body>
+</html>

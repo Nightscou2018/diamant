@@ -1,0 +1,122 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-ajax/iron-request.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill-lite.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise.js"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-loader.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise-Statics.js"><link rel="prefetch" href="../../bower_components/google-chart/charts-loader.html"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-styles.html"></head><body><dom-module id="print-diary">
+  <template>
+    <style is="custom-style">:host{display:none;}</style>
+    <google-chart id="chartbasal" hidden="" type="column"></google-chart>
+    <img id="katheter" src="resources/katheter.print.png" hidden="">
+    <img id="sensor" src="resources/sensor.print.png" hidden="">
+    <img id="ampulle" src="resources/ampulle.print.png" hidden="">
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "print-diary",
+    getForm: function(vars)
+    {
+      var config = vars.config;
+      
+      var ret = 
+      {
+        pageSize: "a4"
+       ,pageMargins: [cm(1),cm(1),cm(1),cm(1)]
+       ,content: 
+        [
+          { text: "Tagebuch", fontSize: 20, alignment: "center"}
+         ,{ text: config.firstname + " " + config.lastname, fontSize: 16, alignment: "center"}
+        ]
+       ,defaultStyle:
+        {
+          fontSize: 8
+        }
+       ,images: 
+        {
+          katheter: _.getBase64Image(this.$.katheter)
+         ,sensor: _.getBase64Image(this.$.sensor)
+         ,ampulle: _.getBase64Image(this.$.ampulle)
+        }
+      };
+      
+      var days = 
+      {
+        margin: [cm(0.0),cm(0.5),0,0]
+       ,table: 
+        {
+          headerRows: 1
+         ,widths: [cm(2),cm(1),cm(2.5),cm(2),cm(1.5),cm(3),cm(5)]
+         ,body: 
+          [
+            [ 
+              {text:"Datum",alignment:"center"}
+             ,{text:"Zeit",alignment:"center"}
+             ,{text:"BZ-Wert\n(Ketone)",alignment:"center"}
+             ,{text:"Mahlzeit",alignment:"center"}
+             ,{text:"Bolus",alignment:"center"}
+             ,{text:"Multiwave\nGesundheit",alignment:"center"}
+             ,{text:"Info",alignment:"center"}
+            ]
+          ]
+        }
+      };
+      
+      for(var i=0; i<vars.items.length; i++)
+      {
+        var day = vars.items[i];
+        for(var j=0; j<day.times.length; j++)
+        {
+          var time = day.times[j];
+          var date = _.fmtNumber(day.year,0,4)+_.fmtNumber(day.month,0,2)+_.fmtNumber(day.day,0,2);
+          var fillColor = _.glucColor(time.gluc,date,time.time,250).color;
+          if(fillColor == "#ffffff")
+            fillColor = undefined;
+          var line = [];
+          if(j == 0)
+            line.push({text:_.fmtDate(new Date(day.year,day.month-1,day.day))+"\n"+_.fmtNumber(day.daygluc,0),rowSpan:day.times.length,fontSize:8,fillColor:_.glucColor(day.daygluc,date,"1200",250).color});
+          else
+            line.push({text:""});
+
+          line.push({text:time.time.substr(0,2) + ":" + time.time.substr(2,2), alignment:"center", fillColor: fillColor});
+          var cell = {alignment:"right",text: "",fillColor:fillColor};
+          if(time.gluc)
+            cell.text = _.glucFromData(time.gluc) + " ";
+          if(time.gluclibre)
+            cell.text += "(" + _.glucFromData(time.gluclibre) + ")";
+          cell.text += " " + _.getGlucInfo().unit;
+          line.push(cell);
+          var temp = _.calcBEValue(time.food,vars.foodList);
+          if(temp != "0.0" && temp != "")
+            temp += " BE";
+          line.push({text:temp,alignment:"right",fillColor:fillColor});
+          temp = Number(time.bolusadjust) + Number(time.bolustime);
+          if(!isNaN(temp))
+            temp = _.fmtNumber(temp,1) + " IE";
+          else
+            temp = "";
+          line.push({text:temp,alignment:"right",fillColor:fillColor});
+          
+          temp = [];
+          if(time.katheter)
+            temp.push({image: "katheter"});
+          if(time.sensor)
+            temp.push({image: "sensor"});
+          if(time.ampulle>0)
+            temp.push({image: "ampulle"});
+          temp.push({text:""});
+          line.push(temp);
+          
+          temp = [];
+          if(time.info)
+            temp.push({text:time.info});
+          else
+            temp.push({text:""});
+          line.push(temp);
+          days.table.body.push(line);
+        }
+      }
+      ret.content.push(days);
+          
+      return ret;
+    }
+  });
+</script></body></html>

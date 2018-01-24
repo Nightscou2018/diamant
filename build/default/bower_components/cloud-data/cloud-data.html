@@ -1,0 +1,1392 @@
+<html><head><link rel="prefetch" href="../polymer/polymer-mini.html"><link rel="prefetch" href="../polymer/polymer-micro.html"><link rel="prefetch" href="../google-signin/google-signin-aware.html"><link rel="prefetch" href="../google-apis/google-js-api.html"><link rel="prefetch" href="../iron-jsonp-library/iron-jsonp-library.html"><link rel="prefetch" href="../iron-icon/iron-icon.html"><link rel="prefetch" href="../iron-meta/iron-meta.html"><link rel="prefetch" href="../iron-flex-layout/iron-flex-layout.html"><link rel="prefetch" href="../font-roboto/roboto.html"><link rel="prefetch" href="../paper-ripple/paper-ripple.html"><link rel="prefetch" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"><link rel="prefetch" href="../paper-material/paper-material.html"><link rel="prefetch" href="../paper-styles/shadow.html"><link rel="prefetch" href="../paper-material/paper-material-shared-styles.html"><link rel="prefetch" href="../google-signin/google-icons.html"><link rel="prefetch" href="../iron-iconset-svg/iron-iconset-svg.html"><link rel="prefetch" href="../google-signin/google-signin.css"><link rel="prefetch" href="../filesaver/FileSaver.min.js"><link rel="prefetch" href="../jszip/dist/jszip.min.js"><link rel="prefetch" href="../paper-button/paper-button.html"><link rel="prefetch" href="../paper-behaviors/paper-button-behavior.html"><link rel="prefetch" href="../iron-behaviors/iron-button-state.html"><link rel="prefetch" href="../iron-behaviors/iron-control-state.html"><link rel="prefetch" href="../paper-behaviors/paper-ripple-behavior.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-overlay-behavior.html"><link rel="prefetch" href="../iron-fit-behavior/iron-fit-behavior.html"><link rel="prefetch" href="../iron-resizable-behavior/iron-resizable-behavior.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-overlay-manager.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-overlay-backdrop.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-focusables-helper.html"></head><body>﻿<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../google-signin/google-signin.html">
+<link rel="import" href="../google-apis/google-client-loader.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="import.html">
+<link rel="import" href="cloud-data-overlay.html">
+<!--
+`cloud-data` is an element that encapsulates some of the features of googles cloud 
+data. It uses the element google-signin for the communication with google webservices.
+
+@demo demo/index.html 
+-->
+<dom-module id="cloud-data">
+  <template>
+    <style is="custom-style">:host{@apply (--backdrop);}img{width:50px;}paper-button{background:#a0a0ff;}google-signin{--google-signin-background:var(--paper-light-red-500);}@media (pointer:coarse){body{background:red;}paper-button{font-size:2em;padding:1.7em 1.57em;}}</style>
+    <google-client-loader id="calendar" name="calendar" version="v3"></google-client-loader>
+    <google-signin id="button" brand="google" client-id="{{googleClientId}}" signed-in="{{_signedIn}}" label-signout="{{googleUserName}}" on-google-signin-success="_handleSignIn" on-google-signed-out="_handleSignOut" scopes="[[_scopes]]" is-authorized="{{_isAuthorized}}" disconnect-on-signout="{{disconnectOnSignout}}" openid-prompt="select_account" <="" google-signin="">
+    <cloud-data-overlay id="overlay" no-cancel-on-outside-click="" with-backdrop="" hide-overlay="{{hideOverlay}}"></cloud-data-overlay>
+  </google-signin></template>
+</dom-module>
+<script>
+  // this variable is needed on a global level
+  // since it is used to manage data-access 
+  // across callback-limits.
+  var __cloudData = undefined;
+  Polymer(
+  {
+    is: "cloud-data",
+    properties:
+    {
+      /**
+        * True, when the user authorized this element.
+        */
+       _isAuthorized: {type: Boolean, value: false}
+      /**
+        * True, when the user signed in to Google.
+        */
+      ,_signedIn: {type: Boolean, value: false}
+      /**
+        * The scopes that are needed to do the work. This should not be changed, unless the code 
+        * changes and more scopes are required.
+        */
+      ,_scopes: {type:String, value: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets"}
+      /**
+        * if true, the client is disconnected when the user signs out from google.
+        */
+      ,disconnectOnSignout: {type:Boolean, value: false}
+      /**
+        * id for google webapp that wants to use this component. 
+        * can be found in the google api manager at 
+        * https://console.developers.google.com/apis/credentials/oauthclient.
+        */
+     ,googleClientId: {type: String, value: ""}
+      /**
+        * id for file that should be accessed with google sheets api. 
+        * starts with https://docs.google.com/spreadsheets/d/ and is the
+        * link, you get, when linking to a sheet.
+        */
+     ,googleSheetsFileId: {type: String, value: ""}
+      /**
+        * css-selector of a html-element. this element is hidden, when signed-in to google and shown when not signed-in.
+        */
+     ,googleSigninHideSelector: {type: String, value: ""}
+      /** 
+       *  css-selector of a html-element. this element is shown, when signed-in to google and hidden when not signed-in.
+       *  if this element has a method named `msg` then this method is called whenever cloud-data wants to tell the
+       *  user something.
+       */
+     ,googleSigninShowSelector: {type: String, value: ""}
+      /**
+        * the status of the connection to google. Can be "signin granted" or "signed out".
+        */
+     ,googleStatus: {type: String, value: "Not granted"}
+      /**
+        * the email-address of the user, when signed in to google.
+        */
+     ,googleUserEmail: {type: String, value: ""}
+      /**
+        * the image of the user, when signed in to google.
+        */
+     ,googleUserImg: {type: String, value: ""}
+      /**
+        * the name of the user, when signed in to google.
+        */
+     ,googleUserName: {type: String, value: "N/A"}
+      /**
+        * if true, then the element gives some additional information when doing work.
+        */
+     ,isDebug: {type:Boolean, value:false}
+      /**
+        * if not present, then an overlay with a message is shown when executing timeconsuming tasks.
+        */
+     ,hideOverlay: {type:Boolean, value: false}
+    },
+    ready: function()
+    {
+      this.handlingSignOut = false;
+      this.dataPool = [];
+      this.dataRequests = [];
+      try
+      {
+        this.hideControl = document.querySelector(this.googleSigninHideSelector);
+        this.hideControl.removeAttribute("hidden");
+      }
+      catch(ex)
+      {
+        this.hideControl = undefined;
+      }
+      try
+      {
+        this.showControl = document.querySelector(this.googleSigninShowSelector);
+        this.showControl.setAttribute("hidden","");
+      }
+      catch(ex)
+      {
+        this.showControl = undefined;
+      }
+      
+      document.body.appendChild(this.$.overlay);
+    },
+    /**
+     * Calls the api of google.
+     *
+     * @param {String} msg       message to display on overlay.
+     * @param {Event}  callback  function to be called when authorization succeeded.
+     */
+    _callGoogleApi: function(msg,callback)
+    {
+      if(!gapi.auth)
+      {
+        gapi.load("auth",function()
+        {
+          if(gapi.auth)
+          {
+            __cloudData.self._callGoogleApi(msg,callback);
+          }
+          else
+          {
+            alert("Auth-API konnte nicht geladen werden.");
+            __cloudData = undefined;
+          }
+        });
+        return;
+      }
+      if(!gapi.client)
+      {
+        gapi.load("client",function()
+        {
+          if(gapi.client)
+          {
+            __cloudData.self._callGoogleApi(msg,callback);
+          }
+          else
+          {
+            alert("Client-API konnte nicht geladen werden.");
+            __cloudData = undefined;
+          }
+        });
+        return;
+      }
+      if(!this.$.overlay.isCanceled)
+        this.$.overlay.show(msg);
+      if(__cloudData == undefined)
+      __cloudData = {self: this};
+      gapi.auth.authorize(
+      {
+        "client_id": this.googleClientId,
+        "scope": this._scopes,
+        "immediate": true,
+        "authuser": this._googleAuthUser
+      }, function(authResult)
+      {
+        if (authResult && !authResult.error)
+        {
+          callback(authResult);
+          return;
+        }
+        __cloudData.self.$.overlay.showCancelButton = true;
+        if(authResult)
+          __cloudData.self.$.overlay.text = "error when accessing google-api: " + authResult.error_description;
+        else
+          __cloudData.self.$.overlay.text = "unknown error when accessing google-api";
+        __cloudData.self.$.overlay.showCancelButton = false;
+      });
+    },
+    _handleSignIn: function(response)
+    {
+      this.googleStatus = "signin granted";
+      this._googleAuthUser = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().session_state.extraQueryParams.authuser;
+      if(!this._googleAuthUser)
+        this._googleAuthUser = "0";
+      this.googleUserEmail = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getEmail();
+      this.googleUserName = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getName();
+      this.googleUserImg = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getImageUrl();
+      if(this.hideControl)
+        this.hideControl.setAttribute("hidden","");
+      if(this.showControl)
+      {
+        this.showControl.removeAttribute("hidden");
+        if(this.showControl.signinDone)
+          this.showControl.signinDone(this);
+      }
+      this.fire("status-change");
+    },
+    _handleSignOut: function(response)
+    {
+      if(this._handlingSignOut)
+        return;
+
+      this._handlingSignOut = true;
+      this.googleUserImg = "";
+      this.googleStatus = "signed out";
+      this.googleUserName = "";
+      if(this.hideControl)
+        this.hideControl.removeAttribute("hidden");
+      if(this.disconnectOnSignout)
+        this.disconnect();
+      if(this.showControl)
+      {
+        this.showControl.setAttribute("hidden","");
+        if(this.showControl.signoutDone)
+          this.showControl.signoutDone(this);
+      }
+      this._handlingSignOut = false;
+      this.fire("status-change");
+    },
+    _msg: function(text)
+    {
+      if(this.showControl && this.showControl.msg)
+        this.showControl.msg(text);
+    },
+    _msgDebug: function(text)
+    {
+      if(this.isDebug)
+        console.log("[cloud-data] " + text);
+    },
+    /**
+     * Diconnects the current user from google.
+     */
+    disconnect: function()
+    {
+      var currentUser = gapi.auth2.getAuthInstance().currentUser.get();
+      if (currentUser)
+        currentUser.disconnect();
+      gapi.auth2.getAuthInstance().signOut();
+    },
+    /**
+     * Executes a signout from google.
+     */
+    signOut: function()
+    {
+      this.$.button.signOut();
+    },
+    /**
+     * Request a list of calendars for the current user.
+     *
+     * @param {object} parent                   the parent that will be given as parameter to onCalendarListReceived
+     * @param {event}  onCalendarListReceived   the function that gets called when the list was received
+     */
+    requestCalendarList: function(parent,onCalendarListReceived)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["requestCalendarList",parent,onCalendarListReceived]);
+        return;
+      }
+      
+      if(this.$.calendar.api == undefined)
+      {
+        if(onCalendarListReceived)
+          onCalendarListReceived(parent,[]);
+        return;
+      }
+
+      __cloudData = {self: this};
+      var request = this.$.calendar.api.calendarList.list({"key":""});
+      request.execute(function(resp) 
+      {
+        __cloudData = undefined;
+        if (resp.error) 
+        {
+          this._msg("Fehler beim Holen der Kalenderliste: " + resp.message)
+        }
+        else 
+        {
+          if(onCalendarListReceived)
+            onCalendarListReceived(parent,resp.items);
+        }
+      }.bind(this));
+    },
+    /**
+     * Add a notification to the specified calendar.
+     *
+     * @param {object} parent             the parent that will be given as parameter to onCalendarListReceived.
+     * @param {string} calendarid         the id of the calendar to add the notification to.
+     * @param {array}  eventList          list of event-Ids that will be checked before sending an event.
+     * @param {string} time               the time for the notification in format "yyyymmddhhss".
+     * @param {string} text               the text for the notification.
+     * @param {event}  onNotificationSet  the function that gets called when notification was set.
+     */
+    addNotification: function(parent,calendarId,eventList,time,text,onNotificationSet)
+    {
+      if(!eventList)
+        eventList = [];
+        
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["addNotification",parent,calendarId,eventList,time,text,onNotificationSet]);
+        return;
+      }
+      
+      if(this.$.calendar.api == undefined)
+      {
+        if(onNotificationSet)
+          onNotificationSet(parent);
+        return;
+      }
+
+      __cloudData = {self:this};
+      var start = time.substr(0,4)
+                 +"-"+time.substr(4,2)
+                 +"-"+time.substr(6,2)
+                 +"T"+time.substr(8,2)
+                 +":"+time.substr(10,2)
+                 +":00";
+      var evt =
+      {
+        summary: text
+       ,description: "erzeugt von DIAMANT"
+       ,start:
+        {
+          dateTime: start
+         ,timeZone: "Europe/Berlin"
+        }
+       ,end:
+        {
+          dateTime: start
+         ,timeZone: "Europe/Berlin"
+        }
+       ,reminders:
+        {
+          useDefault: false
+         ,overrides:
+          [
+            {method:"popup",minutes:"1"}
+          ]
+        }
+      };
+      var request = this.$.calendar.api.events.insert
+      (
+        {
+          calendarId:calendarId
+         ,resource:evt
+        }
+      );
+      request.execute(function(resp) 
+      {
+        __cloudData = undefined;
+        if (resp.error) 
+        {
+          this._msg("Fehler beim Setzen der Benachrichtigung: " + resp.message)
+        }
+        this._endRequest("addNotification");
+        if(onNotificationSet)
+          onNotificationSet(parent,new Date(resp.start.dateTime));
+      }.bind(this));
+    },
+    /**
+     * Saves data to the cloud and calls onDataSaved afterwards.
+     *
+     * @param {object} parent       the parent that will be given as parameter to onDataSaved.
+     * @param {object} data         the data that should be saved.
+     * @param {string} ext          file extension without the dot.
+     * @param {event}  onDataSaved  the function that gets called when saving is done.
+     *
+     * the function onDataSaved receives this parameters:
+     *
+     * {object}  parent  the parent that was given in saveData.
+     *
+     * {string}  status  the status of the operation:
+     *
+     *                   "ok"        everything is fine.
+     *
+     *                   "error"     the data property contains the response
+     *                               as json-data.
+     *
+     *                   "modified"  the data on the server was modified since
+     *                               the last call to requestData - nothing was saved.
+     *
+     *                   "canceled"  the data on the server was modified since
+     *                               the last call to requestData and the check
+     *                               was performed already.
+     *
+     * {object}  data    the data that was saved or the json-data of the error.
+     */
+    saveData: function(parent,data,ext,onDataSaved)
+    {
+      if(ext == "")
+      {
+        var pos = data._id.lastIndexOf(".");
+        if(pos >= 0)
+        {
+          ext = data._id.substr(pos+1);
+          data._id = data._id.substr(0,pos);
+        }
+      }
+      
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["saveData",parent,data,ext,onDataSaved]);
+        return;
+      }
+
+      this._msgDebug("saveData(" + data._id + "." + ext + ")");
+      var found = false;
+      for(var i=0; i<this.dataPool.length && !found; i++)
+      {
+        if(this.dataPool[i]._id == data._id)
+        {
+          this.dataPool[i] = this.cloneOf(data);
+          found = true;
+        }
+      }
+      if(!found)
+        this.dataPool.push(this.cloneOf(data));
+
+      __cloudData = {self:this,id:data._id};
+      
+      __cloudData.self._msgDebug("saveData: connecting to google-server...");
+      this._callGoogleApi("Speichere Daten...",function(authResult)
+      {
+        gapi.client.load("drive","v3",function()
+        {
+          var saveData = __cloudData.self.cloneOf(data);
+          saveData._modified = undefined;
+          saveData._fileId = undefined;
+          saveData._id = undefined;
+          saveData._ext = undefined;
+          
+          var saveText;
+          if(ext == "json")
+            saveText = JSON.stringify(saveData);
+          else
+            saveText = saveData.content;
+          var accessToken = gapi.auth.getToken().access_token;
+          var xhr = new XMLHttpRequest();
+          var boundary = "--=#drivedata#=--";
+          var mime = "text/plain";
+          if(ext == "json")
+            mime = "application/json";
+          var temp = "--" + boundary;
+          var metadata = "\n \"name\":\"" + data._id + "." + ext + "\"";
+          if(saveData.metadata)
+          {
+            for(var key in saveData.metadata)
+              metadata += ",\n \"" + key + "\":\"" + saveData.metadata[key] + "\"";
+          }
+          temp += "\nContent-Type: application/json; charset=UTF-8\n\n{" + metadata + "\n}\n\n";
+          temp += "--" + boundary + "\nContent-Type: " + mime + "\n\n" + saveText + "\n";
+          temp += "--" + boundary + "--";
+          saveData = temp;
+          
+          if(data._fileId)
+          {
+            __cloudData.self._msgDebug("saveData: requesting file " + data._id + "." + ext + " for modification check...");
+            var accessToken = gapi.auth.getToken().access_token;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "https://www.googleapis.com/drive/v3/files/" + data._fileId + "?fields=modifiedTime");
+            xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+            xhr.onload=function()
+            {
+              var file = JSON.parse(xhr.responseText);
+              if(data._modified != file.modifiedTime)
+              {
+                if(data._alreadyModChecked)
+                {
+                  __cloudData.self._msgDebug("saveData: file was modified - second check, operation canceled");
+                  __cloudData.self.$.overlay.close();
+                  if(onDataSaved)
+                    onDataSaved(parent,"canceled",data);
+                  delete(data._alreadyModChecked);
+                  return;
+                }
+                __cloudData.self._msgDebug("saveData: file was modified, "+(onDataSaved?"sending modified-status to app":"operation canceled"));
+                __cloudData.self.$.overlay.close();
+                __cloudData = undefined;
+//                  data._alreadyModChecked = true;
+                if(onDataSaved)
+                  onDataSaved(parent,"modified",data);
+                return;
+              }
+              __cloudData.self._msgDebug("saveData: file was not modified - saving file");
+              xhr = new XMLHttpRequest();
+              xhr.open("PUT", "https://www.googleapis.com/upload/drive/v2/files/" + data._fileId + "?uploadType=multipart");
+              xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+              xhr.setRequestHeader("Content-Type", "multipart/related; boundary=" + boundary);
+              xhr.onload=function()
+              {
+                if(xhr.status == 200)
+                  __cloudData.self._saveResult(xhr.responseText,parent,"ok",onDataSaved,data,ext);
+                else
+                  __cloudData.self._saveResult(xhr.responseText,parent,xhr.status,onDataSaved,data,ext);
+              };
+              xhr.onerror=function()
+              {
+                __cloudData.self._saveResult(xhr.responseText,parent,"error",onDataSaved,data,ext);
+              };
+              xhr.send(saveData);
+            };
+            xhr.send();
+            return;
+          }
+          else // saving new file
+          {
+            if(this.isDebug)this.$.overlay.show("Speichere Daten...");
+            xhr.open("POST", "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
+            xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+            xhr.setRequestHeader("Content-Type", "multipart/related; boundary=" + boundary);
+            xhr.onload=function()
+            {
+              if(xhr.status == 200)
+                __cloudData.self._saveResult(xhr.responseText,parent,"ok",onDataSaved,data,ext);
+              else
+                __cloudData.self._saveResult(xhr.responseText,parent,xhr.status,onDataSaved,data,ext);
+            };
+            xhr.onerror=function()
+            {
+              __cloudData.self._saveResult(xhr.responseText,parent,"error",onDataSaved,data,ext);
+            };
+            xhr.send(saveData);
+          }
+        });
+      });
+    },
+    _saveResult: function(text,parent,status,onDataSaved,data,ext)
+    {
+      try
+      {
+        resp = JSON.parse(text);
+        data._id = __cloudData.id;
+        data._ext = ext;
+        data._fileId = resp.id;
+        data._modified = resp.modifiedDate;
+        __cloudData.self.$.overlay.close();
+        __cloudData = undefined;
+      }
+      catch(e)
+      {
+        this._msg("_saveResult("+text+","+status+","+__cloudData.id+","+ext+")");
+      }
+      if(onDataSaved)
+        onDataSaved(parent,status,data);
+    },
+    /**
+     * Creates a clone of an object.
+     *
+     * @param {object} obj    the object that should be cloned.
+     */
+    cloneOf: function(obj)
+    {
+      var copy;
+
+      // handle the 3 simple types, and null or undefined
+      if (null == obj || "object" != typeof obj)
+        return obj;
+
+      // handle Date
+      if (obj instanceof Date)
+      {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+      }
+
+      // handle Array
+      if (obj instanceof Array)
+      {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++)
+          copy[i] = this.cloneOf(obj[i]);
+        return copy;
+      }
+
+      // handle Object
+      if (obj instanceof Object)
+      {
+        copy = {};
+        for (var attr in obj)
+        {
+          if (obj.hasOwnProperty(attr))
+            copy[attr] = this.cloneOf(obj[attr]);
+        }
+        return copy;
+      }
+
+      throw new Error("Unable to copy obj! Its type isn't supported.");
+    },
+    /**
+     * Checks, if the data that should be saved was changed on the server since it was loaded.
+     *
+     * @param {object} parent         the parent that will be used for sending callbacks.
+     * @param {object} data           the data that should be checked.
+     * @param {event}  onDataChecked  the function that is called when checking was done.
+     */
+    checkModifiedOnServer: function(parent,data,onDataChecked)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["checkModifiedOnServer",parent,data,onDataChecked]);
+        return;
+      }
+
+      __cloudData = {self:this, id:data.id};
+      this._callGoogleApi("",function(authResult)
+      {
+        gapi.client.load("drive","v3",function()
+        {
+          var accessToken = gapi.auth.getToken().access_token;
+          var xhr = new XMLHttpRequest();
+          xhr.open("GET", "https://www.googleapis.com/drive/v3/files/" + data._fileId + "?fields=modifiedTime");
+          xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+          xhr.onload=function()
+          {
+            __cloudData.self._checkResult(data,ext,xhr.responseText,parent,dataChecked);
+            __cloudData.self._endRequest(data.id);
+          };
+          xhr.onerror=function()
+          {
+            __cloudData.self._msg(resp.message);
+            __cloudData.self._endRequest(data.id);
+          };
+          xhr.send();
+          return;
+        });
+      });
+    },
+    _checkResult: function(data,ext,text,parent,dataChecked)
+    {
+      try
+      {
+        var file = text;
+        if(ext=="json")
+          file = JSON.parse(text);
+        if(dataChecked)
+          dataChecked(parent,data._modified,file.modifiedTime);
+      }
+      catch(e)
+      {
+        this._msg("Fehler bei _checkResult("+data._fileId+","+text+"): "+e);
+        data = {_id:__cloudData.id};
+      }
+    },
+    /**
+     * Request list of files from server. the list contains a maximum of 1000 files.
+     *
+     * @param {object} parent       the parent that will be given as parameter to onDataLoaded.
+     * @param {string} filemask     filemask for files.
+     * @param {event}  onListLoaded the function that gets called when loading is done.
+     * @param {string} fields       the fields that are requested from the server (default id,name,trashed).
+     *                              (https://developers.google.com/drive/v3/reference/files/list#try-it)
+     *
+     * the function onListLoaded receives this parameters:
+     *
+     * {object} parent  the parent that was given in reqeustData.
+     *
+     * {string} status  the status of the operation:
+     *
+     *                  "ok"        everything is fine.
+     *
+     *                  "error"     the data property contains an object with the id as property _id.
+     *
+     * {array}  list    the list of found files.
+     */
+    requestFileList: function(parent,filemask,onListLoaded,fields)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["requestFileList",parent,filemask,onListLoaded,fields]);
+        this._msg("Das ist zur Zeit nicht möglich!");
+        return;
+      }
+      
+      if(fields == undefined)
+        fields = "id,name";
+        
+      if(fields.indexOf("trashed")<0)
+        fields += ",trashed";
+        
+      __cloudData = {self:this, id:"filelist"};
+      this._callGoogleApi("Suche Dateien...",function(authResult)
+      {
+        gapi.client.load("drive","v3",function()
+        {
+          var request = gapi.client.drive.files.list(
+          {
+            "pageSize": 1000,
+            "fields": "nextPageToken,files(" + fields + ")",
+            "orderBy": "name",
+            "q": "name contains '" + filemask + "'"
+          });
+          request.execute(function(resp)
+          {
+            var files = resp.files;
+            if(files == undefined)
+            {
+              __cloudData.self._msg("Fehler bei cloud-data.requestFileList: " + resp.message)
+              files = [];
+            }
+            else
+            {
+              for(var i=0; i<files.length; i++)
+              {
+                var keep = !files[i].trashed;
+                if(!keep)
+                {
+                  files.splice(i,1);
+                  i--;
+                }
+              }
+            }
+            if(onListLoaded)
+              onListLoaded(parent,"ok",files);
+            __cloudData.self._endRequest("filelist");
+          });
+        });
+      });
+    },
+    /**
+     * Request data from server.
+     *
+     * @param {String}  id           id of the file to request. in fact the filename without extension.
+     * @param {String}  ext          file extension without the dot. if this is empty, then the 
+     *                               extension is extracted from the id.
+     * @param {Object}  parent       the parent that will be given as parameter to onDataLoaded. Since
+     *                               the variable "this" is this class when invoking the onDataLoaded-
+     *                               callback, parent should be set to the object, that contains the
+     *                               function onDataLoaded.
+     * @param {Event}   onDataLoaded the function that gets called when loading is done.
+     * @param {String}  msg          the message to display during load.
+     * @param {Boolean} skipDataPool if true, then the data will not be looked up in the datapool.
+     *
+     * the function onDataLoaded receives this parameters:
+     *
+     * {Object} parent  the same parameter that was given in requestData.
+     *
+     * {String} status  the status of the operation:
+     *
+     *                  "ok"        everything is fine.
+     *
+     *                  "error"     the data property contains an object with the id as property _id.
+     *
+     * {Object} data    the data that was loaded or the json-data of the error
+     *
+     * The data that is given back, is an object. When the requested datafile was a JSON-file then the 
+     * object contains the converted json-content of the file. When the requested datafile was not json,
+     * then the object has a property "content" that contains the content of the file.
+     *
+     * The object always has the following properties:
+     *
+     * {String} _id      the name of the file without extension.
+     *
+     * {String} _fileId  the unique id of the file in the google drive system. This value is used 
+     *                   by the function saveData to save the file. If _fileId is not present in the
+     *                   object, then a new file is created.
+     */
+    requestData: function(id,ext,parent,onDataLoaded,msg,skipDataPool)
+    {
+      if(ext == "")
+      {
+        var pos = id.lastIndexOf(".");
+        if(pos >= 0)
+        {
+          ext = id.substr(pos+1);
+          id = id.substr(0,pos);
+        }
+      }
+      
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["requestData",id,ext,parent,onDataLoaded,msg,skipDataPool]);
+        return;
+      }
+
+      __cloudData = {self:this, id:id};
+      var data = undefined;
+      if(skipDataPool == undefined || !skipDataPool)
+      {
+        for(var i=0; i<this.dataPool.length && data == undefined; i++)
+        {
+          if(this.dataPool[i]._id == __cloudData.id)
+            data = this.cloneOf(this.dataPool[i]);
+        }
+      }
+
+      if(!msg)
+        msg = "Lade Daten...";
+      if(!data)
+      {
+        this._callGoogleApi(msg,function(authResult)
+        {
+          gapi.client.load("drive","v3",function()
+          {
+            var request = gapi.client.drive.files.list(
+            {
+              "pageSize": 1000,
+              "fields": "nextPageToken, files(id, name, trashed, modifiedTime)",
+              "q": "name='" + __cloudData.id + "." + ext + "'"
+            });
+            request.execute(function(resp)
+            {
+              var files = resp.files;
+              if (files && files.length > 0)
+              {
+                for (var i = 0; i < files.length; i++)
+                {
+                  var file = files[i];
+                  if(file.name.substr(0,__cloudData.id.length) == __cloudData.id && !file.trashed)
+                  {
+                    var req = gapi.client.drive.files.get(
+                    {
+                      "fileId": file.id
+                     ,"alt": "media"
+                     ,"fields": "files(idx,name,trashed)"
+                    });
+                    req.then(function(content)
+                    {
+                      __cloudData.self._requestResult(content,ext,parent,onDataLoaded,file);
+                      __cloudData.self._endRequest(id);
+                    });
+/*
+                    var accessToken = gapi.auth.getToken().access_token;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("GET", "https://www.googleapis.com/drive/v3/files/" + file.id + "?alt=media");
+                    xhr.setRequestHeader("Authorization", "Bearer " + accessToken);
+                    xhr.onload=function()
+                    {
+                      __cloudData.self._driveResult(xhr.responseText,ext,parent,onDataLoaded,file);
+                      __cloudData.self._endRequest(id);
+                    };
+                    xhr.onerror=function()
+                    {
+                      __cloudData.self._msg(resp.message);
+                      __cloudData.self._endRequest(id);
+                    };
+                    xhr.send();
+//*/                      
+                    return;
+                  }
+                }
+                __cloudData.self._requestResult({body:"{}"},ext,parent,onDataLoaded,{id:"",modifiedTime:""});
+                __cloudData.self._endRequest(id);
+              }
+              else if(files)
+              {
+                __cloudData.self._requestResult({body:"{}"},ext,parent,onDataLoaded,{id:"",modifiedTime:""});
+                __cloudData.self._endRequest(id);
+              }
+              else
+              {
+                this._msg(resp.message);
+                this._endRequest(id);
+              }
+            });
+          });
+        });
+      }
+      else
+      {
+        if(onDataLoaded)
+          onDataLoaded(parent,"ok",data);
+        this._endRequest(id);
+      }
+    },
+    _endRequest: function(id)
+    {
+      __cloudData = undefined;
+      var doClose = true;
+      
+      if(this.$.overlay.isCanceled)
+      {
+        this.dataRequests.splice(0,this.dataRequests.length);
+        this.$.overlay.isCanceled = false;
+      }
+      
+      if(this.dataRequests.length > 0)
+      {
+        if(this.dataRequests[0].id == id)
+          this.dataRequests.splice(0,1);
+
+        if(this.dataRequests.length > 0)
+        {
+          var req = this.dataRequests[0];
+          this.dataRequests.splice(0,1);
+          doClose = false;
+          switch(req[0])
+          {
+            case "requestData":
+              setTimeout(this.requestData(req[1],req[2],req[3],req[4],req[5],req[6]),100);
+              break;
+            case "saveData":
+              setTimeout(this.saveData(req[1],req[2],req[3],req[4]),100);
+              break;
+            case "requestFileList":
+              setTimeout(this.requestFileList(req[1],req[2],req[3],req[4]),100);
+              break;
+            case "requestCalendarList":
+              setTimeout(this.requestCalendarList(req[1],req[2]),100);
+              break;
+            case "addNotification":
+              setTimeout(this.addNotification(req[1],req[2],req[3],req[4],req[5],req[6]),100);
+              break;
+            case "getBackupFile":
+              setTimeout(this.getBackupFile(req[1],req[2]),100);
+              break;
+            case "_saveZip":
+              setTimeout(this._saveZip(req[1]),100);
+              break;
+            case "loadSheetInfo":
+              setTimeout(this.loadSheetInfo(req[1],req[2]),100);
+              break;
+            case "readSheetData":
+              setTimeout(this.readSheetData(req[1],req[2],req[3]),100);
+              break;
+            case "writeSheetData":
+              setTimeout(this.writeSheetData(req[1],req[2],req[3],req[4]),100);
+              break;
+            case "addSheet":
+              setTimeout(this.addSheet(req[1],req[2],req[3]),100);
+              break;
+          }
+        }
+      }
+      if(doClose)
+        this.$.overlay.close();
+    },
+    _requestResult: function(content,ext,parent,onDataLoaded,file)
+    {
+      var status = "ok";
+      var data;
+      try
+      {
+        if(ext=="json")
+          data = JSON.parse(content.body);
+        else
+          data = {content:content.body};
+      }
+      catch(e)
+      {
+        this._msgDebug("_requestResult("+content+","+__cloudData.id+","+file.id+"): "+e.message);
+        data = {_id:__cloudData.id};
+        status = "error";
+      }
+      this.dataPool.push(this.cloneOf(data));
+      while(this.dataPool.length > 10)
+        this.dataPool.splice(0, 1);
+      data._id = __cloudData.id;
+      data._fileId = file.id;
+      data._ext = ext;
+      data._modified = file.modifiedTime;
+      if(onDataLoaded)
+        onDataLoaded(parent,status,data);
+    },
+    _decode: function(content)
+    {
+      var ret = new Uint8Array(content.length);
+      for (var i = 0; i < ret.length; i++)
+        ret[i] = content.charCodeAt(i);
+      return ret;
+    },
+    _getBackupFiles: function(zipfilename, pageToken)
+    {
+      if(!pageToken)
+        __cloudData.self._zip = new JSZip();
+        
+      var request = gapi.client.drive.files.list(
+      {
+        "pageToken": pageToken,
+        "pageSize": 100,
+        "fields": "nextPageToken,files(id,name,trashed)",
+        "orderBy": "name",
+        "q": "name contains '" + __cloudData.id + "'"
+      });
+      
+      request.then(function(response)
+      {
+        for(var i=0; i<response.result.files.length; i++)
+        {
+          if(__cloudData.self.$.overlay.isCanceled)
+          {
+            __cloudData.self._zip = undefined;
+            __cloudData.self._endRequest("");
+            return;
+          }
+          var file = response.result.files[i];
+          if(!file.trashed)
+          {
+            var msg = "Backupdatei wird erstellt, bitte warten ...<br>Füge Datei <b>" + file.name + "</b> hinzu";
+            __cloudData.self.requestData(file.name,"",__cloudData.self,__cloudData.self._packBackupFile,msg,false);
+/*            
+            var req = gapi.client.drive.files.get(
+            {
+              "fileId": file.id
+             ,"alt": "media"
+             ,"fields": "files(idx,name,trashed)"
+            });
+            req.then(function(content,cont)
+            {
+              __cloudData.self.$.overlay.text = "Backupdatei wird erstellt, bitte warten ...<br>Füge Datei <b>" + file.name + "</b> hinzu";
+              __cloudData.self._zip.file(file.name, __cloudData.self._decode(content.body));
+            });
+            return;
+//*/
+          }
+        }
+        __cloudData.self.dataRequests.push(["_saveZip",zipfilename]);
+        __cloudData.self._endRequest("getBackupFile");
+      });
+    },
+    _packBackupFile: function(self, status, data)
+    {
+      if(status != "ok")
+      {
+        self._msg("Datei " + data.id + " konnte nicht gepackt werden.");
+        return;
+      }
+      var name = data._id + "." + data._ext;
+      if(data.content)
+        self._zip.file(name, self._decode(data.content));
+      else
+        self._zip.file(name, JSON.stringify(data));
+    },
+    /**
+     * Get a backupfile in zip-format.
+     *
+     * @param {String}  filemask     the filemask for the files.
+     * @param {String}  zipfilename  name of the zipfile for download.
+     */
+    getBackupFile: function(filemask,zipfilename)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["getBackupFile",filemask,zipfilename]);
+        return;
+      }
+      
+      if(this.$.overlay.isCanceled)
+        return;
+
+      __cloudData = {self:this, id:filemask};
+      this.$.overlay.showCancelButton = true;
+      this._callGoogleApi("Backupdatei wird erstellt...",function(authResult)
+      {
+        gapi.client.load("drive","v3",function()
+        {
+          __cloudData.self._getBackupFiles(zipfilename);
+        });
+      });
+    },
+    /**
+      * Creates a zip-file from the content of the internal variable 
+      * _zip and presents the user a save as dialog.
+      *
+      * @param {String} zipfilename    Name of the zip-file to recommend to the user.
+      */
+    _saveZip: function(zipfilename)
+    {
+      __cloudData = undefined;
+      this.$.overlay.close();
+      var content = this._zip.generateAsync({type:"blob"}).then(function(content)
+      {
+        saveAs(content,zipfilename);
+      });
+      this.$.overlay.showCancelButton = false;
+    },
+    /**
+     * Retrieve info about a google sheet.
+     *
+     * @param {Object}  parent       the parent that will be given as parameter to onDataLoaded. Since
+     *                               the variable "this" is this class when invoking the onDataLoaded-
+     *                               callback, parent should be set to the object, that contains the
+     *                               function onDataLoaded.
+     * @param {Event}   onInfoLoaded the function that gets called when loading is done.
+     *
+     * the function onInfoLoaded receives this parameters:
+     *
+     * {Object} parent  the same parameter that was given in loadSheetInfo.
+     *
+     * {String} status  the status of the operation:
+     *
+     *                  "ok"        everything is fine.
+     *
+     *                  "error"     the data property contains an object with the error.
+     *
+     * {Object} sheets  an array of sheets information the error data.
+     */
+    loadSheetInfo: function(parent,onInfoLoaded)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["loadSheetInfo",parent,onInfoLoaded]);
+        return;
+      }
+      
+      __cloudData = {self:this};
+      this._callGoogleApi("Loading Sheetinfo...",function(authResult)
+      {
+        gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(function()
+        {
+          var args = {spreadsheetId:__cloudData.self.googleSheetsFileId
+                     ,fields: "sheets.properties"};
+          gapi.client.sheets.spreadsheets.get(args).then(function(response)
+          {
+            if(onInfoLoaded)
+            {
+              var sheets = [];
+              for(var i=0; i<response.result.sheets.length; i++)
+                sheets.push(response.result.sheets[i].properties);
+              onInfoLoaded(parent,"ok",sheets);
+            }
+            __cloudData.self._endRequest("loadSheetInfo");
+          }, function(error)
+          {
+            if(onDataLoaded)
+              onDataLoaded(parent,"error",error.result.error);
+            __cloudData.self._msg(error.result.error.message);
+            __cloudData.self._endRequest("loadSheetInfo");
+          });
+        }, function(error)
+        {
+          if(onDataLoaded)
+            onDataLoaded(parent,"error",error.result.error);
+          __cloudData.self._msg(error.result.error.message);
+          __cloudData.self._endRequest("loadSheetInfo");
+        });
+      });
+    },
+    /**
+     * Retrieve data from a google sheet.
+     *
+     * @param {Object}  parent         the parent that will be given as parameter to onDataReceived. Since
+     *                                 the variable "this" is this class when invoking the onDataReceived-
+     *                                 callback, parent should be set to the object, that contains the
+     *                                 function onDataReceived
+     * @param {String   range          range of cells to be loaded. if this is an array, then every entry
+     *         or                      in this array is considered a range to receive.
+     *         Array}  
+     * @param {Event}   onDataReceived the function that gets called when loading is done.
+     *
+     * the function onDataReceived receives this parameters:
+     *
+     * {Object} parent  the same parameter that was given in readSheetData.
+     *
+     * {String} range   the same parameter that was given in readSheetData.
+     *
+     * {String} status  the status of the operation:
+     *
+     *                  "ok"        everything is fine.
+     *
+     *                  "error"     the data property contains an object with the error.
+     *
+     * {Object} data    the data that was loaded or the json-data of the error
+     */
+    readSheetData: function(parent,range,onDataReceived)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["readSheetData",parent,range,onDataReceived]);
+        return;
+      }
+      
+      __cloudData = {self:this};
+      
+      
+      this._callGoogleApi("Reading range " + range + "...",function(authResult)
+      {
+        gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(function()
+        {
+          var args = {spreadsheetId:__cloudData.self.googleSheetsFileId,range: range};
+          if(range.constructor === Array)
+          {
+            delete args.range;
+            args.ranges = range;
+            args.valueRenderOption = "UNFORMATTED_VALUE";
+            args.majorDimension = "ROWS";
+            gapi.client.sheets.spreadsheets.values.batchGet(args).then(function(response)
+            {
+              if(onDataReceived)
+                onDataReceived(parent,range,"ok",response.result.valueRanges);
+              __cloudData.self._endRequest("readSheetData");
+            }, function(error)
+            {
+              if(onDataReceived)
+                onDataReceived(parent,range,"error",error.result.error);
+              __cloudData.self._msg(error.result.error.message);
+              __cloudData.self._endRequest("readSheetData");
+            });
+          }
+          else
+          {
+            gapi.client.sheets.spreadsheets.values.get(args).then(function(response)
+            {
+              if(onDataReceived)
+                onDataReceived(parent,range,"ok",response.result.values);
+              __cloudData.self._endRequest("readSheetData");
+            }, function(error)
+            {
+              if(onDataReceived)
+                onDataReceived(parent,range,"error",error.result.error);
+              __cloudData.self._msg(error.result.error.message);
+              __cloudData.self._endRequest("readSheetData");
+            });
+          }
+        });
+      },function(error)
+      {
+        if(onDataReceived)
+          onDataReceived(parent,range,"error",error.result.error);
+        __cloudData.self._msg(error.result.error.message);
+        __cloudData.self._endRequest("readSheetData");
+      });
+    },
+    /**
+     * Write data to a google sheet.
+     *
+     * @param {Object}  parent         the parent that will be given as parameter to onDataWritten. Since
+     *                                 the variable "this" is this class when invoking the onDataWritten-
+     *                                 callback, parent should be set to the object, that contains the
+     *                                 function onDataWritten
+     * @param {String}  range          range of cells to be written. if this is empty then the data is 
+     *                                 considered to be written with batchUpdate.
+     * @param {Object}  data           data to write.
+     * @param {Event}   onDataWritten the function that gets called when writing is done.
+     *
+     * the function onDataWritten receives this parameters:
+     *
+     * {Object} parent  the same parameter that was given in writeSheetData.
+     *
+     * {String} range   the same parameter that was given in writeSheetData.
+     *
+     * {String} status  the status of the operation:
+     *
+     *                  "ok"        everything is fine.
+     *
+     *                  "error"     the data property contains an object with the error.
+     *
+     * {Object} data    result of the write operation.
+     */
+    writeSheetData: function(parent,range,data,onDataWritten)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["writeSheetData",parent,range,data,onDataWritten]);
+        return;
+      }
+      
+      __cloudData = {self:this};
+      this._callGoogleApi("Writing range " + range + "...",function(authResult)
+      {
+        gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(function()
+        {
+          if(range == "" || range == undefined)
+          {
+            var args = {spreadsheetId:__cloudData.self.googleSheetsFileId
+                       ,data: data
+                       ,valueInputOption: "USER_ENTERED"};
+            gapi.client.sheets.spreadsheets.values.batchUpdate(args).then(function(response)
+            {
+              if(onDataWritten)
+                onDataWritten(parent,range,"ok",response.result);
+              __cloudData.self._endRequest("writeSheetData");
+            }, function(error)
+            {
+              if(onDataWritten)
+                onDataWritten(parent,range,"error",error.result.error);
+              __cloudData.self._msg(error.result.error.message);
+              __cloudData.self._endRequest("writeSheetData");
+            });
+          }
+          else
+          {
+            var args = {spreadsheetId:__cloudData.self.googleSheetsFileId
+                       ,majorDimension: "ROWS"
+                       ,range: range
+                       ,values: data
+                       ,valueInputOption: "USER_ENTERED"};
+            gapi.client.sheets.spreadsheets.values.update(args).then(function(response)
+            {
+              if(onDataWritten)
+                onDataWritten(parent,range,"ok",response.result);
+              __cloudData.self._endRequest("writeSheetData");
+            }, function(error)
+            {
+              if(onDataWritten)
+                onDataWritten(parent,range,"error",error.result.error);
+              __cloudData.self._msg(error.result.error.message);
+              __cloudData.self._endRequest("writeSheetData");
+            });
+          }
+        }, function(error)
+        {
+          if(onDataWritten)
+            onDataWritten(parent,range,"error",error.result.error);
+          __cloudData.self._msg(error.result.error.message);
+          __cloudData.self._endRequest("writeSheetData");
+        });
+      }, function(error)
+      {
+        if(onDataWritten)
+          onDataWritten(parent,range,"error",error.result.error);
+        __cloudData.self._msg(error.result.error.message);
+        __cloudData.self._endRequest("writeSheetData");
+      });
+    },
+    /**
+     * Add a page to google sheet.
+     *
+     * @param {Object}  parent         the parent that will be given as parameter to onSheetAdded. Since
+     *                                 the variable "this" is this class when invoking the onSheetAdded-
+     *                                 callback, parent should be set to the object, that contains the
+     *                                 function onSheetAdded
+     * @param {String}  title          title of the new sheet.
+     * @param {Event}   onSheetAdded   the function that gets called when adding is done.
+     *
+     * the function onSheetAdded receives this parameters:
+     *
+     * {Object} parent  the same parameter that was given in addSheet.
+     *
+     * {String} title   the same parameter that was given in addSheet.
+     *
+     * {String} status  the status of the operation:
+     *
+     *                  "ok"        everything is fine.
+     *
+     *                  "error"     the data property contains an object with the error.
+     *
+     * {Object} data    result of the add operation.
+     */
+    addSheet: function(parent,title,onSheetAdded)
+    {
+      if(__cloudData != undefined)
+      {
+        this.dataRequests.push(["addSheet",parent,title,onSheetAdded]);
+        return;
+      }
+      
+      __cloudData = {self:this};
+      this._callGoogleApi("Adding sheet " + title + "...",function(authResult)
+      {
+        gapi.client.load("https://sheets.googleapis.com/$discovery/rest?version=v4").then(function()
+        {
+          var args = {spreadsheetId:__cloudData.self.googleSheetsFileId
+                     ,requests:
+                      {
+                        addSheet: 
+                        {
+                          properties:
+                          {
+                            title: title
+                          }
+                        }
+                      }
+                     };
+          gapi.client.sheets.spreadsheets.batchUpdate(args).then(function(response)
+          {
+            if(onSheetAdded)
+              onSheetAdded(parent,title,"ok",response.result);
+            __cloudData.self._endRequest("writeSheetData");
+          }, function(error)
+          {
+            if(onSheetAdded)
+              onSheetAdded(parent,title,"error",error.result.error);
+            __cloudData.self._msg(error.result.error.message);
+            __cloudData.self._endRequest("writeSheetData");
+          });
+        }, function(error)
+        {
+          if(onSheetAdded)
+            onSheetAdded(parent,title,"error",error.result.error);
+          __cloudData.self._msg(error.result.error.message);
+          __cloudData.self._endRequest("writeSheetData");
+        });
+      }, function(error)
+      {
+        if(onSheetAdded)
+          onSheetAdded(parent,title,"error",error.result.error);
+        __cloudData.self._msg(error.result.error.message);
+        __cloudData.self._endRequest("writeSheetData");
+      });
+    }
+  });
+</script>
+</body></html>

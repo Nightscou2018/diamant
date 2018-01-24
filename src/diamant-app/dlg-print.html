@@ -1,0 +1,889 @@
+﻿<script src="../../bower_components/pdfmake/build/pdfmake.js"></script>
+<script src="../../bower_components/pdfmake/build/vfs_fonts.js"></script>
+<link rel="import" href="../../bower_components/polymer/polymer.html" />
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html" />
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html" />
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html" />
+<link rel="import" href="../../bower_components/paper-button/paper-button.html" />
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html" />
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html" />
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html" />
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html" />
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html" />
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html" />
+<link rel="import" href="../../bower_components/zreptil-date-picker/zreptil-date-picker.html" />
+<link rel="import" href="print-analysis.html" />
+<link rel="import" href="print-diary.html" />
+<link rel="import" href="print-INPUT-protkoll.html" />
+<link rel="import" href="print-INPUT-protkoll-cgm.html" />
+<link rel="import" href="print-INPUT-datenmanagement.html" />
+<link rel="import" href="print-INPUT-basalrate.html" />
+<link rel="import" href="print-INPUT-faktoren.html" />
+<link rel="import" href="print-INPUT-trend.html" />
+<dom-module id="dlg-print">
+  <template>
+    <style is="custom-style">
+    :host
+    {
+      @apply(--layout-flex);
+      font-size: 1em;
+      padding: 0em 0.5em;
+    }
+    paper-button
+    {
+      @apply(--diamant-button);
+      @apply(--layout-horizontal);
+      @apply(--layout-start);
+    }
+    paper-button>div
+    {
+      text-align: left;
+    }
+    paper-button>div>div
+    {
+      display: flex;
+      align-items: row;
+    }
+    paper-button>div>div div
+    {
+      text-align:center;
+      width:1.5em;
+      color:#ffffff;
+    }
+    .vert
+    {
+      @apply(--layout-vertical);
+    }
+    .horz
+    {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+    }
+    .controls
+    {
+      align-self: flex-start;
+      align-items: flex-start;
+      @apply(--layout-vertical);
+    }
+    .controls paper-button
+    {
+      @apply(--layout-center);
+      @apply(--layout-center-justified);
+    }
+    .controls paper-button iron-icon
+    {
+      padding-right: 1em;
+    }
+    paper-dialog
+    {
+      --paper-dialog:
+      {
+        *
+        {
+          margin-top: 0;
+        }
+      };
+    }
+    #pnlFoot
+    {
+      padding: 1em;
+      display: flex;
+      justify-content: flex-end;
+    }
+    .title
+    {
+      @apply(--layout-horizontal);
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em;
+    }
+    .title>div
+    {
+      font-size: 2em;
+      font-weight: 600;
+      @apply(--layout-horizontal);
+    }
+    .title>paper-icon-button
+    {
+      margin-left: 2em;
+    }
+    paper-radio-group
+    {
+      margin-bottom: 1em;
+    }
+    .radioLabel
+    {
+      flex-direction: row;
+      display: flex;
+      align-items: center;
+    }
+    #pageStart
+    {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: row;
+    }
+    #pageTrendInfo
+    {
+      display: flex;
+      align-items: flex-start;
+      flex-direction: column;
+    }
+    #pageTrendInfo paper-button iron-icon
+    {
+      padding-right: 1em;
+    }
+    @media(max-width:435px)
+    {
+      paper-dialog
+      {
+        font-size: 0.55em;
+      }
+    }
+    @media(max-width:412px)
+    {
+      paper-dialog
+      {
+        font-size: 0.5em;
+      }
+    }
+    @media(max-width:376px)
+    {
+      paper-dialog
+      {
+        font-size: 0.4em;
+      }
+    }
+    @media(max-width:320px)
+    {
+      paper-dialog
+      {
+        font-size: 0.3em;
+      }
+      .controls paper-button iron-icon
+      {
+        width: 16px;
+      }
+    }
+    </style>
+    <paper-dialog id="dlg" modal on-iron-overlay-closed="dlgClosed" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+      <div class="title">
+        <div>{{title}}</div>
+        <paper-icon-button dialog-dismiss icon="cancel"></paper-icon-button>
+      </div>
+      <paper-dialog-scrollable>
+        <iron-pages id="pages" selected="0">
+          <div id="pageStart">
+            <paper-radio-group id="timespan" class="vert" selected="{{timespan}}">
+              <paper-radio-button name="7">1 Woche</paper-radio-button>
+              <paper-radio-button name="14">2 Wochen</paper-radio-button>
+              <paper-radio-button name="21">3 Wochen</paper-radio-button>
+              <paper-radio-button name="30">1 Monat</paper-radio-button>
+              <paper-radio-button name="60">2 Monate</paper-radio-button>
+              <paper-radio-button name="90">3 Monate</paper-radio-button>
+              <paper-radio-button name="-1">
+                <div class="radioLabel">ab <zreptil-date-picker id="startdate" value="{{startdate}}"></zreptil-date-picker></div>
+              </paper-radio-button>
+            </paper-radio-group>
+            <div class="controls">
+              <paper-button on-tap="tapINPUTProtokoll"><iron-icon icon="print"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div> Protokoll</div></paper-button>
+              <paper-button on-tap="tapINPUTProtokollCGM"><iron-icon icon="print"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div> Protokoll CGM</div></paper-button>
+              <paper-button on-tap="tapINPUTDatenmanagement1"><iron-icon icon="print"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div> Datenmanagement 1</div></paper-button>
+              <paper-button on-tap="tapINPUTDatenmanagement5"><iron-icon icon="print"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div> Datenmanagement 5</div></paper-button>
+              <paper-button on-tap="tapINPUTBasalrate"><iron-icon icon="print"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div> Basalrate</div></paper-button>
+              <paper-button on-tap="tapINPUTBRTest"><iron-icon icon="print"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div> Basalratentest</div></paper-button>
+              <paper-button on-tap="tapINPUTFaktoren"><iron-icon icon="print"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div>Faktoren und Regeln</div></paper-button>
+              <paper-button on-tap="tapINPUTTrend"><iron-icon icon="more-horiz"></iron-icon><div><div style="font-weight:bold"><div style="background:#d69a2e">I</div><div style="background:#2e4736">N</div><div style="background:#662c40">P</div><div style="background:#343a49">U</div><div style="background:#528c8e">T</div></div>Wochentrend</div></paper-button>
+              <paper-button on-tap="tapDiary"><iron-icon icon="print"></iron-icon><div>Tagebuch</div></paper-button>
+              <paper-button on-tap="tapAnalysis"><iron-icon icon="print"></iron-icon><div>Auswertung</div></paper-button>
+            </div>
+          </div>
+          <div id="pageTrendInfo">
+            <paper-button on-tap="tapTrendInfo" data="0"><iron-icon icon="print"></iron-icon>Alle gemessenen Werte</paper-button>
+            <div>Mit Mustererkennung</div>
+            <paper-button on-tap="tapTrendInfo" data="1"><iron-icon icon="print"></iron-icon>Jede Stunde</paper-button>
+            <paper-button on-tap="tapTrendInfo" data="2"><iron-icon icon="print"></iron-icon>Alle 2 Stunden</paper-button>
+            <paper-button on-tap="tapTrendInfo" data="3"><iron-icon icon="print"></iron-icon>Alle 3 Stunden</paper-button>
+            <paper-button on-tap="tapTrendInfo" data="4"><iron-icon icon="print"></iron-icon>Alle 4 Stunden</paper-button>
+            <paper-button on-tap="tapTrendInfo" data="6"><iron-icon icon="print"></iron-icon>Alle 6 Stunden</paper-button>
+          </div>
+        </iron-pages>
+      </paper-dialog-scrollable>
+      <div id="pnlFoot" class="horz">
+      </div>
+    </paper-dialog>
+    <print-analysis id="pdfAnalysis"></print-analysis>
+    <print-diary id="pdfDiary"></print-diary>
+    <print-INPUT-protokoll id="pdfINPUTProtokoll"></print-INPUT-protokoll>
+    <print-INPUT-protokoll-cgm id="pdfINPUTProtokollCGM"></print-INPUT-protokoll-cgm>
+    <print-INPUT-basalrate id="pdfINPUTBasalrate"></print-INPUT-basalrate>
+    <print-INPUT-faktoren id="pdfINPUTFaktoren"></print-INPUT-faktoren>
+    <print-INPUT-trend id="pdfINPUTTrend"></print-INPUT-trend>
+    <print-INPUT-datenmanagement id="pdfINPUTDatenmanagement"></print-INPUT-datenmanagement>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "dlg-print",
+    properties:
+    {
+       response: {type: Object, value: null}
+      ,timespan: {type: Number, value: 14}
+      ,startdate: {type: Number, value: new Date()}
+      ,title: {type:String,value:"PDF Erstellung"}
+      ,vars: {type: Object, value: null}
+    },
+    ready: function()
+    {
+    },
+    show: function(isQuick)
+    {
+      if(!_.storage.getItem("print.timespan"))
+        _.storage.setItem("print.timespan","14");
+      if(!_.storage.getItem("print.startdate"))
+        _.storage.setItem("print.startdate",_.dateData.idDate);
+      this.timespan = _.storage.getItem("print.timespan");
+      this.startdate = _.storage.getItem("print.startdate");
+      this.title = "PDF-Erstellung";
+      this.$.pages.selected = 0;
+      if(isQuick)
+      {
+        var lastType = _.storage.getItem("print.lasttype");
+        if(lastType)
+        {
+          this.tapPrint(lastType);
+          if(lastType != "inputTrend")
+            return;
+        }
+      }
+      this.$.dlg.toggle();
+    },
+    dlgClosed: function(event,closingReason)
+    {
+      if(event)
+      {
+        event.stopImmediatePropagation();
+        if(event.srcElement != this.$.dlg)
+          return;
+      }
+
+      this.fire(closingReason.confirmed?"done":"cancel");
+    },
+    dataLoaded: function(self,status,data)
+    {
+      var month = Number(data._id.substr(data._id.length-2));
+      var year = Number(data._id.substr(data._id.length-6,4));
+      for(var i=0; i<data.length; i++)
+      {
+        if(self.vars.type != "inputProtokoll" && self.vars.currDate.getDate() > 1 && Number(data[i].day) < self.vars.currDate.getDate())
+          continue;
+        data[i].month = month;
+        data[i].year = year;
+        self.vars.items.push(data[i]);
+      }
+      var today = new Date();
+      if(month != today.getMonth()+1 || year != today.getFullYear())
+      {
+        self.vars.currDate.setMonth(self.vars.currDate.getMonth()+1,1);
+        var dd = _.getDateData(self.vars.currDate);
+        _.driveData.requestData(dd.dataId,"json",self,self.dataLoaded,dd.getLoadMsg());
+      }
+      else
+      {
+        self.doPrint();
+      }
+    },
+    doPrint: function()
+    {
+      var ctrl;
+      this.vars.config = _.config;
+      _.storage.setItem("print.timespan",this.$.timespan.selected);
+      _.storage.setItem("print.startdate",this.startdate);
+
+      switch(this.vars.type)
+      {
+        case "analysis":
+          ctrl = this.$.pdfAnalysis;
+          this.fillAnalysisData();
+          break;
+        case "diary":
+          ctrl = this.$.pdfDiary;
+          this.fillDiaryData();
+          break;
+        case "inputProtokoll":
+          ctrl = this.$.pdfINPUTProtokoll;
+          this.fillINPUTProtokollData(false);
+          break;
+        case "inputProtokollCGM":
+          ctrl = this.$.pdfINPUTProtokollCGM;
+          this.fillINPUTProtokollData(true);
+          break;
+        case "inputBasalrate":
+        case "inputBRTest":
+          ctrl = this.$.pdfINPUTBasalrate;
+          this.fillINPUTBasalData();
+          break;
+        case "inputDatenmanagement1":
+          ctrl = this.$.pdfINPUTDatenmanagement;
+          this.fillINPUTDatenmanagementData(1);
+          break;
+        case "inputDatenmanagement5":
+          ctrl = this.$.pdfINPUTDatenmanagement;
+          this.fillINPUTDatenmanagementData(5);
+          break;
+        case "inputFaktoren":
+          ctrl = this.$.pdfINPUTFaktoren;
+          this.fillINPUTFaktorenData();
+          break;
+        case "inputTrend":
+          ctrl = this.$.pdfINPUTTrend;
+          this.fillINPUTTrendData();
+          break;
+      }
+
+      if(this.vars.items.length == 0)
+      {
+        _.msg("Es wurden keine Daten für einen Ausdruck gefunden");
+        return;
+      }
+      
+      _.driveData.$.overlay.show("Erzeuge PDF...");
+      try
+      {
+        var form = ctrl.getForm(this.vars);
+//        _.debug(form);
+        var pdf = pdfMake.createPdf(form);
+        _.driveData.$.overlay.close();
+        try 
+        {
+          pdf.getBlob(function (result) 
+          {
+            var urlCreator = this.URL || this.webkitURL;
+            var pdfUrl = urlCreator.createObjectURL(result);
+            _.printURL = pdfUrl;
+            _.tapOpenPrint();
+//            _.msg(pdfUrl,Infinity);
+          }, undefined);
+        } 
+        catch (e) 
+        {
+          throw e;
+        }
+      }
+      catch(err)
+      {
+        _.driveData.$.overlay.close();
+        _.msg(err,Infinity);
+      }
+    },
+    inDateRange: function(item,begDate,endDate)
+    {
+      return _.inDateRange(item.day,item.month,item.year,begDate,endDate);
+    },
+    fillDiaryData: function()
+    {
+      this.vars.foodList = _.foodList;
+      for(var i=0; i<this.vars.items.length; i++)
+        this.vars.items[i].daygluc = _.calcDay(this.vars.items,i).avg;
+    },
+    fillINPUTBasalData: function()
+    {
+      this.vars.foodList = _.foodList;
+      var days = [];
+      var brLast = {};
+      var beg = this.vars.begDate;
+      var date = this.vars.endDate.year*10000+(this.vars.endDate.month)*100+this.vars.endDate.day;
+      for(var i=0; i<this.vars.items.length; i++)
+      {
+        var v = this.vars.items[i];
+        var vdate = Number(v.year)*10000+(Number(v.month))*100+Number(v.day);
+        switch(this.vars.type)
+        {
+          case "inputBRTest":
+            if(this.inDateRange(this.vars.items[i],this.vars.begDate,this.vars.endDate))
+            {
+              var found = false;
+              for(var j=0; j<v.times.length && !found; j++)
+                found = (v.times[j].typ == "brtest");
+
+              if(found)
+              {
+                this.vars.items[i].brtimes = _.getProfileData(vdate).times;
+                days.push(this.vars.items[i]);
+              }
+            }
+            break;
+          case "inputBasalrate":
+            var br = _.getProfileData(vdate);
+            if(br.since != brLast.since)
+            {
+              this.vars.items[i].brtimes = br.times;
+              days.push(this.vars.items[i]);
+            }
+            brLast = br;
+            break;
+          case "inputFaktoren":
+            break;
+          case "inputTrend":
+            break;
+        }
+      }
+
+      this.vars.items = days;
+    },
+    fillINPUTTrendData: function()
+    {
+      var days = [];
+      var beg = this.vars.begDate;
+      while(beg.getDay() != 1)
+        beg.setDate(beg.getDate()+1);
+      this.vars.begDate = beg;
+      this.vars.glucMax = 0;
+      this.vars.trendInfo = this.trendInfo;
+      for(var i=0; i<this.vars.items.length; i++)
+      {
+        var day = _.driveData.cloneOf(this.vars.items[i]);
+        if(this.inDateRange(day,this.vars.begDate,this.vars.endDate))
+        {
+          for(var j=0; j<day.times.length; j++)
+          {
+            if(Number(day.times[j].gluc) > this.vars.glucMax)
+              this.vars.glucMax = Number(day.times[j].gluc);
+          }
+          days.push(day);
+        }
+      }
+      
+      if(this.trendInfo != 0)
+      {
+        for(var i=0; i<days.length; i++)
+        {
+          var day = days[i];
+          var date = _.fmtNumber(day.year,0,4)+_.fmtNumber(day.month,0,2)+_.fmtNumber(day.day,0,2);
+          var diff = this.trendInfo * 60;
+          var beg = 0;
+          day.times = _.getTimeList(this.vars.items,date,beg,(24*60-beg)/diff,diff);
+          for(var j=0; j<day.times.length; j++)
+            day.times[j].time = Math.floor(Number(day.times[j].time)/60)*100 + Number(day.times[j].time)%60
+        }
+        for(var idx=0; idx<days.length; idx+=7)
+        {
+          var cnt = days.length-idx;
+          if(cnt > 7)
+            cnt = 7;
+          
+          var now = Number(_.fmtDateTime(new Date(),"ymdhM"));
+          for(var i=0; i<days[idx].times.length; i++)
+          {
+            var sum = 0;
+            var info = {max:0,min:1000};
+            var count = 0;
+            for(var j=0; j<cnt; j++)
+            {
+              var day = days[idx+j];
+              if(day.times.length > i)
+              {
+                var check = Number("" + day.year + _.fmtNumber(day.month,0,2) + _.fmtNumber(day.day,0,2) + day.times[i].time);
+                if(check<now)
+                {
+                  var v = day.times[i].gluc;
+                  sum += v;
+                  info.max = Math.max(v,info.max);
+                  info.min = Math.min(v,info.min);
+                  count++;
+                }
+                else
+                {
+                  day.times.splice(i);
+                }
+              }
+            }
+            info.average = sum / count;
+            sum = 0;
+            count = 0;
+            for(var j=0; j<cnt; j++)
+            {
+              if(i < days[idx+j].times.length)
+              {
+                var v = (days[idx+j].times[i].gluc - info.average);
+                sum += v*v;
+                count++;
+              }
+            }
+            info.varianz = sum / count;
+            info.stdabw = Math.sqrt(info.varianz);
+
+            if(i < days[idx].times.length)            
+              days[idx].times[i].info = info;
+          }
+        }
+      }
+
+      this.vars.items = days;
+    },
+    fillINPUTProtokollData: function(isCGM)
+    {
+      this.vars.foodList = _.foodList;
+      var days = [];
+      var beg = this.vars.begDate;
+      while(beg.getDay() != 1)
+        beg.setDate(beg.getDate()+1);
+      this.vars.begDate = beg;
+/*
+      var end = new Date(beg);
+      while(end.getDay() != 0)
+        end.setDate(end.getDate()+1);
+      this.vars.endDate = end;
+*/
+      for(var i=0; i<this.vars.items.length; i++)
+      {
+        if(this.inDateRange(this.vars.items[i],this.vars.begDate,this.vars.endDate))
+        {
+          this.vars.items[i].daygluc = _.calcDay(this.vars.items,i,isCGM).avg;
+          days.push(this.vars.items[i]);
+        }
+      }
+
+      this.vars.items = days;
+    },
+    fillINPUTDatenmanagementData: function(modul)
+    {
+      var weeks = [];
+      if(this.timespan < 0)
+      {
+        var begDate = _.driveData.cloneOf(this.vars.begDate);
+        while(begDate < this.vars.endDate)
+        {
+          var endDate = _.driveData.cloneOf(begDate);
+          endDate.setDate(begDate.getDate()+7);
+          this.fillAnalysis(begDate,endDate);
+          weeks.push(this.vars.calc);
+          begDate = endDate;
+        }
+      }
+      else
+      {
+        var begDate = _.driveData.cloneOf(this.vars.endDate);
+        while(begDate > this.vars.begDate)
+        {
+          var endDate = _.driveData.cloneOf(begDate);
+          begDate.setDate(endDate.getDate()-7);
+          this.fillAnalysis(begDate,endDate);
+          weeks.push(this.vars.calc);
+        }
+      }
+      weeks.sort(function(a,b){return a.begdate-b.begdate;});
+      this.vars.calc = weeks;
+      this.vars.modul = modul;
+    },
+    fillINPUTFaktorenData: function()
+    {
+      this.vars.days = [];
+      var srcTimes = [];
+      for(var i=0; i<_.config.zeiten.length; i++)
+      {
+        var time = {time:_.config.zeiten[i].time
+                   ,adjusttest:[]
+                   ,betest:[]
+                   };
+        srcTimes.push(time);
+      }
+
+      var lastTime = 0;
+      var idxBE = undefined;
+      var idxAdjust = undefined;
+
+      for(var i=0; i<this.vars.items.length; i++)
+      {
+        var day = this.vars.items[i];
+        var times = _.driveData.cloneOf(srcTimes);
+        var hasData = false;
+        var betestTime = -24*60;
+        var adjusttestTime = -24*60;
+        for(var j=0; j<day.times.length; j++)
+        {
+          var item = day.times[j];
+          var check = Number(item.time);
+          check = Math.floor(check/100)*60+check%100;
+          var idx = undefined;
+          for(var k=0; k<times.length && !idx; k++)
+          {
+            if(Number(times[k].time) > check)
+              idx = k;
+          }
+
+          if(!idx)
+            continue;
+
+          var time = Number(item.time);
+          time = Math.floor(time/100)*60+time%100;
+          switch(item.typ)
+          {
+            case "betest":
+              if(times[idx].betest.length == 0 && item.bolusbe != undefined && !item.bolusadjust && time > betestTime+4*60)
+              {
+                var date = _.fmtNumber(day.year,0,4)+_.fmtNumber(day.month,0,2)+_.fmtNumber(day.day,0,2);
+                var list = _.getTimeList(this.vars.items,date,time,5,60);
+                list[0].food = item.food;
+                list[0].bolusbe = item.bolusbe;
+                list[0].bolusadjust = item.bolusadjust;
+                times[idx].betest = list;
+                betestTime = time;
+                hasData = true;
+              }
+/*
+              var list = _.getTimeList(_.monthData,_.dateData.idDate,16*60+13,5,60);
+              var msg = "";
+              for(var i=0; i<list.length; i++)
+              {
+                var t = list[i].time;
+                msg += _.fmtNumber(Math.floor(t/60),0) + ":" + _.fmtNumber(t%60,0,2) + " = " + _.fmtNumber(list[i].gluc,0) + "\n";
+              }
+
+              if(!idxBE)
+              {
+                if(!item.bolusbe || item.bolusadjust)
+                  continue;
+                idxBE = idx;
+              }
+              else if(item.bolusbe || item.bolusadjust)
+              {
+                continue;
+              }
+
+              times[idxBE].betest.push({data:item});
+*/
+              break;
+            case "adjusttest":
+              if(times[idx].adjusttest.length == 0 && time > adjusttestTime+4*60)
+              {
+                var date = _.fmtNumber(day.year,0,4)+_.fmtNumber(day.month,0,2)+_.fmtNumber(day.day,0,2);
+                var list = _.getTimeList(this.vars.items,date,time,5,60);
+                list[0].food = item.food;
+                list[0].bolusbe = item.bolusbe;
+                list[0].bolusadjust = item.bolusadjust;
+                times[idx].adjusttest = list;
+                adjusttestTime = time;
+                hasData = true;
+              }
+//              if(!idxAdjust)
+//                idxAdjust = idx;
+//              times[idxAdjust].adjusttest.push({data:item});
+              break;
+          }
+        }
+        if(hasData)
+          this.vars.days.push({day:day,times:times});
+      }
+    },
+    fillAnalysisData: function()
+    {
+      this.fillAnalysis(this.vars.begDate,this.vars.endDate);
+    },
+    fillAnalysis: function(begDate,endDate)
+    {
+      var calc =
+      {
+         begdate: new Date(begDate)
+        ,enddate: new Date(endDate)
+        ,daycount: 0
+        ,combocount: 0
+        ,librecount: 0
+        ,ampullecount: 0
+        ,kathetercount: 0
+        ,combohigh: 0
+        ,combonorm: 0
+        ,combolow: 0
+        ,combo70: 0
+        ,combo70180: 0
+        ,combo180: 0
+        ,combosum: 0
+        ,librehigh: 0
+        ,librenorm: 0
+        ,librelow: 0
+        ,libre70: 0
+        ,libre70180: 0
+        ,libre180: 0
+        ,libresum: 0
+        ,besum: 0
+        ,bemain: 0
+        ,besmall: 0
+        ,bemaincount: 0
+        ,besmallcount: 0
+        ,beadjust: 0
+        ,beadjustcount: 0
+        ,iebolussum: 0
+        ,iebasalsum: 0
+      };
+      var checkBeg = _.getDateData(begDate);
+      var checkEnd = _.getDateData(endDate);
+      checkEnd.addDay(1);
+      var started = false;
+      for(var i=0; i<this.vars.items.length; i++)
+      {
+        var day = this.vars.items[i];
+        var c = (day.day<10?"0":"") + day.day;
+        c += "." + (day.month<10?"0":"") + day.month;
+        c += "." + day.year;
+        if(checkBeg.date == c)
+          started = true;
+        if(checkEnd.date == c)
+          break;
+
+        if(started)
+        {
+          calc.daycount++;
+          var profile = _.getProfileData(_.config,day.year*10000+day.month*100+Number(day.day));
+          calc.iebasalsum += profile.sum;
+          for(var j=0; j<day.times.length; j++)
+          {
+            var time = day.times[j];
+            if(time.gluc > 0)
+            {
+              calc.combocount++;
+              var inZielbereich = _.checkZielbereich(time.gluc,day.year*10000+day.month*100+Number(day.day)+"",time.time,_.config);
+              if(inZielbereich < 0)
+                calc.combolow++;
+              else if(inZielbereich > 0)
+                calc.combohigh++;
+              else
+                calc.combonorm++;
+              if(time.gluc < 70)
+                calc.combo70++;
+              else if(time.gluc > 180)
+                calc.combo180++;
+              else
+                calc.combo70180++;
+              calc.combosum += Number(time.gluc);
+            }
+            if(time.gluclibre > 0)
+            {
+              calc.librecount++;
+              var inZielbereich = _.checkZielbereich(time.gluclibre,day.year*10000+day.month*100+Number(day.day)+"",time.time,_.config);
+              if(inZielbereich < 0)
+                calc.librelow++;
+              else if(inZielbereich > 0)
+                calc.librehigh++;
+              else
+                calc.librenorm++;
+              if(time.gluclibre < 70)
+                calc.libre70++;
+              else if(time.gluclibre > 180)
+                calc.libre180++;
+              else
+                calc.libre70180++;
+              calc.libresum += Number(time.gluclibre);
+            }
+            if(time.ampulle)
+              calc.ampullecount++;
+            if(time.katheter)
+              calc.kathetercount++;
+
+            var be = _.calcBE(time.food, _.foodList);
+            calc.besum += be;
+            if(time.typ == "main")
+            {
+              calc.bemain += be;
+              calc.bemaincount++;
+            }
+            else if(time.typ == "small")
+            {
+              calc.besmall += be;
+              calc.besmallcount++;
+            }
+            else if(time.typ == "adjust")
+            {
+              calc.beadjust += be;
+              calc.beadjustcount++;
+            }
+            if(time.bolusadjust)
+              calc.iebolussum += Number(time.bolusadjust);
+            if(time.bolusbe)
+              calc.iebolussum += Number(time.bolusbe);
+          }
+        }
+      }
+
+      calc.iebolusprz = calc.iebolussum/(calc.iebolussum+calc.iebasalsum)*100;
+      calc.iebasalprz = calc.iebasalsum/(calc.iebolussum+calc.iebasalsum)*100;
+
+      this.vars.calc = calc;
+    },
+    tapAnalysis: function()
+    {
+      this.tapPrint("analysis");
+    },
+    tapDiary: function()
+    {
+      this.tapPrint("diary");
+    },
+    tapINPUTProtokoll: function()
+    {
+      this.tapPrint("inputProtokoll");
+    },
+    tapINPUTProtokollCGM: function()
+    {
+      this.tapPrint("inputProtokollCGM");
+    },
+    tapINPUTBasalrate: function()
+    {
+      this.tapPrint("inputBasalrate");
+    },
+    tapINPUTFaktoren: function()
+    {
+      this.tapPrint("inputFaktoren");
+    },
+    tapINPUTTrend: function()
+    {
+      this.tapPrint("inputTrend");
+    },
+    tapTrendInfo: function(e)
+    {
+      this.trendInfo = Number(e.target.getAttribute("data"));
+      this.tapPrint("inputTrend");
+    },
+    tapINPUTBRTest: function()
+    {
+      this.tapPrint("inputBRTest");
+    },
+    tapINPUTDatenmanagement1: function()
+    {
+      this.tapPrint("inputDatenmanagement1");
+    },
+    tapINPUTDatenmanagement5: function()
+    {
+      this.tapPrint("inputDatenmanagement5");
+    },
+    tapPrint: function(type)
+    {
+      if(type == "inputTrend")
+      {
+        switch(this.$.pages.selected)
+        {
+          case 0:
+            this.$.pages.selected = 1;
+            this.title = "Anzuzeigende Daten";
+            return;
+          case 1:
+            break;
+        }
+      }
+      _.storage.setItem("print.lasttype",type);
+      this.$.dlg.close();
+      this.vars = {type:type,begDate:new Date(),currDate:new Date(),endDate:new Date(),items:[]};
+      switch(Number(this.timespan))
+      {
+        case -1:
+          this.vars.begDate = new Date(this.$.startdate.date);
+          break;
+        default:
+          this.vars.begDate.setDate(this.vars.begDate.getDate() - this.timespan);
+          break;
+      }
+      this.vars.currDate = new Date(this.vars.begDate);
+      var dd = _.getDateData(this.vars.begDate);
+      _.driveData.requestData(dd.dataId,"json",this,this.dataLoaded,dd.getLoadMsg());
+    }
+  });
+</script>

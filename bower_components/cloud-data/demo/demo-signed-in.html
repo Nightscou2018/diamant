@@ -1,0 +1,189 @@
+﻿<link rel="import" href="../../paper-toast/paper-toast.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<link rel="import" href="../../paper-toast/paper-toast.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+<dom-module id="demo-signed-in">
+  <style is="custom-style" include="demo-pages-shared-styles">
+    :host
+    {
+    }
+    #signedIn
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-center);
+    }
+    #signedIn>div
+    {
+      padding: 10px;
+    }
+    #title
+    {
+      @apply(--layout);
+      @apply(--layout-center);
+      @apply(--shadow-elevation-2dp);
+      @apply(--layout-center-justified);
+      padding: 1em;
+      font-size: 1.5em;
+    }
+    #list
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+      @apply(--shadow-elevation-4dp);
+      overflow-y: auto;
+      overflow-x: hidden;
+      text-align: left;
+    }
+    #right
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+    }
+    #btnSignout
+    {
+      background: var(--paper-blue-500);
+    }
+  </style>
+  <template>
+    <div id="signedIn">
+      <div>You are signed in with this google-account:</div>
+      <img id="userImage">
+      <div id="userName"></div>
+      <paper-button id="btnSignout" raised on-tap="tapSignout">Sign Out</paper-button>
+      <paper-button id="btnList" raised on-tap="tapFilelist">Request Filelist</paper-button>
+      <paper-button id="btnTable" raised on-tap="tapTable">Show Table</paper-button>
+    </div>
+    <div id="right">
+      <div id="title"></div>
+      <div id="list"></div>
+    </div>
+    <paper-toast id="toast"></paper-toast>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "demo-signed-in"
+   ,properties:
+    {
+    }
+   ,ready: function()
+    {
+    }
+   ,msg: function(text)
+    {
+      this.$.toast.text = text;
+      this.$.toast.duration = 0;
+      this.$.toast.open();
+      this.$.toast.noCancelOnOutsideClick = false;
+    }
+   ,signinDone: function(cloudData)
+    {
+      this.cloudData = cloudData;
+      this.$.userName.textContent = cloudData.googleUserName;
+      this.$.userImage.src = cloudData.googleUserImg;
+      this.$.list.innerHTML = "";
+    }
+   ,tapSignout: function()
+    {
+      this.cloudData.signOut();
+    }
+   ,tapFilelist: function()
+    {
+      this.cloudData.requestFileList(this,"*.*",this.listLoaded);
+    }
+   ,listLoaded: function(self,status,list)
+    {
+      if(status != "ok")
+        return;
+        
+      self.$.title.innerHTML = "list of files";
+      self.$.list.innerHTML = "";
+      for(var key in list)
+      {
+        var file = list[key];
+        var btn = document.createElement("paper-button");
+        btn.onclick = self.fileClick;
+        btn.className = "filebtn";
+        btn.file = file;
+        btn.self = self;
+        btn.innerHTML = key + " - " + file.name;
+        self.$.list.appendChild(btn);
+      }
+    }
+   ,tapTable: function()
+    {
+      this.cloudData.loadSheetInfo(this,this.infoLoaded);
+    }
+   ,infoLoaded: function(self,status,sheets)
+    {
+      if(status != "ok")
+        return;
+      var html = "";
+      for(var i=0; i<sheets.length; i++)
+      {
+        html += sheets[i].properties.title;
+        self.sheet = sheets[i].properties.title;
+        self.cloudData.readSheetData(self,sheets[i].properties.title+"!A:A",self.sheetLoaded);
+      }
+      self.$.list.innerHTML = html;
+    }
+   ,sheetLoaded: function(self,range,status,data)
+    {
+      if(status != "ok")
+        return;
+      self.$.title.innerHTML = "contents of sheet";
+      var html = self.$.list.innerHTML;
+      var row = undefined;
+      for(var i=0; i<data.length && row == undefined; i++)
+      {
+        if(data[i] == self.cloudData.googleUserName)
+          row = i;
+      }
+      
+      if(row == undefined)
+      {
+        self.cloudData.writeSheetData(self,self.sheet + "!A" + (data.length+1),[[self.cloudData.googleUserName]],self.sheetWritten);
+        html = "Da müssen wir wohl einen neuen anlegen";
+      }
+      else
+      {
+        html += "<tr>";
+        for(var j=0; j<data[row].length; j++)
+          html += "<td>" + data[row][j] + "</td>";
+        html += "</tr>";
+      }
+      html += "</table>";
+      self.$.list.innerHTML = html;
+    }
+   ,sheetWritten: function(parent,range,status,data)
+    {
+      if(status != "ok")
+        return;
+    }
+   ,fileClick: function()
+    {
+      this.self.cloudData.requestData(this.file.name,"",this.self,this.self.fileLoaded);
+    }
+   ,fileLoaded: function(self,status,data)
+    {
+      try
+      {
+        if(data.content)
+        {
+          var blob = new Blob([data.content]);//,{type:"image/jpeg"});
+          saveAs(blob, data._id + "." + data._ext);
+        }
+        else
+        {
+          self.$.list.innerHTML = JSON.stringify(data);
+          self.$.title.innerHTML = "content of " + data._id;
+        }
+      }
+      catch(ex)
+      {
+        alert("error when loading file: " + ex);
+      }
+    }
+  });
+</script>

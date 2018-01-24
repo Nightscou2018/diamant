@@ -1,0 +1,25 @@
+{
+  "name": "responsive-table",
+  "description": "a style definition for responsive tables",
+  "main": "responsive-table.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "homepage": "https://github.com/zreptil/responsive-table",
+  "_release": "af5c5b1a67",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "af5c5b1a67c12c6027da425a4f7771722c8b49ce"
+  },
+  "_source": "git://github.com/zreptil/responsive-table.git",
+  "_target": "*",
+  "_originalSource": "zreptil/responsive-table",
+  "_direct": true
+}

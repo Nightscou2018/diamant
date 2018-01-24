@@ -1,0 +1,239 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<dom-module id="diamant-tutor-sign">
+  <template>
+    <style is="custom-style">
+    :host
+    {
+    }
+    #sign
+    {
+      font-size: 1em;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      color: #000;
+      border: 2px solid #a0a0a0;
+      border-radius: 0.2em;
+      padding: 1em;
+      max-width: 20em;
+      z-index: 999;
+    }
+    #pages>div div:first-child
+    {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    #pages>div div:nth-child(2)
+    {
+      padding-top: 0.5em;
+    }
+    #sign>div:nth-child(3)
+    {
+      padding-top: 0.5em;
+      display: flex;
+      justify-content: space-between;
+    }
+    #btnCancel
+    {
+      position: absolute;
+      right: 0.5em;
+      top: 0.5em;
+    }
+    </style>
+    <div id="sign">
+      <iron-pages id="pages" on-iron-page on-iron-select="pageChanged">
+        <div>
+          <div>Tutor</div>
+          <div>
+            Das war leider die falsche Richtung. Bitte den Button <iron-icon icon="chevron-right"></iron-icon>
+            betätigen.
+          </div>
+        </div>
+        <div>
+          <div>Tutor</div>
+          <div>
+            Freut mich, dass Du Dich entschieden hast, Dir das mal anzuschauen. Dieses Fensterchen hier
+            dient der Navigation durch den Tutor. Mit den Buttons am unteren Rand kannst Du weiter 
+            (<iron-icon icon="chevron-right"></iron-icon>) oder zurück (<iron-icon icon="chevron-left"></iron-icon>)
+            navigieren oder den Tutor beenden (<iron-icon icon="cancel"></iron-icon>). 
+            Probier das gleich mal aus, indem Du auf weiter klickst.
+          </div>
+        </div>
+        <div>
+          <div>Hauptmenü</div>
+          <div>
+            Prima, das hat schon mal funktioniert. Nun schauen wir uns zunächst das Hauptmenü an. Das ist
+            dieser Button hier.
+          </div>
+        </div>
+        <div>
+          <div>Hauptmenü</div>
+          <div>
+            Im Hauptmenü können verschiedene Aktionen ausgeführt werden. Mit diesem Button wird die Liste der 
+            auswählbaren Nahrungsmittel bearbeitet.
+          </div>
+        </div>
+        <div>
+          <div>Hauptmenü</div>
+          <div>
+            Mit diesem Button können PDF-Dateien erstellt werden. Er heisst Drucken, weil diese PDFs 
+            normalerweise in papierner Form ihren Weg zum Diabetologen finden.
+          </div>
+        </div>
+        <div>
+          <div>Hauptmenü</div>
+          <div>
+            Mit diesem Button können alle Datendateien heruntergeladen werden. Diese werden in einer
+            ZIP-Datei zusammengepackt, die dann irgendwo im lokalen Rechner gespeichert werden kann.
+          </div>
+        </div>
+      </iron-pages>
+      <div>
+        <paper-icon-button id="btnPrev" icon="chevron-left" on-tap="tapPrev"></paper-icon-button>
+        <paper-icon-button id="btnNext" icon="chevron-right" on-tap="tapNext"></paper-icon-button>
+      </div>
+      <paper-icon-button id="btnCancel" icon="cancel" on-tap="tapClose"></paper-icon-button>
+    </div>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "diamant-tutor-sign",
+    properties:
+    {
+      dst: {type:Object,value:undefined},
+    },
+    behaviors: [Polymer.IronOverlayBehavior],
+    ready: function()
+    {
+      this.noCancelOnOutsideClick = true;
+      this.noCancelOnEscKey = true;
+      this.withBackdrop = true;
+    },
+    getOffset: function(elem) 
+    {
+      var box = elem.getBoundingClientRect();
+      var body = document.body;
+      var docElem = document.documentElement;
+      var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
+      var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
+      var clientTop = docElem.clientTop || body.clientTop || 0;
+      var clientLeft = docElem.clientLeft || body.clientLeft || 0;
+      var top  = box.top +  scrollTop - clientTop;
+      var left = box.left + scrollLeft - clientLeft;
+      return {top: Math.round(top),left: Math.round(left),width:box.width,height:box.height};
+    },
+    activateElement: function(elem)
+    {
+      var temp = this.getOffset(elem);
+      this.$.sign.style.position = "fixed";
+      this.$.sign.style.left = (temp.left + temp.width) + "px";
+      this.$.sign.style.top = temp.top + "px";
+
+      this.dst = {elem:elem,z:elem.zIndex,style:elem.style};
+      this.dst.elem.style.backgroundColor = "red";
+//      var elem = document.querySelector("#topBar paper-icon-button iron-icon");
+//      elem = _.$.btnQuick;
+//      elem = document.querySelector("#topBar paper-icon-button iron-icon");
+    },
+    start: function()
+    {
+      if(this.dst)
+        this.hide();
+      this.$.pages.selected = 1;
+      this.open();
+    },
+    deactivateElement: function()
+    {
+      if(this.dst)
+      {
+        this.dst.elem.zIndex = this.dst.z;
+        this.dst.elem.style = this.dst.style;
+        this.dst = undefined;
+      }
+      this.$.sign.style.position = "";
+      this.$.sign.style.left = "";
+      this.$.sign.style.top = "";
+    },
+    hide: function()
+    {
+      this.deactivateElement();
+      this.close();
+    },
+    tapClose: function()
+    {
+      this.hide();
+    },
+    pageChanged: function()
+    {
+      var idx = Number(this.$.pages.selected);
+      var p = idx > 0;
+      var n = idx < this.$.pages.items.length-1;
+      var c = true;
+      var e = undefined;
+      switch(idx)
+      {
+        case 0:
+          p = false;
+          c = false;
+          break;
+        case 2:
+          e = document.querySelector("#topBar paper-icon-button iron-icon");
+          break;
+        case 3:
+          e = _.$.btnFoodlist;
+          _.$.drawer.openDrawer();
+          break;
+        case 4:
+          e = _.$.btnPrint;
+          _.$.drawer.openDrawer();
+          break;
+        case 5:
+          e = _.$.btnBackup;
+          _.$.drawer.openDrawer();
+          break;
+      }
+      this.$.btnPrev.disabled = !p;
+      this.$.btnCancel.disabled = !c;
+      this.$.btnNext.disabled = !n;
+      if(e)
+        this.activateElement(e);
+      else
+        this.deactivateElement();
+    },
+    tapNext: function()
+    {
+      var idx = Number(this.$.pages.selected);
+      switch(idx)
+      {
+        case 0:
+          idx = 2;
+          break;
+        default:
+          idx++;
+          break;
+      }
+      
+      if(idx >= this.$.pages.items.length)idx = this.$.pages.items.length-1;
+      this.$.pages.selected = idx;
+    },
+    tapPrev: function()
+    {
+      var idx = Number(this.$.pages.selected);
+      switch(idx)
+      {
+        default:
+          idx--;
+          break;
+      }
+      
+      if(idx < 0)idx = 0;
+      this.$.pages.selected = idx;
+    }    
+  });
+</script>

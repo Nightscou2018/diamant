@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>DIAMANT</title>
+
+  <link rel="shortcut icon" href="resources/favicon.png" />
+  <link rel="manifest" href="resources/manifest.json">
+  <meta name="application-name" content="DIAMANT" />
+  <meta name="apple-mobile-web-app-title" content="DIAMANT" />
+  <link rel="apple-touch-icon" sizes="180x180" href="resources/apple-touch-icon-180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="resources/apple-touch-icon-152.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="resources/apple-touch-icon-120.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="resources/apple-touch-icon-76.png">
+
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="expires" content="0">
+
+  <script src="components/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="components/bower_components/polymer/polymer.html">
+  <link rel="import" href="components/bower_components/paper-styles/paper-styles.html">
+  <link rel="import" href="components/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+  <link rel="import" href="diamant-signed-out.html">
+  <link rel="import" href="diamant-signed-in.html">
+  <style is="custom-style">
+    body
+    {
+      font-family: 'RobotoDraft', 'Roboto', sans-serif;
+      line-height:1.2;
+      vertical-align:middle;
+      color: black;
+      @apply(--watermark);
+      @apply(--layout-vertical);
+      @apply(--layout-fullbleed);
+      font-size: 1em;
+      padding: 0px!important;
+      height: 100vh;
+    }
+    diamant-signed-in
+    {
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+    }
+  </style>
+  <script>
+    var _ = {};
+    var _typeList = {"none":""
+                    ,"main":"Hauptmahlzeit"
+                    ,"small":"Zwischenmahlzeit"
+                    ,"adjust":"Ausgleichsmahlzeit"
+                    ,"after":"Nach Mahlzeit"
+                    ,"brtest":"Basalraten-Test"
+                    ,"betest":"BE-Faktoren-Test"
+                    ,"adjusttest":"Korrektur-Faktoren-Test"};
+    var _units = {"stueck":"Stück","gramm":"Gramm","tafeln":"Tafeln","riegel":"Riegel",
+                  "tueten":"Tüten","glaeser":"Gläser","scheiben":"Scheiben",
+                  "becher":"Becher","milliliter":"Milliliter","dosen":"Dosen"};
+    var _unit = {"stueck":"Stück","gramm":"Gramm","tafeln":"Tafel","riegel":"Riegel",
+                 "tueten":"Tüte","glaeser":"Glas","scheiben":"Scheibe",
+                 "becher":"Becher","milliliter":"Milliliter","dosen":"Dose"};
+    
+    function Num(text)
+    {
+      if(typeof text != "stringValue")
+        return text;
+        
+      return Number(text.replace(",","."));
+    }
+    function mm(pt){return pt/0.35277;}
+    function cm(pt){return pt/0.035277;}
+  </script>
+</head>
+<body unresolved>
+  <diamant-signed-out></diamant-signed-out>
+  <diamant-signed-in hidden></diamant-signed-in>
+</body>
+</html>

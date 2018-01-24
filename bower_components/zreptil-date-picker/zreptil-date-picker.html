@@ -1,0 +1,163 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="../vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<!--
+@element vaadin-date-picker
+@demo demo/index.html
+-->
+<dom-module id="zreptil-date-picker">
+  <template>
+    <style is="custom-style">
+      section
+      {
+        display: flex;
+      }
+      .btn
+      {
+        display: flex;
+        margin: 0;
+        align-items: flex-start;
+        flex-direction: column;
+        @apply(--date-button);
+      }
+      .label
+      {
+        display: flex;
+        font-size: 0.75em;
+        color: #555;
+        padding-right: 1em;
+        text-transform: none;
+        @apply(--date-label);
+      }
+      .date
+      {
+        align-self: center;
+      }
+      vaadin-date-picker
+      {
+        --vaadin-date-picker-calendar-cell-selected:
+        {
+          font-weight: bold;
+          background: var(--color-primary-back);
+          color: var(--color-primary-font);
+        };
+      }
+    </style>
+    <section bind-value="{{value}}">
+        <paper-button class="btn" on-tap="showDialog" disabled="{{readonly}}">
+          <div class="label">{{label}}</div>
+          <div class="date">{{fmtDate(date)}}</div>
+        </paper-button>
+      <paper-dialog id="dialog" class="paper-date-picker-dialog" modal>
+        <vaadin-date-picker id="picker" label="{{label}}" on-value-changed="pickerChanged" on-close="pickerClosed"></vaadin-date-picker>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Abbruch</paper-button>
+          <paper-button dialog-confirm>OK</paper-button>
+        </div>
+      </paper-dialog>
+    </section>
+  </template>
+</dom-module>
+
+<script>
+  Polymer(
+  {
+    is: "zreptil-date-picker",
+    behaviors: 
+    [
+      Polymer.IronFormElementBehavior
+    ],
+    properties:
+    {
+       readonly: {type: Boolean, value: false}
+      ,date: {type: Date, value: new Date()}
+      ,value: {type: String, reflectToAttribute: true, value: "", observer: "valueChanged"}
+      ,label: {type: String},
+    },
+    ready: function()
+    {
+      this.skipCompute = false;
+      this.date = new Date();
+      this.$.picker.i18n =
+      {
+        today: "Heute",
+        cancel: "Abbruch",
+        firstDayOfWeek: 1,
+        monthNames: ["Januar","Februar","März","April","Mai","Juni"
+                    ,"Juli","August","September","Oktober","November","Dezember"
+                    ],
+        weekdaysShort: ["So","Mo","Di","Mi","Do","Fr","Sa"],
+        formatDate: function(d) 
+        {
+          return [d.getDate(), (d.getMonth()<9?"0":"")+(d.getMonth() + 1), d.getFullYear()].join('.');
+        },
+        formatTitle: function(monthName, fullYear)
+        {
+          return monthName + " " + fullYear;
+        }
+      };
+    },
+//    dateFormat: function(date, format)
+//    {
+//      return moment(date).format(format);
+//    },
+    showDialog: function()
+    {
+      this.valueChanged();
+      this.$.picker._selectedDate = this.date;
+      this.$.dialog.open();
+      this.$.picker.open();
+    },
+    fmtDate: function(date)
+    {
+      if(date == undefined)
+        return "";
+        
+      if(date instanceof Date)
+      {
+        var ret = (date.getDate()<10?"0":"") + date.getDate();
+        ret += "." + (date.getMonth()<9?"0":"") + (date.getMonth()+1);
+        ret += "." + date.getFullYear();
+        return ret;
+      }
+      
+      if(date.length >= 8)
+        return date.substr(6,2) + "." + date.substr(4,2) + "." + date.substr(0,4);
+      
+      return date;
+    },
+    pickerClosed: function()
+    {
+      this.$.dialog.close();
+    },
+    pickerChanged: function()
+    {
+      this.$.dialog.close();
+      this.date = this.$.picker._selectedDate;
+      this.value = this.getSaveValue();
+    },
+    valueChanged: function()
+    {
+      if(this.value && this.value.length >= 8)
+        this.date = new Date(Number(this.value.substr(0,4)),Number(this.value.substr(4,2))-1,Number(this.value.substr(6,2)));
+    },
+    getSaveValue: function()
+    {
+      if(!this.date)
+        return undefined;
+        
+      var ret = "" + this.date.getDate();
+      while(ret.length < 2)
+        ret = "0" + ret;
+      ret = (this.date.getMonth()+1) + ret;
+      while(ret.length < 4)
+        ret = "0" + ret;
+      ret = this.date.getFullYear() + ret;
+      while(ret.length < 8)
+        ret = "0" + ret;
+      return ret;
+    }
+  });
+</script>

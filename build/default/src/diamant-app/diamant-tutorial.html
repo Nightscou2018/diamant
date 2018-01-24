@@ -1,0 +1,309 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-meta/iron-meta.html"><link rel="prefetch" href="../../bower_components/iron-flex-layout/iron-flex-layout.html"><link rel="prefetch" href="../../bower_components/iron-iconset-svg/iron-iconset-svg.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-button-behavior.html"><link rel="prefetch" href="../../bower_components/iron-behaviors/iron-button-state.html"><link rel="prefetch" href="../../bower_components/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"><link rel="prefetch" href="../../bower_components/iron-behaviors/iron-control-state.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-ripple-behavior.html"><link rel="prefetch" href="../../bower_components/paper-ripple/paper-ripple.html"><link rel="prefetch" href="../../bower_components/paper-material/paper-material-shared-styles.html"><link rel="prefetch" href="../../bower_components/paper-styles/shadow.html"><link rel="prefetch" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html"><link rel="prefetch" href="../../bower_components/iron-selector/iron-selectable.html"><link rel="prefetch" href="../../bower_components/iron-selector/iron-selection.html"></head><body><dom-module id="diamant-tutorial">
+  <template>
+    <style is="custom-style">:host{display:flex;@apply (--layout-center-center);@apply (--watermark);@apply (--layout-fit);@apply (--layout-vertical);}h1,h2{margin-bottom:0;}iron-pages{padding:1em 3em 0em 3em;text-align:justify;}iron-pages>div>div{padding:1em 0em 0em 0em;}.title{font-size:1.5em;font-weight:600;padding:1em 0;}.controls{margin-top:1.5em;@apply (--layout-vertical);@apply (--layout-align-start);}.controls paper-button{align-self:flex-start;text-transform:none;background:#fff;margin-bottom:1em;}.controls paper-button iron-icon{padding-right:1em;}iron-pages>div:first-child{max-width:50em;}div[page]{padding-bottom:3em;}</style>
+    <iron-pages id="pages" selected="0" class="layout flex scroll">
+      <div page="">
+        <h1>Willkommen</h1>
+        <div>
+          Herzlich Willkommen bei <b>DIAMANT</b>. Auf dieser Webseite können Deine Blutzuckerwerte relativ einfach
+          protokolliert und ausgewertet werden. Die Daten werden auf Deinem eigenen Google-Drive gespeichert. 
+        </div>
+        <div>
+          Du kannst entweder gleich loslegen, oder Dich zunächst mit den verschiedenen Elementen auf dieser Seite vertraut machen.
+          Was möchtest Du tun?
+        </div>
+        <div class="controls">
+          <paper-button raised="" on-tap="tapStart"><iron-icon icon="maps:directions-run"></iron-icon>Na, ich leg natürlich gleich los!</paper-button>
+          <paper-button raised="" id="btnTutor" on-tap="tapTutor"><iron-icon icon="social:school"></iron-icon>{{tutorText}}</paper-button>
+          <paper-button raised="" on-tap="tapCommunity"><iron-icon icon="social:people"></iron-icon>Ich besuch erstmal die Community auf Google+</paper-button>
+          <paper-button raised="" on-tap="tapTechdoc"><iron-icon icon="myicons:techdoc"></iron-icon>Wie funktioniert die Seite, wo landen meine Daten?</paper-button>
+        </div>
+      </div>
+      <div page="">
+        <h1>Impressum</h1>
+        <div>
+          <br>Angaben gemäss § 5 TMG
+          <br>
+          <br>Andreas Perlitz
+          <br>Karlsbader Str. 15
+          <br>86169 Augsburg
+          <br><h2>Kontakt</h2>
+          Telefon: 0821 / 704 705
+          <br>E-Mail: <a href="mailto:andi@zreptil.de">andi@zreptil.de</a>
+          <br>Internetadresse: <a href="https://plus.google.com/+AndiPerlitz" target="_blank">https://plus.google.com/+AndiPerlitz</a>
+        </div>
+        <h2>Quellenangaben für die verwendeten Komponenten</h2>
+        <div>
+            Die gesamte Webseite bedient sich der Elemente des <a href="https://www.polymer-project.org/1.0/" target="_blank">Polymer-Projekts</a> von Google.
+            <br>Die PDF-Dateien, die auf dieser Webseite erzeugt werden können, werden mit <a href="http://pdfmake.org/#/" target="_blank">PDFMake</a> erzeugt.
+            <br>Die ZIP-Dateien, die auf dieser Webseite erzeugt werden können, werden mit <a href="https://stuk.github.io/jszip/" target="_blank">JSZip</a> erzeugt.
+        </div>
+        <h2>Haftungsausschluss</h2>
+        <div>
+          <h3>Haftung für Inhalte</h3>
+          Die Inhalte unserer Seiten wurden mit grösster Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Als Diensteanbieter sind wir gemäss § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend entfernen.
+          <br>
+          <h3>Haftung für Links</h3>
+          Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstösse überprüft. Rechtswidrige Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Links umgehend entfernen.
+          <br>
+          <h3>Urheberrecht</h3>
+          Die durch die Seitenbetreiber erstellten bzw. verwendeten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung ausserhalb der Grenzen des Urheberrechtes bedürfen der Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet. Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
+          <br>
+          <br><i>Quelle:  </i><a href="http://www.muster-vorlagen.net" target="_blank">Impressum-Generator Muster-Vorlagen.net</a>
+        </div>
+      </div>
+      <div page="">
+        <h1>Technische Dokumentation</h1>
+        <h2>Vorwort</h2>
+        <div>
+          Bei Erstellung dieser Webseite habe ich darauf geachtet, dass sie sowohl im Browser auf einem Computer, 
+          als auch auf einem Handy oder sonstigen mobilen Gerät gut bedienbar ist. Ich habe selbst Diabetes 
+          Typ I und verwende diese Seite daheim im Browser und auch unterwegs auf dem Handy zur Protokollierung 
+          meiner  Werte. Deshalb kann man davon ausgehen, dass die Seite solange ich lebe und keine bessere 
+          Möglichkeit der Protokollierung gefunden habe, gewartet und erweitert wird. Ich habe in der Vergangenheit 
+          schon mehrere Programme dafür geschrieben, die ich allerdings immer nur für mich selbst verwendet habe. 
+          Diese Webseite ist das erste meiner Diabetes-Programme, das ich öffentlich zur Verfügung stelle.
+        </div>
+        <div>
+          Ich habe gewisse Anforderungen an eine Anwendung, die mir das Management meines Diabetes ermöglichen soll.
+          <ul>
+            <li>Die Eingabe der Daten muss schnell und unkompliziert sein.</li>
+            <li>
+              Ich möchte mir die Broteinheiten nicht jedesmal irgendwo zusammensuchen müssen (Nährwertangaben auf 
+              Verpackungen oder Schätzung). Ich will eine Liste, in der die Nahrungsmittel mit den entsprechenden 
+              Nährwertangaben gespeichert sind, so dass ich die jeweiligen Nahrungsmittel nur aussuchen muss.
+              Gleichzeitig muss es natürlich möglich sein, schnell mal geschätzte Broteinheiten einzugeben.
+            </li>
+            <li>
+              Ich möchte für Besuche bei Ärzten, Diabetologen und Diabetesberatern die Daten, die sie zu einer
+              sinnvollen Beratung benötigen, unkompliziert für frei wählbare Zeiträume ausdrucken lassen können.
+            </li>
+          </ul>
+        </div>
+        <div>
+          Da keines der Programme, die ich am Anfang meiner Diabetes-Karriere in Augenschein nahm, diesen 
+          Mindestanforderungen genügte und es schon damals mehrere Anbieter von Blutzuckermessgeräten gab, 
+          die ihre Daten allesamt auf proprietäre Art sammelten und es sehr schwer machten, an diese Daten
+          von ausserhalb der dafür vorgesehenen Anwendungen heran zu kommen, habe ich mir selbst ein Programm
+          geschrieben (damals in Delphi und mit lokaler Datenspeicherung). Was mir von Anfang an immer gefehlt
+          hat, war die Nahrungsmittelliste. Es war damals nicht üblich, die Nährwertangaben auf Verpackungen 
+          zu drucken, weshalb man immer auf grobe Schätzungen angewiesen war. Das hat sich zwar inzwischen zum Glück 
+          geändert und man kann die Angaben auf fast jeder Nahrungsmittelverpackung finden, aber diese Daten müssen 
+          für mein Diabetesmanagement eben auch direkt im Programm zur Verfügung stehen. Deshalb habe ich mir damals 
+          schon eine Speicherung für die Nahrungsmittel ausgedacht und implementiert, damit ich mir nur einmal Gedanken
+          über die Broteinheiten von Nahrungsmitteln machen musste und die Information in Zukunft einfach wieder abrufen 
+          kann.
+        </div>
+        <div>
+          Inzwischen habe ich das Programm immer wieder von der Technik, vom Namen und der Datenmenge her geändert 
+          und es an neue Gegebenheiten angepasst. Aktuell halte ich die Datenspeicherung in der Cloud wegen der permanenten 
+          Verfügbarkeit der Daten über das Internet für die sinnvollste Möglichkeit, mein Diabetesmanagement durchzuführen. 
+          Das kann sich in Zukunft natürlich ändern, aber da ich selbst Diabetiker bin und natürlich niemals bei einem neuen 
+          Programm alle Daten per Hand übertragen werde, ist sichergestellt, dass ich immer eine Möglichkeit schaffen werde, 
+          um die bisher erfassten Daten in ein neues System zu transferrieren.
+        </div>
+        <h2>Datenspeicherung</h2>
+        <div>
+          Die Daten, die auf dieser Seite erfasst werden, werden in Deinem eigenen Google Drive gespeichert.
+          Aufgrund der verwendeten Technik erhält mein Server diese Daten gar nicht. Ich habe mich aus verschiedenen 
+          Gründen für Google-Drive entschieden:
+        </div>
+        <ol>
+          <li>Google Drive ist kostenlos und stellt für jeden angemeldeten Benutzer 15 Gigabyte Speicherplatz zur Verfügung</li>
+          <li>Die Daten werden in einem privaten Speicherplatz des jeweiligen Benutzers gespeichert</li>
+          <li>Ich möchte den Speicherplatz für die Daten weder bezahlen noch rund um die Uhr zur Verfügung stellen</li>
+          <li>Ich habe keinerlei Interesse an diesen Daten, ausser natürlich an meinen eigenen</li>
+        </ol>
+        <div>
+          Ich habe im Laufe der Jahre meine Daten in verschiedenen Programmen gespeichert und bei einem Wechsel
+          auf ein anderes Programm immer mitgenommen. Aktuell belegen meine Daten, die ich seit <b>2006</b> gesammelt
+          habe auf Google Drive <b>6,5 Megabyte</b>. Ich müsste also noch etwas über 200 Jahre weiter Daten wie bisher 
+          sammeln, damit Google Drive überläuft. Ich denke, das sollte für jeden ausreichend sein.
+        </div>
+        <div>
+          Die Daten werden auf Google Drive als JSON-Dateien gespeichert. Sie haben immer einen Namen, der mit 
+          <b>[[dataPrefix]]</b> beginnt, gefolgt von der Art der Daten und als Dateiendung <b>.json</b>. Folgende Dateien
+          werden derzeit verwendet:
+          <ul>
+            <li><b>[[dataPrefix]]config.json</b> - Die Konfigurationseinstellungen</li>
+            <li><b>[[dataPrefix]]food.json</b> - Die Nahrungsmittelliste</li>
+            <li>z.B. <b>[[dataPrefix]]201604.json</b> - Die Daten für den Monat April 2016</li>
+          </ul>
+          Die Daten für die Blutzuckerwerte werden für jeden Monat in einer eigenen Datei gespeichert. Das hat den Vorteil,
+          dass sie auch relativ schnell wieder geladen werden. Beim Aufruf der Seite werden immer der aktuelle Monat und
+          der Vormonat geladen. So kann man in den Tabellen und Grafiken auch am Anfang des Monats schnell mal schauen, was 
+          vor Kurzem für Werte vorlagen. Für die Auswertung über ein Jahr oder den Ausdruck müssen weitere Daten nachgeladen 
+          werden. Deshalb kommt es bei diesen Funktionen immer wieder zu Meldungen wie "Lade Daten...".
+        </div>
+        <div>
+          Die Daten werden als JSON-String gespeichert. Das heisst, sie sind relativ einfach lesbar und enthalten keine
+          verschlüsselten Informationen. Wenn ich die Daten mal selbst anschauen will, dann verwende ich immer den 
+          <a href="http://jsonviewer.stack.hu/">Online-JSON-Viewer</a> von Gabor Turi. Hier kann man den Inhalt der 
+          JSON-Datei einfach einfügen und dann im Viewer als Struktur anzeigen lassen.
+        </div>
+        <div>
+          Wenn die Daten erstmals gespeichert werden, befinden sich diese Dateien im Verzeichnis "Meine Ablage" 
+          auf Google-Drive. Sie können von dort aber jederzeit in Unterordner verschoben werden und werden dann
+          trotzdem gefunden.
+        </div>
+        <h2>Verwendete Technik</h2>
+        <div>
+          Die Webseite wurde unter Verwendung von 
+          <a href="https://www.polymer-project.org/1.0/" target="_blank">Polymer</a> entwickelt. Das ist eine 
+          Sammlung von Elementen, die exzessiven Gebrauch von <b>Javascript</b> und <b>HTML5</b>-Techniken machen. 
+          Die Software läuft komplett im Browser des Benutzers und der Quellcode kann durch die eingebauten 
+          Entwicklungswerkzeuge moderner Browser problemlos angesehen oder heruntergeladen werden. Da das Programm 
+          in Javascript geschrieben wurde, kann es mit genug Aufwand vollständig analysiert und auf 
+          <a href="https://de.wikipedia.org/wiki/Datenkrake" target="_blank">Datenkrakeleien</a> hin 
+          untersucht werden. Ich behaupte, dass ich keine Daten in irgendeiner Form missbrauche und das 
+          kann auch gerne überprüft werden. Für die Sicherheit und Zuverlässigkeit der Daten übernehme ich 
+          allerdings andererseits auch keine Verantwortung, da die Datenspeicherung abseits meiner Systeme erfolgt. 
+          Um Datenverlust vorzubeugen gibt es die Möglichkeit, die vorhandenen Daten als ZIP-Datei herunter zu laden.
+        </div>
+        <h2>Anmeldung bei Google</h2>
+        <div>
+          Die Anmeldung an Google Drive erfolgt unter Verwendung des Elements
+          <a href="https://elements.polymer-project.org/elements/google-signin" target="_blank">google-signin</a>. 
+          Dieses Element sorgt dafür, dass ein Fenster aufgeht, in dem die Autorisierung oder Erstellung eines 
+          Google-Accounts erfolgt. Das alles geschieht abseits meiner Anwendung. Wenn man im Browser schon mit 
+          seinem Google-Account angemeldet ist, muss in diesem Fenster nur noch bestätigt werden, dass man 
+          einverstanden ist, dass DIAMANT auf Google Drive zugreift und Daten herunter- und hochladen darf. 
+          Ohne diesen Zugriff kann DIAMANT nichts für den Benutzer tun, weshalb das auch das allererste ist, 
+          was bei Aufruf der Seite gemacht werden muss. 
+        </div>
+        <div hidden="">
+          Um einen Überblick über die Nutzung und die Verbreitung von DIAMANT zu haben, wird 
+          <a href="https://www.google.com/intl/de_de/analytics/" target="_blank">Google Analytics</a> eingesetzt.
+          Jedesmal, wenn sich ein Benutzer autorisiert, wird das als ein Zugriff auf die Webseite gezählt. Das 
+          dient dazu, dass ich eine Übersicht darüber habe, wie stark die Seite frequentiert wird.
+          Weitere Daten werden von DIAMANT selbst nicht protokolliert. Was mir Googles Analytics alles an Daten
+          zur Verfügung stellt, kann ich zum derzeitigen Zeitpunkt noch nicht sagen. Das weiss ich erst, wenn
+          das eine Weile läuft und ich tatsächlich Daten erhalten habe. Wenn ich mehr darüber weiss, werde ich 
+          das hier kundtun.
+        </div>
+        <h2>Sicherheitshinweise</h2>
+        <div>
+          Auf dieser Seite werden persönliche Daten erfasst, gespeichert und verarbeitet. Und selbstverständlich 
+          ist es wie mit allen Daten, die man mit irgendeinem Programm ins Internet sendet: sie können vom 
+          Betreiber des Servers, bei dem die Daten gespeichert werden und vom Programmierer der Software, welche
+          die Daten verarbeitet, ausgelesen und beliebig verwendet werden, bevor sie zum Server geschickt werden.
+        </div>
+        <div>
+          Ich könnte sie also zusätzlich zur Speicherung in Google-Drive auch woanders hin schicken. Allerdings
+          ist schon allein durch die zugrunde liegende Technik sichergestellt, dass jeder beliebige Besucher der
+          Webseite den kompletten Quellcode der Seite auslesen und analysieren kann. Ich wäre also etwas 
+          blauäugig, wenn ich denke würde, ich könnte auf dieser Webseite im Geheimen irgendwelchen Unfug treiben.
+          Da ich noch nie blaue Augen hatte, besteht von der Seite her also keine Gefahr für die Daten. Wenn
+          jemand irgendwelche Sicherheitsprobleme im Code finden sollte, dann bitte ich darum, mir unter der 
+          eMail-Adresse im <paper-button on-tap="tapImpressum"><iron-icon icon="account-balance"></iron-icon>Impressum</paper-button> Bescheid zu geben.
+        </div>
+      </div>
+    </iron-pages>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "diamant-tutorial",
+    properties:
+    {
+      dataPrefix: {type:String,value:undefined}
+      ,themeTutor: {type:Object,value:
+                    {
+                      "--color-background":"var(--paper-green-50)"
+                     ,"--color-primary-back":"var(--paper-green-500)"
+                     ,"--color-primary-font":"rgba(255,255,255,var(--light-primary-opacity))"
+                    }
+                   }
+      ,tutorText: {type:String,value:"Zeig mir, wie das hier funktioniert"}
+    },
+    activated: function()
+    {
+      this.navigate(0);
+      if(!this.dataPrefix)
+      {
+        this.dataPrefix = _.$.localcfg.dataPrefix;
+        _.$.localcfg.dataPefix += "tutorial.";
+        _.$.localcfg.isTutor = true;
+      }
+      _.switchTheme(this.themeTutor);
+      this.$.btnTutor.disabled = !_.$.localcfg.isAdmin;
+      if(this.$.btnTutor.disabled)
+        this.tutorText = "Tutor bisher noch nicht verfügbar";
+    },
+    deactivate: function()
+    {
+      _.$.localcfg.dataPefix = this.dataPrefix;
+      _.$.localcfg.isTutor = false;
+      this.dataPrefix = undefined;
+      _.switchTheme(_.theme);
+    },
+    tapImpressum: function()
+    {
+      this.$.pages.selected = 1;
+    },
+    tapStart: function()
+    {
+      _.$.pages.selected = 0;
+      _.msg("Viel Spass mit DIAMANT :)", 3000);
+      this.deactivate();
+      if(_.config._fileId == "")
+        _.tapConfig();
+    },
+    tapTutor: function()
+    {
+      _.$.sign.start();
+    },
+    tapCommunity: function()
+    {
+      window.open("https://plus.google.com/communities/100671216082420655709", "_blank");
+    },
+    tapConfig: function()
+    {
+      _.tapConfig();
+    },
+    tapTechdoc: function()
+    {
+      this.$.pages.selected = 2;
+    },
+    execTool: function(id)
+    {
+      switch(id)
+      {
+        case "Welcome":
+          this.$.pages.selected = 0;
+          break;
+        case "Impressum":
+          this.$.pages.selected = 1;
+          break;
+        case "Techdoc":
+          this.$.pages.selected = 2;
+          break;
+      }
+      this.navigate(0);
+    },
+    tapPrev: function()
+    {
+      this.navigate(-1);
+    },
+    tapNext: function()
+    {
+      this.navigate(1);
+    },
+    navigate: function(diff)
+    {
+      var idx = Number(this.$.pages.selected) + diff;
+      if(idx < 0)idx = this.$.pages.items.length - 1;
+      if(idx >= this.$.pages.items.length)idx = 0;
+      this.$.pages.selected = idx;
+      var list = document.querySelectorAll("[id^=tool3]");
+      for(var i=0; i<list.length; i++)
+        list[i].active = (i == idx);
+    }
+  });
+</script></body></html>

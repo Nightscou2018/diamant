@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>DIAMANT</title>
+    <meta charset="utf-8">
+		<link rel="shortcut icon" href="src/diamant-app/resources/favicon.png" />
+    <link rel="manifest" href="/manifest.json">
+    <script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="src/diamant-app/diamant-app.html">
+		<style>
+			body
+			{
+				font-family: 'RobotoDraft', 'Roboto', sans-serif;
+				line-height:1.2;
+				vertical-align:middle;
+				color: black;
+				@apply(--watermark);
+				@apply(--layout-vertical);
+				@apply(--layout-fullbleed);
+				font-size: 1em;
+				padding: 0px!important;
+			}
+		</style>
+  </head>
+  <body>
+    <diamant-app></diamant-app>
+  </body>
+</html>

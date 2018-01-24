@@ -1,0 +1,696 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../../bower_components/responsive-table/responsive-table.html">
+<link rel="import" href="../../bower_components/zreptil-time-picker/zreptil-time-picker.html">
+<link rel="import" href="dlg-foodlist.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-flex-layout/iron-flex-layout.html"><link rel="prefetch" href="../../bower_components/paper-styles/default-theme.html"><link rel="prefetch" href="../../bower_components/paper-styles/color.html"><link rel="prefetch" href="../../bower_components/paper-styles/typography.html"><link rel="prefetch" href="../../bower_components/font-roboto/roboto.html"><link rel="prefetch" href="../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html"><link rel="prefetch" href="../../bower_components/iron-input/iron-input.html"><link rel="prefetch" href="../../bower_components/iron-a11y-announcer/iron-a11y-announcer.html"><link rel="prefetch" href="../../bower_components/iron-validatable-behavior/iron-validatable-behavior.html"><link rel="prefetch" href="../../bower_components/iron-meta/iron-meta.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-behavior.html"><link rel="prefetch" href="../../bower_components/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"><link rel="prefetch" href="../../bower_components/iron-behaviors/iron-control-state.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-char-counter.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-addon-behavior.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-error.html"><link rel="prefetch" href="../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html"><link rel="prefetch" href="../../bower_components/iron-menu-behavior/iron-menu-behavior.html"><link rel="prefetch" href="../../bower_components/iron-selector/iron-multi-selectable.html"><link rel="prefetch" href="../../bower_components/iron-selector/iron-selectable.html"><link rel="prefetch" href="../../bower_components/iron-selector/iron-selection.html"><link rel="prefetch" href="../../bower_components/paper-item/paper-item-behavior.html"><link rel="prefetch" href="../../bower_components/iron-behaviors/iron-button-state.html"><link rel="prefetch" href="../../bower_components/paper-item/paper-item-shared-styles.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-button-behavior.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-ripple-behavior.html"><link rel="prefetch" href="../../bower_components/paper-ripple/paper-ripple.html"><link rel="prefetch" href="../../bower_components/paper-material/paper-material-shared-styles.html"><link rel="prefetch" href="../../bower_components/paper-styles/shadow.html"><link rel="prefetch" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html"><link rel="prefetch" href="../../bower_components/iron-iconset-svg/iron-iconset-svg.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-inky-focus-behavior.html"><link rel="prefetch" href="../../bower_components/paper-menu-button/paper-menu-button.html"><link rel="prefetch" href="../../bower_components/iron-dropdown/iron-dropdown.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-overlay-behavior.html"><link rel="prefetch" href="../../bower_components/iron-fit-behavior/iron-fit-behavior.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-overlay-manager.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-overlay-backdrop.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-focusables-helper.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animatable-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/opaque-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animation-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/web-animations.html"><link rel="prefetch" href="../../bower_components/web-animations-js/web-animations-next-lite.min.js"><link rel="prefetch" href="../../bower_components/iron-dropdown/iron-dropdown-scroll-manager.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/fade-in-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/fade-out-animation.html"><link rel="prefetch" href="../../bower_components/paper-menu-button/paper-menu-button-animations.html"><link rel="prefetch" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu-icons.html"><link rel="prefetch" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu-shared-styles.html"><link rel="prefetch" href="../../bower_components/iron-range-behavior/iron-range-behavior.html"><link rel="prefetch" href="../../bower_components/paper-progress/paper-progress.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-checked-element-behavior.html"><link rel="prefetch" href="../../bower_components/iron-checked-element-behavior/iron-checked-element-behavior.html"><link rel="prefetch" href="../../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animated-pages.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animatable.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animations.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/cascaded-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/hero-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-shared-element-animation-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/ripple-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/reverse-ripple-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/scale-down-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/scale-up-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-left-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-right-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-top-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-bottom-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-left-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-right-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-up-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-down-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/transform-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html"></head><body><dom-module id="input-label">
+  <template>
+    <style is="custom-style">:host{font-size:0.75em;color:#737373;display:flex;flex-direction:row;}div:not(:empty){font-weight:bold;padding-left:0.3em;padding-right:0.3em;}</style>
+    {{prefix}}<div>{{h}}</div>{{hu}}<div>{{m}}</div>{{mu}}
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "input-label"
+   ,properties:
+    {
+     minutes: {type:Number,value:0,observer:"valueChanged"}
+    }
+   ,ready: function()
+    {
+      this.valueChanged();
+    }
+   ,valueChanged: function()
+    {
+      this.prefix = "Keine Aufteilung";
+      this.h = "";
+      this.m = "";
+      this.hu = "";
+      this.mu = "";
+      if(this.minutes == 0)
+        return;
+
+      this.prefix = "Rest über";
+      if(this.minutes < 60)
+      {
+        this.m = " " + this.minutes + " ";
+        this.mu = "Minuten";
+        return;
+      }
+      
+      this.h = " " + Math.floor(this.minutes/60) + " ";
+      this.m = " " + this.minutes%60 + " ";
+      this.hu = "Stunde" + (this.h==1?"":"n");
+      if(this.m == 0)
+        this.m = "";
+      else
+        this.mu = "Minuten";
+      this.basalChanged();
+    }
+  });
+</script>
+<dom-module id="dlg-input">
+  <template>
+    <style include="responsive-table-style"></style>
+    <style is="custom-style">:host{@apply (--layout-flex);font-size:100%;padding:0em 0.5em;}paper-dropdown-menu{--paper-input-container-input:{font-size:100%;};--paper-input-container-label:{font-size:75%;};}paper-item{font-size:100%;}paper-input,paper-textarea{--paper-input-container-input:{font-size:100%;};--paper-input-container-label:{font-size:75%;};padding-right:1em;}div[prefix],div[suffix]{font-size:75%;}div[suffix]{padding-left:0.5em;}paper-input,paper-textarea{padding-right:1em;}paper-button{@apply (--diamant-button);}#date,#typ,#health{padding-right:1em;}#typ{@apply (--layout-flex-1);}#insulinfrom{@apply (--layout-flex-1);}#gluc,#gluclibre{@apply (--layout-flex-1);padding-right:0;}#bolusbe paper-input paper-input-container input{text-align:right;background:red;}#bolusbe,#bolusadjust{}#typ{}div[suffix]{font-weight:normal;color:var(--light-theme-secondary-color);}paper-input{--paper-input-container-input:{font-weight:900;};}paper-input.right{--paper-input-container-input:{text-align:right;};}paper-dropdown-menu{--paper-input-container-input:{font-size:100%;font-weight:bold;};}label{font-size:0.75em;color:#737373;display:flex;flex-direction:row;}label div{font-weight:bold;padding-left:0.75em;padding-right:0.75em;}paper-slider{width:100%;@apply (--layout-self-stretch);}#healthlist{width:7.0em;}paper-checkbox{padding-right:1.0em;}.vert{@apply (--layout-vertical);}.horz{@apply (--layout-horizontal);@apply (--layout-center);}#controls paper-button{@apply (--layout-center);@apply (--layout-center-justified);}paper-button#save{@apply (--layout-flex-5);}paper-button#delete{background:var(--paper-grey-500);@apply (--layout-flex-1);}paper-button#cancel{@apply (--layout-flex-5);background:var(--paper-red-200);--paper-button-ink-color:var(--paper-red-500);}.foodtitle{@apply (--layout);justify-content:space-between;}.foodtitle>div{font-size:1.2em;font-weight:600;margin-top:2em;margin-bottom:1em;}.foodtitle paper-fab{top:0.5em;right:0.3em;width:2em;height:2em;--paper-fab-iron-icon:{height:1.5em;width:1.5em;};}paper-icon-button[icon="delete"]{@apply (--layout-end);}.responsive-table tbody th[scope="row"] div,
+    .responsive-table thead th[scope="col"] div{display:flex;flex-direction:row;align-items:center;justify-content:space-between;}paper-dialog{--paper-dialog:{*{margin-top:0;}};}#pnlFoot{padding:1em;display:flex;justify-content:space-between;}paper-item[value="+"]{background:orchid;}paper-item[value="++"]{background:mediumorchid;}paper-item[value="+++"]{background:darkorchid;}#title{@apply (--layout-horizontal);align-items:center;padding:1.5em;justify-content:space-between;}#title>div{font-size:2em;font-weight:600;white-space:nowrap;align-items:center;@apply (--layout-horizontal);}@media (max-width:40em){#title>div{font-size:1.5em;}}#btnPage,#btnFood{--paper-fab-iron-icon:{height:2em;width:2em;};min-height:3em;min-width:3em;}#btnPage{font-size:0.8em;}paper-dialog-scrollable{--paper-dialog-scrollable:{max-width:none!important;};}#iconGluc{color:red;padding-top:1em;padding-right:1em;}#iconLibre{color:#e0e000;padding-top:1em;}#btnLibreArrow{width:30px;height:30px;padding:6px;margin-left:1em;margin-top:1em;color:#ffffff;align-self:center;--paper-fab:{width:24px;height:24px;};}@media (max-width:40em){}.cbx{margin-top:1em;margin-left:1em;}.cbx div{align-items:flex-start;font-size:0.6em;}paper-fab#today{margin-right:0.5em;}.second{--paper-fab-background:var(--color-fab-second-back);--paper-fab-iron-icon:{color:var(--color-fab-second-front);};}#iconSensor{_color:red;}#bolustime{--paper-slider-pin:{top:26px;margin-left:-100px;border-radius:50% 50% 50% 50%;};--paper-slider-pin-text:{top:23px;margin-left:-103px;};}#basal{--paper-slider-pin:{top:-40px;border-radius:50% 50% 50% 50%;};--paper-slider-pin-text:{top:-43px;};}#bolustime>paper-item,
+    #basal paper-item{white-space:nowrap;}</style>
+    <paper-dialog id="dlg" on-iron-overlay-closed="dlgClosed" modal="" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+      <div id="title">
+        <div>
+          <paper-fab id="today" class="second" hidden="" on-tap="tapToday" mini="" icon="today"></paper-fab>
+          {{titleDate}},
+          <zreptil-time-picker id="time" value="{{titleTime}}"></zreptil-time-picker>
+        </div>
+        <paper-icon-button dialog-dismiss="" icon="cancel"></paper-icon-button>
+      </div>
+      <paper-dialog-scrollable>
+        <iron-pages id="pages" selected="0">
+          <div class="vert">
+            <table>
+              <tbody><tr>
+                <td>
+                  <div class="horz">
+                    <paper-input type="number" class="right" step="{{glucInfo.step}}" min="0" maxlength="3" size="3" prevent-invalid-input="true" allowed-pattern="[0-9.,]" id="gluc" label="Blutzucker" value="{{gluc}}"><div suffix="">{{glucInfo.unit}}</div></paper-input>
+                    <iron-icon id="iconGluc" icon="myicons:drop"></iron-icon>
+                  </div>
+                </td>
+                <td>
+                  <div class="horz">
+                    <paper-input type="number" class="right" step="{{glucInfo.step}}" min="0" maxlength="3" size="3" prevent-invalid-input="true" allowed-pattern="[0-9.,]" id="gluclibre" label="FreeStyle Libre" value="{{gluclibre}}"><div suffix="">{{glucInfo.unit}}</div></paper-input>
+                    <iron-icon id="iconLibre" icon="myicons:drop"></iron-icon>
+                  </div>
+                </td>
+                <td>
+                  <div class="vert">
+                    <paper-fab id="btnLibreArrow" on-tap="tapLibreArrow" mini="" icon="myicons:arrow-{{arrowlibre}}" style="background:{{arrowcolor}};"></paper-fab>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <paper-input type="number" class="right" min="0" maxlength="3" size="3" step="0.1" prevent-invalid-input="true" allowed-pattern="[0-9.,]" id="bolusbe" label="BE-Bolus" value="{{data.bolusbe}}" on-change="bolusChanged"><div suffix="">IE</div></paper-input>
+                </td>
+                <td>
+                  <div class="horz">
+                    <paper-input type="number" class="right" maxlength="3" size="3" step="0.1" prevent-invalid-input="true" allowed-pattern="[0-9.,-]" id="bolusadjust" label="Korrektur-Bolus" value="{{data.bolusadjust}}" on-change="bolusChanged"><div suffix="">IE</div></paper-input>
+                    <paper-fab id="btnFood" on-tap="tapFood" mini="" icon="maps:local-dining"></paper-fab>
+                  </div>
+                </td>
+                <td>
+                  <div class="vert cbx">
+                    <div>Neuer Katheter</div>
+                    <paper-checkbox id="katheter" on-tap="tapKatheter" checked="{{data.katheter}}"><iron-icon id="iconKatheter" icon="myicons:katheter"></iron-icon></paper-checkbox>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <paper-input type="number" class="right" min="0" maxlength="3" size="3" step="0.1" prevent-invalid-input="true" allowed-pattern="[0-9.,]" id="bolusnow" label="Bolus Sofort" value="{{data.bolusnow}}" on-change="bolusNowChanged"><div suffix="">IE</div></paper-input>
+                </td>
+                <td>
+                  <paper-dropdown-menu id="bolustimeLabel" label="Keine Aufteilung">
+                    <paper-listbox id="bolustime" class="dropdown-content" attr-for-selected="value" selected="{{bolustime}}">
+                      <template is="dom-repeat" items="{{bolustimeList}}">
+                        <paper-item value="{{item.id}}">{{item.text}}</paper-item>
+                      </template>
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                </td>
+                <td>
+                  <div class="vert cbx">
+                    <div>Neuer Sensor</div>
+                    <paper-checkbox id="sensor" checked="{{data.sensor}}"><iron-icon id="iconSensor" icon="myicons:sensor"></iron-icon></paper-checkbox>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <paper-dropdown-menu id="typ" label="Art">
+                    <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{data.typ}}">
+                      <paper-item value="none"></paper-item>
+                      <paper-item value="main">Hauptmahlzeit</paper-item>
+                      <paper-item value="small">Zwischenmahlzeit</paper-item>
+                      <paper-item value="adjust">Ausgleichsmahlzeit</paper-item>
+                      <paper-item value="after">Nach Mahlzeit</paper-item>
+                      <paper-item value="brtest">Basalraten-Test</paper-item>
+                      <paper-item value="betest">BE-Faktoren-Test</paper-item>
+                      <paper-item value="adjusttest">Korrekturfaktoren-Test</paper-item>
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                </td>
+                <td>
+                  <div class="horz">
+                    <paper-dropdown-menu id="insulinfrom" always-float-label="true" label="Insulinabgabe über">
+                      <paper-listbox class="dropdown-content" selected="{{insulinfrom}}">
+                        <paper-item>Pumpe</paper-item>
+                        <paper-item>Pen</paper-item>
+                      </paper-listbox>
+                    </paper-dropdown-menu>
+                  </div>
+                </td>
+                <td>
+                  <div class="vert cbx">
+                    <div>Neue Ampulle</div>
+                    <paper-checkbox id="ampulle" checked="{{data.ampulle}}"><iron-icon id="iconAmpulle" icon="myicons:ampulle"></iron-icon></paper-checkbox>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div class="horz center-justified">
+                    <paper-dropdown-menu id="basal" label="Temporäre Basalrate">
+                      <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{basal}}">
+                        <template is="dom-repeat" items="{{basalList}}">
+                          <paper-item value="{{item.id}}">{{item.text}}</paper-item>
+                        </template>
+                      </paper-listbox>
+                    </paper-dropdown-menu>
+                  </div>
+                </td>
+                <td></td>
+              </tr>
+            </tbody></table>
+            <div class="horz center-justify">
+              <paper-dropdown-menu id="health" label="Gesundheit">
+                <paper-listbox id="healthlist" iron-select="healthChanged" class="dropdown-content" attr-for-selected="value" selected="{{data.health}}">
+                  <paper-item value="">Nüchtern</paper-item>
+                  <paper-item value="sport1">Sport 1</paper-item>
+                  <paper-item value="sport2">Sport 2</paper-item>
+                  <paper-item value="stress">Stress</paper-item>
+                  <paper-item value="krankheit">Krankheit</paper-item>
+                  <paper-item value="periode">Periode</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input type="number" class="right" min="-100" max="100" maxlength="3" size="3" prevent-invalid-input="true" allowed-pattern="[0-9]" id="healthadjust" label="Korrektur" value="{{data.healthadjust}}"><div suffix="">%</div></paper-input>
+              <paper-dropdown-menu label="Ketone">
+                <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{data.ketone}}">
+                  <paper-item value=""></paper-item>
+                  <paper-item value="-">-</paper-item>
+                  <paper-item value="+">+</paper-item>
+                  <paper-item value="++">++</paper-item>
+                  <paper-item value="+++">+++</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+            </div>
+            <paper-textarea label="Info" id="info" value="{{data.info}}"></paper-textarea>
+          </div>
+        </iron-pages>
+      </paper-dialog-scrollable>
+      <div id="pnlFoot" class="horz">
+        <div>
+          <paper-fab id="btnPage" on-tap="tapPage" mini="" icon="description"></paper-fab>
+        </div>
+        <div class="horz">
+          <paper-icon-button id="btnDelete" on-tap="deleteData" icon="delete"></paper-icon-button>
+          <paper-icon-button dialog-confirm="" icon="save"></paper-icon-button>
+        </div>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "dlg-input",
+    properties:
+    {
+      healthlist: {type: Object, value: {"0":undefined,"1":"sport1","2":"sport2","3":"stress",
+                                         "4":"krankheit","5":"periode"}},
+      healthidx: {type: Object, value: {undefined:"0","sport1":"1","sport2":"2","stress":"3",
+                                        "krankheit":"4","periode":"5"}},
+      date: {type:String,value:""},
+      dateSuffix: {type:String},
+      insulinfrom: {type:String,value:"0"},
+//      health: {type: String, observer: "healthChanged", value: "0"},
+//      basal: {type: Number, value: 100},
+      bolustime: {type:Number,value:0,observer:"bolustimeChanged"},
+      basal: {type:Number,value:100,observer:"basalChanged"},
+      gluc: {type:Number,value:0},
+      gluclibre: {type:Number,value:0},
+      arrowlibre: {type:String,value:"equal"},
+      bolustimeList: {type:Array,value:[]},
+      basalList: {type:Array,value:[]},
+      arrowcolor: {type:String, value:"#008000"},
+      glucInfo: {type:Object,value:{step:1,unit:"mg/dl"}},
+      dataFood: {type:Array,value:[]},
+      foodIcon: {type:String,value:"add"},
+      titleTime: {type:String,value:""},
+      titleDate: {type:String,value:""},
+      data: {type:Object,value: {}}
+    },
+    bolustimeitem: function(minutes)
+    {
+      var t = "";
+      var h = "";
+      var m = "";
+      var hu = "";
+      var mu = "";
+      if(minutes !== undefined && minutes > 0)
+      {
+        if(minutes < 60)
+        {
+          m = minutes + " ";
+          mu = "Minuten";
+        }
+        else
+        {
+          h = Math.floor(minutes/60) + " ";
+          m = " " + minutes%60 + " ";
+          hu = "Stunde" + (h==1?"":"n");
+          if(m == 0)
+            m = "";
+          else
+            mu = "Minuten";
+        }
+        t = h + " " + hu + " " + m + " " + mu;
+      }
+      return {id:minutes,text:t};
+    },
+    basalitem: function(percent)
+    {
+      var t = percent + " %";
+      switch(percent)
+      {
+        case 0:
+          t = "";
+          break;
+        case 100:
+          t = "Keine";
+          break;
+      }
+      return {id:percent,text:t};
+    },
+    show: function(time)
+    {
+      var list = [];
+      for(var i=0; i<300; i+=15)
+        list.push(this.bolustimeitem(i));
+      this.bolustimeList = list;
+      this.notifyPath("bolustimeList",this.bolustimeList);
+      
+      var list = [];
+      for(var i=0; i<=200; i+=10)
+        list.push(this.basalitem(i));
+      this.basalList = list;
+      this.notifyPath("basalList",this.basalList);
+      
+      this.$.dlg.entryAnimation = "scale-up-animation";
+      this.$.dlg.exitAnimation = "scale-down-animation";
+      this.isAdd = false;
+      if(!time)
+      {
+        this.$.btnDelete.hidden = true;
+        var date = new Date();
+        var h = date.getHours() + "";
+        var m = date.getMinutes() + "";
+        if(h.length < 2) h = "0" + h;
+        if(m.length < 2) m = "0" + m;
+        _.dateData.time = h+m;
+        this.data = {time: h+m};
+        this.isAdd = true;
+      }
+      else
+      {
+        this.$.btnDelete.hidden = false;
+        this.data = _.driveData.cloneOf(time);
+        _.dateData.time = this.data.time;
+      }
+      this.dataLoadedAndShow();
+      this.$.pages.selected = 0;
+      this.updateControls();
+      
+      this.$.today.hidden = !this.isAdd || _.dateData.isToday();
+      this.tapKatheter();
+      if(this.isAdd && _.dateData.isToday())
+      {
+        var calc = _.calcProgress();
+        var minWarn = 80;
+        if(calc.isToday && calc.katProgress > minWarn)
+        {
+          var diff = Math.min(1,(calc.katProgress - minWarn)/(100 - minWarn));
+          this.animKatheter = this.$.iconKatheter.animate
+          (
+            [
+             {opacity: 1-(0.5*diff), transform: "scale(" + (1-(0.5*diff)) + ")"},
+             {opacity: 1.0, transform: "scale(" + (1+(0.5*diff)) + ")"}
+            ]
+           ,{
+             direction: "alternate",
+             duration: 500,
+             iterations: Infinity
+            }
+          );
+        }
+      }
+      
+      setTimeout(function(){this.$.gluc.inputElement.focus();}.bind(this),750);
+    },
+    tapKatheter: function()
+    {
+      if(this.animKatheter)
+      {
+        this.animKatheter.cancel();
+        this.animKatheter = undefined;
+      }
+    },
+    tapLibreArrow: function()
+    {
+      switch(this.arrowlibre)
+      {
+        case "fastup":  this.arrowlibre = "up";break;
+        case "up":  this.arrowlibre = "equal";break;
+        case "equal":  this.arrowlibre = "down";break;
+        case "down":  this.arrowlibre = "fastdown";break;
+        case "fastdown":  this.arrowlibre = "";break;
+        case "":  this.arrowlibre = "fastup";break;
+      }
+      this.setArrowColor();
+    },
+    setArrowColor: function()
+    {
+      switch(this.arrowlibre)
+      {
+        case "fastup":  this.arrowcolor = "#ff4040";break;
+        case "up":  this.arrowcolor = "#80c080";break;
+        case "equal":  this.arrowcolor = "#40c040";break;
+        case "down":  this.arrowcolor = "#80c080";break;
+        case "fastdown":  this.arrowcolor = "#ff4040";break;
+        case "":  this.arrowcolor = "#e0e000";break;
+      }
+    },
+    tapToday: function()
+    {
+      this.$.dlg.close();
+      _.dateData = _.getDateData(new Date());
+      _.driveData.requestData(_.dateData.dataId,"json",this,this.todayLoaded);
+    },
+    todayLoaded: function(self,status,data)
+    {
+      _.monthLoaded(_,status,data);
+      _.showDlgInput();
+    },
+    updateControls: function()
+    {
+      if(!this.data.katheter)
+        this.data.katheter = false;
+      if(!this.data.sensor)
+        this.data.sensor = false;
+      if(!this.data.ampulle)
+        this.data.ampulle = false;
+        
+      switch(Number(this.$.pages.selected))
+      {
+        case 0:
+          this.$.btnPage.hidden = true;
+          this.$.btnFood.label = _.calcBEValue(this.dataFood,_.foodList);
+          this.$.btnFood.icon = this.$.btnFood.label==""?"maps:local-dining":"";
+          if(this.$.btnFood.label!="")
+          {
+            switch(this.data.typ)
+            {
+              case "main":
+              case "small":
+              case "adjust":
+              case "betest":
+                break;
+              default:
+                this.data.typ = "main";
+                break;
+            }
+          }
+          this.notifyPath("data.typ",this.data.typ);
+          break;
+        case 1:
+          if(this.dataFood.length == 0)
+          {
+            this.$.pages.selected = 0;
+            this.updateControls();
+            return;
+          }
+          this.$.btnPage.hidden = false;
+          break;
+      }
+    },
+    dataLoadedAndShow: function()
+    {
+      this.dataLoaded();
+      this.$.title.style.background = _.glucColor(this.data.gluc,_.dateData.idDate,this.data.time,250).color;
+      this.$.dlg.open();
+    },
+    dataLoaded: function()
+    {
+      this.$.time.time = _.dateData.time;
+      if(!this.data.basal)
+        this.data.basal = 100;
+      if(!this.data.bolustime)
+        this.data.bolustime = 0;
+      this.calcBolusNow = (this.data.bolusnow == undefined || this.data.bolusnow == 0);
+      this.gluc = _.glucFromData(this.data.gluc);
+      this.gluclibre = _.glucFromData(this.data.gluclibre);
+      this.arrowlibre = this.data.arrowlibre;
+      this.bolustime = this.data.bolustime;
+      this.basal = this.data.basal;
+      this.setArrowColor();
+      if(!this.arrowlibre)
+        this.arrowlibre = "equal";
+      this.glucInfo = _.getGlucInfo();
+      this.notifyPath("data.basal",this.data.basal);
+      this.notifyPath("data.health",this.data.health);
+      this.notifyPath("bolustime",this.bolustime);
+      this.notifyPath("basal",this.basal);
+
+      // Nahrungsmittelliste erstellen
+      this.dataFood = [];
+      if(this.data.food)
+      {
+        for(var i=0; i<_.foodList.length; i++)
+        {
+          var fl = _.foodList[i];
+          for(var j=0; j<this.data.food.length; j++)
+          {
+            var fd = this.data.food[j];
+            if(fd.id == fl.id)
+            {
+              var item = {id:fd.id,name:fl.name,menge:fd.menge,einheit:fl.einheit,be:_.fmtNumber(fd.menge * fl.kh / fl.menge / 12.0,2) + " BE"};
+              this.push("dataFood", item);
+              break;
+            }
+          }
+        }
+      }
+      this.foodIcon = this.data.food && this.data.food.length > 0 ? "image:edit" : "add";
+      this.titleDate = _.fmtFullDate(_.dateData.idDate,"W - D");
+      this.titleTime = _.fmtTime(_.dateData.time);
+    },
+    calcBE: function(food)
+    {
+      if(!food || !_.foodList)
+        return;
+      var ret = _.calcBEValue(food,_.foodList);
+      if(ret == 0.0)
+        ret = "";
+      else if(false)
+        ret += " BE";
+      return ret;
+    },
+    bolusNowChanged: function()
+    {
+      var bolus = (Number(this.data.bolusbe?this.data.bolusbe:0) 
+                  +Number(this.data.bolusadjust?this.data.bolusadjust:0));
+      var v = Number(this.data.bolusnow);
+      if(bolus > 0 && v < bolus && _.storage)
+      {
+        _.storage.setItem("nowfactor",v / bolus);
+      }
+    },
+    bolusChanged: function()
+    {
+      if(this.data != undefined && _.storage && this.calcBolusNow)
+      {
+        if(_.storage.getItem("nowfactor") == null)
+          _.storage.setItem("nowfactor","0.5");
+        var f = Number(_.storage.getItem("nowfactor"));
+        var v = f*(Number(this.data.bolusbe?this.data.bolusbe:0) 
+                  +Number(this.data.bolusadjust?this.data.bolusadjust:0));
+        if(!this.bolustime)
+          v = undefined;
+        this.set("data.bolusnow",Number(_.fmtNumber(v,1)));
+      }
+    },
+    bolustimeChanged: function()
+    {
+      this.$.bolustimeLabel.label = "Keine Aufteilung";
+      if(this.bolustime !== undefined && Number(this.bolustime) > 0)
+        this.$.bolustimeLabel.label = "Rest über";
+      this.basalChanged();
+      this.bolusChanged();
+    },
+    healthChanged: function()
+    {
+      this.$.healthadjust.value = _.config["evt" + this.healthlist[this.health]];
+      this.$.healthadjust.disabled = this.data.health > 0;
+    },
+    basalChanged: function()
+    {
+      this.$.basal.label = "Temporäre Basalrate";
+      if(this.basal !== undefined)
+      {
+        switch(this.basal)
+        {
+          case 0:
+            this.$.basal.label = "Temporär ausgeschaltet";
+            break;
+        }
+      }      
+    },
+    hasAmpulle: function()
+    {
+      return this.data && (this.data.ampulle > 0);
+    },
+/*    
+    dataChanged: function()
+    {
+      this.$.time.time = _.dateData.time;
+      if(!this.data.insulinfrom || this.data.insulinfrom == "pumpe")
+        this.insulinfrom = "0";
+      else if(this.data.insulinfrom == "pen")
+        this.insulinfrom = "1";
+      this.basalChanged();
+      this.health = this.healthidx[this.data.health];
+      this.foodIcon = this.data && this.data.food && this.data.food.length > 0 ? "image:edit" : "add";
+      this.healthChanged();
+    },
+*/
+    deleteData: function(e)
+    {
+      _.confirm("Soll der Datensatz gelöscht werden?",this.doDeleteData.bind(this));
+    },
+    doDeleteData: function()
+    {
+      this.fire("delete", {data:this.data});
+      this.$.dlg.close();
+    },
+    deleteFood: function(e)
+    {
+      for(var i=0; i<this.data.food.length; i++)
+      {
+        if(this.data.food[i].id == e.currentTarget.itemId)
+        {
+          this.data.food.splice(i,1);
+          i--;
+        }
+      }
+      this.dataLoaded(this);
+    },
+    saveMarkedFood: function(data)
+    {
+      this.storeData();
+      this.data.food = data;
+      this.dataLoaded();
+      this.$.dlg.opened = true;
+      this.updateControls();
+    },
+    storeData: function()
+    {
+      if(this.data.basal == 100)
+        delete this.data.basal;
+      this.data.bolustime = this.bolustime;
+      if(this.data.bolustime == 0)
+      {
+        delete this.data.bolustime;
+        delete this.data.bolusnow;
+      }
+      this.data.basal = this.basal;
+      if(this.data.basal == 100)
+        delete this.data.basal;
+      this.data.gluc = _.glucToData(this.gluc);
+      this.data.gluclibre = _.glucToData(this.gluclibre);
+      this.data.arrowlibre = this.arrowlibre;
+      if(this.data.gluc == 0)
+      {
+        delete this.data.gluc;
+        if(this.data.typ == "brtest" || this.data.typ == "betest" || this.data.typ == "adjusttest")
+        {
+          delete this.data.typ;
+          _.msg("Ohne BZ-Wert kann das kein Test sein.", 3000);
+        }
+      }
+      if(this.data.gluclibre == 0)
+        delete this.data.gluclibre;
+      if(this.data.bolustime == 0)
+        delete this.data.bolustime;
+      if(this.data.basal == 100)
+        delete this.data.basal;
+      this.data.time = this.$.time.time;
+      if(this.data.food && this.data.food.length > 0)
+      {
+        for(var i=0; i<this.data.food.length; i++)
+          delete this.data.food[i].food;
+      }
+      if(this.data.food && this.data.food.length == 0)
+        delete this.data.food;
+    },
+    save: function()
+    {
+      this.storeData();
+      this.fire("save", {data:this.data});
+      this.$.dlg.close();
+    },
+    dlgClosed: function(e,closingReason)
+    {
+      if(e)
+      {
+        e.stopImmediatePropagation();
+        if(e.srcElement != this.$.dlg)
+        {
+          this.$.dlg.opened = true;
+          this.updateControls();
+          return;
+        }
+      }
+
+      if(closingReason.confirmed)
+        this.save();
+      else
+        this.fire("cancel");
+    },
+    onFoodClosed: function(e)
+    {
+      this.$.dlg.entryAnimation = undefined;
+      this.$.dlg.opened = true;
+      this.unlisten(_.$.dlgFood, "closed", "onFoodClosed");
+    },
+    tapFood: function()
+    {
+      var tmp = this.$.dlg.exitAnimation;
+      this.$.dlg.exitAnimation = undefined;
+      this.$.dlg.opened = false;
+      _.$.dlgFood.editable = false;
+      _.$.dlgFood.title = "Nahrungsmittel Auswahl";
+      this.listen(_.$.dlgFood, "closed", "onFoodClosed");
+      _.$.dlgFood.show(this.data.food);
+      this.$.dlg.exitAnimation = tmp;
+    }
+  });
+</script></body></html>

@@ -1,0 +1,327 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<dom-module id="print-INPUT-basalrate">
+  <template>
+    <style is="custom-style">
+    :host
+    {
+      display: none;
+    }
+    </style>
+    <google-chart id="chartbasal" hidden type="column"></google-chart>
+    <img id="input" src="resources/INPUT.png">
+    <img id="katheter" src="resources/katheter.png">
+    <img id="diamant" src="resources/background.png">
+    <img id="logomod2" src="resources/INPUTmodul2.png">
+    <img id="logomod3" src="resources/INPUTmodul3.png">
+  </template>
+</dom-module>
+<script>
+  var lineWidth;
+  var colText;
+  var colLine;
+  Polymer(
+  {
+    is: "print-INPUT-basalrate",
+    getForm: function(vars)
+    {
+      var config = vars.config;
+      lineWidth = cm(0.03);
+      colText = "#e74c51";
+      colLine = "#606060";
+      this.vars = vars;
+      var ret = 
+      {
+        pageSize: "a4"
+       ,pageOrientation: "landscape"
+       ,pageMargins: [cm(0),cm(0),cm(0),cm(0)]
+       ,content: []
+       ,defaultStyle:
+        {
+          fontSize: 8
+        }
+       ,images: 
+        {
+          INPUT: _.getBase64Image(this.$.input)
+         ,katheter: _.getBase64Image(this.$.katheter)
+         ,DIAMANT: _.getBase64Image(this.$.diamant)
+         ,logomod2: _.getBase64Image(this.$.logomod2)
+         ,logomod3: _.getBase64Image(this.$.logomod3)
+        }
+      };
+      
+      var calc = {firstGluc:undefined,firstTime:undefined,lastTime:undefined,bolusTime:undefined,glucMax:0,brBolusTime:undefined};
+      for(var i=0; i<vars.items.length; i++)
+      {
+        calc = this.calcDay(vars.items[i],calc);
+        if(i < vars.items.length - 1)
+          calc.nextBRTimes = vars.items[i+1].brtimes;
+        else
+          calc.nextBRTimes = vars.items[i].brtimes;
+        var page = this.getPage(vars.items[i],calc);
+        for(var j=0; j<page.length; j++)
+          ret.content.push(page[j]);
+          
+        ret.content.push(this.getFooter(i<vars.items.length-1));
+        calc.firstTime -= 24*60;
+        calc.bolusTime -= 24*60;
+        if(calc.brBoluTime)
+          calc.brBolusTime -= 24*60;
+      }
+      return ret;
+    },
+    calcDay: function(day,calc)
+    {
+      for(var i=0; i<day.times.length; i++)
+      {
+        if(day.times[i].typ=="brtest" && day.times[i].gluc)
+        {
+          var gluc = Number(day.times[i].gluc);
+          if(!calc.firstGluc)
+          {
+            var time = day.times[i].time;
+            time = Math.floor(time/100)*60+(time%100);
+            if(!calc.bolusTime || time > calc.bolusTime + 4*60)
+            {
+              calc.firstGluc = gluc;
+              calc.firstTime = Number(day.times[i].time);
+              calc.firstTime = Math.floor(calc.firstTime/100)*60+(calc.firstTime%100);
+            }
+          }
+          if(gluc>calc.glucMax)
+            calc.glucMax = gluc;
+            
+          if(!calc.brBolusTime)
+          {
+            calc.lastTime = Number(day.times[i].time);
+            calc.lastTime = Math.floor(calc.lastTime/100)*60+(calc.lastTime%100);
+          }
+          if(day.times[i].bolusbe || day.times[i].bolusadjust)
+          {
+            calc.brBolusTime = day.times[i].time;
+            calc.brBolusTime = Math.floor(calc.brBolusTime/100)*60+(calc.brBolusTime%100);
+          }
+        }
+        if((day.times[i].bolusbe || day.times[i].bolusadjust) && !calc.firstTime)
+        {
+          calc.bolusTime = Number(day.times[i].time);
+          calc.bolusTime = Math.floor(calc.bolusTime/100)*60+(calc.bolusTime%100);
+        }
+      }
+      return calc;      
+    },
+    getHeader: function()
+    {
+      var ret = { canvas:
+                  [
+                    {type: "rect",x:cm(0.0),y:0,w:cm(2.2),h:cm(0.55),color:"#d69a2e"}
+                   ,{type: "rect",x:cm(2.2),y:0,w:cm(2.3),h:cm(0.55),color:"#2e4736"}
+                   ,{type: "rect",x:cm(4.5),y:0,w:cm(2.3),h:cm(0.55),color:"#662c40"}
+                   ,{type: "rect",x:cm(6.8),y:0,w:cm(2.25),h:cm(0.55),color:"#343a49"}
+                   ,{type: "rect",x:cm(9.05),y:0,w:cm(2.3),h:cm(0.55),color:"#528c8e"}
+                   ,{type: "rect",x:cm(11.35),y:0,w:cm(2.25),h:cm(0.55),color:"#362946"}
+                   ,{type: "rect",x:cm(13.6),y:0,w:cm(2.3),h:cm(0.55),color:"#6b8133"}
+                   ,{type: "rect",x:cm(15.9),y:0,w:cm(2.25),h:cm(0.55),color:"#2a3b56"}
+                   ,{type: "rect",x:cm(18.15),y:0,w:cm(2.3),h:cm(0.55),color:"#862d2e"}
+                   ,{type: "rect",x:cm(20.45),y:0,w:cm(2.3),h:cm(0.55),color:"#607f6e"}
+                   ,{type: "rect",x:cm(22.75),y:0,w:cm(2.3),h:cm(0.55),color:"#273d3f"}
+                   ,{type: "rect",x:cm(25.05),y:0,w:cm(2.3),h:cm(0.55),color:"#a5916d"}
+                  ]
+                };
+      return ret;
+    },
+    getFooter: function(pageBreak)
+    {
+      var ret = 
+      {stack:
+       [
+        {absolutePosition:{x:cm(2.0),y:cm(18.0)},image:"DIAMANT",height:cm(2.0),width:cm(2.0)}
+       ,{absolutePosition:{x:cm(2.25),y:cm(18.5)},text:"DIAMANT",fontSize: 10,color: "#00f",bold: true}
+       ,{absolutePosition:{x:cm(23.4),y:cm(17.9)},image:"INPUT",width:cm(4.05)}
+       ,{absolutePosition:{x:cm(14.85),y:cm(20.1)},canvas: [{ type: "line", x1: cm(0), y1: cm(0), x2: cm(0), y2: cm(0.5), lineWidth: cm(0.005), color: "#444" }]}
+       ]
+      };
+      
+      if(pageBreak)
+        ret.pageBreak = "after";
+        
+      return ret;
+    },
+    getPage: function(day,calc)
+    {
+      if(!calc.firstGluc && this.vars.type=="inputBRTest")
+        return [];
+        
+      var brMax = 0;
+      for(var i=0; i<day.brtimes.length; i++)
+      {
+        if(day.brtimes[i] > brMax)
+          brMax = day.brtimes[i];
+      }
+      
+      var lowLimit = calc.firstGluc - 30;
+      var highLimit = calc.firstGluc + 30;
+      
+      var gridHeight = 9.45;
+      var gridWidth = 23.25;
+      var gridLines = Math.floor((this.vars.type=="inputBRTest"?Math.max(brMax*10,calc.glucMax/10):brMax*10)+1);
+      var lineHeight = gridHeight / gridLines;
+      var colWidth = gridWidth / 25;
+      
+      var lw = cm(0.03);
+      var lc = "#a0a0a0";
+      var xo = 3.35;
+      var yo = 3.9;
+      var vertLines = {absolutePosition:{x:cm(xo),y:cm(yo-0.2)},canvas:[]};
+      var horzLines = {absolutePosition:{x:cm(xo-0.2),y:cm(yo)},canvas:[]};
+      var horzLegend = {stack:[]};
+      for(var i=0; i<25; i++)
+      {
+        vertLines.canvas.push({type:"line",x1:cm(i*colWidth),y1:0
+                                          ,x2:cm(i*colWidth),y2:cm(lineHeight*gridLines+0.4)
+                                          ,lineWidth:lw,lineColor:lc});
+        if(i<24)
+        {
+          vertLines.canvas.push({type:"line",x1:cm((i+0.5)*colWidth),y1:cm(lineHeight*gridLines+0.2)
+                                            ,x2:cm((i+0.5)*colWidth),y2:cm(lineHeight*gridLines+0.3)
+                                            ,lineWidth:lw,lineColor:lc});
+          horzLegend.stack.push({absolutePosition:{x:cm(xo+i*colWidth),y:cm(yo+gridLines*lineHeight+0.3)},text:_.fmtNumber(i,0)});
+        }
+      }
+      var vertLegend = {stack:[]};
+      for(var i=0; i<=gridLines; i++)
+      {
+        horzLines.canvas.push({type:"line",x1:0,                  y1:cm((gridLines-i)*lineHeight)-lw/2
+                                          ,x2:cm(24*colWidth+0.4),y2:cm((gridLines-i)*lineHeight)-lw/2
+                                          ,lineWidth:lw,lineColor:lc});
+        vertLegend.stack.push({absolutePosition:{x:cm(xo-0.7),y:cm(yo+(gridLines-i)*lineHeight-0.15)},text:_.fmtNumber(i/10,1)});
+        if(this.vars.type=="inputBRTest")
+          vertLegend.stack.push({absolutePosition:{x:cm(xo+24*colWidth+0.3),y:cm(yo+(gridLines-i)*lineHeight-0.15)},text:i==0?"0":_.glucFromData(i*10)});
+      }
+      
+      var x1 = Math.max(colWidth*calc.firstTime/60,0);
+      var x2 = colWidth*calc.lastTime/60;
+      var y1 = highLimit/10*lineHeight;
+      var y2 = lowLimit/10*lineHeight;
+      var testArea = {absolutePosition:{x:cm(xo),y:cm(yo)},canvas:[]};
+      var glucArea = {absolutePosition:{x:cm(xo),y:cm(yo)},canvas:[]};
+      var glucValues = {stack:[]};
+      if(this.vars.type=="inputBRTest")
+      {
+        testArea.canvas.push({type:"rect",x:cm(x1),y:cm(lineHeight*gridLines-y1),w:cm(x2-x1),h:cm(y1-y2),color:"#e0e0ff",fillOpacity:0.5,strokeOpacity:0.5});
+        for(var i=0; i<day.times.length; i++)
+        {
+          if(day.times[i].typ=="brtest" && day.times[i].gluc)
+          {
+            var time = Math.floor(day.times[i].time/100)*60+(day.times[i].time%100);
+            var x = colWidth*time/60;
+            var y = lineHeight*gridLines-day.times[i].gluc/10*lineHeight;
+            if(!calc.bolusTime || time-calc.bolusTime > 4*60 && (!calc.brBolusTime || time<=calc.brBolusTime))
+              glucArea.canvas = glucArea.canvas.concat(this.getBRMark(xo,yo,x,y,day.times[i].gluc,calc));
+            else
+              glucArea.canvas = glucArea.canvas.concat(this.getIllegalMark(xo,yo,x,y));
+            
+            glucValues.stack.push({absolutePosition:{x:cm(xo+x+0.15),y:cm(yo+y-0.15)},text:_.glucFromData(day.times[i].gluc)});
+          }        
+        }
+      }
+      
+      var brArea = {absolutePosition:{x:cm(xo),y:cm(yo)},canvas:[]};
+      for(var i=0; i<day.brtimes.length; i++)
+        brArea.canvas.push({type:"rect",x:cm(i*colWidth),y:cm(lineHeight*gridLines),w:cm(colWidth),h:cm(-day.brtimes[i]*10*lineHeight),color:colorBasal});
+      
+      xo -= 1.0;
+      yo += lineHeight*gridLines+1.5;
+      
+      lineHeight = 0.7;
+      var pureLayout =
+      {
+        hLineWidth: function(i, node) {return 0;},
+        vLineWidth: function(i, node) {return 0;},
+        hLineColor: function(i, node) {return 0;},
+        vLineColor: function(i, node) {return 0;},
+        paddingLeft: function(i, node) { return 0; },
+        paddingRight: function(i, node) { return 0; },
+        paddingTop: function(i, node) { return 0; },
+        paddingBottom: function(i, node) { return 0; }
+      };
+      var brLegend = {absolutePosition:{x:cm(xo),y:cm(yo)},table:{body:[[{margin:[0,cm(0.05),0,0],text:"Uhr-\nzeit",color:colorBasalFont,alignment:"center"}],
+                                                                         [{margin:[0,cm(0.175),0,0],text:"IE",alignment:"center"}],
+                                                                         [{margin:[0,cm(0.17),0,0],text:"Anpas-\nsung",alignment:"center"}]],widths:[]}
+                                                          ,layout:pureLayout};
+      var brTable = {absolutePosition:{x:cm(xo),y:cm(yo)},canvas:[]};
+      brTable.canvas.push({type:"rect",x:cm(0),y:cm(0),w:cm(24*colWidth+2.0),h:cm(lineHeight),color:colorBasal});
+      brTable.canvas.push({type:"rect",x:cm(0),y:cm(lineHeight),w:cm(24*colWidth+2.0),h:cm(lineHeight),color:_.blendColor(colorBasal,"#ffffff",0.5)});
+      brTable.canvas.push({type:"line",x1:cm(0),y1:cm(0),x2:cm(0),y2:cm(3*lineHeight),lineWidth:lw,lineColor:lc});
+      brTable.canvas.push({type:"line",x1:cm(24*colWidth+2.0),y1:cm(0),x2:cm(24*colWidth+2.0),y2:cm(3*lineHeight),lineWidth:lw,lineColor:lc});
+      for(var i=0; i<4; i++)
+        brTable.canvas.push({type:"line",x1:cm(0),y1:cm(i*lineHeight),x2:cm(24*colWidth+2.0),y2:cm(i*lineHeight),lineWidth:lw,lineColor:lc});
+      
+      brLegend.table.widths[0] = cm(1);
+      for(var i=0; i<24; i++)
+        brLegend.table.widths.push(cm(colWidth));
+      brLegend.table.widths.push(cm(1));
+        
+      var ieSum = 0;
+      var ieSumNext = 0;
+      for(var i=0; i<25; i++)
+      {
+        brTable.canvas.push({type:"line",x1:cm(1+i*colWidth),y1:cm(0),x2:cm(1+i*colWidth),y2:cm(3*lineHeight),lineWidth:lw,lineColor:lc});
+        var m = [0,cm(0.17),0,0];
+        var text = {margin:m,text:(i<24?_.fmtNumber(i,0):"Gesamt"),color:colorBasalFont,alignment:i<24?"left":"center"};
+        brLegend.table.body[0].push(text);
+        if(i<day.brtimes.length)
+        {
+          brLegend.table.body[1].push({margin:m,text:_.fmtNumber(day.brtimes[i],-1),alignment:"center"});
+          if(day.brtimes[i] != calc.nextBRTimes[i])
+            brLegend.table.body[2].push({margin:[0,cm(0.35),0,0],text:_.fmtNumber(calc.nextBRTimes[i],-1),alignment:"center"});
+          else
+            brLegend.table.body[2].push({text:""});
+          ieSum += day.brtimes[i];
+          ieSumNext += calc.nextBRTimes[i];
+        }
+      }
+      
+      brLegend.table.body[1].push({margin:m,text:_.fmtNumber(ieSum,-1),alignment:"center"});
+      brLegend.table.body[2].push({margin:[0,cm(0.35),0,0],text:_.fmtNumber(ieSumNext,-1),alignment:"center"});
+
+      var dispDate = _.fmtNumber(day.day,0,2);
+      dispDate += "." + _.fmtNumber(day.month,0,2);
+      dispDate += "." + _.fmtNumber(day.year,0,4);
+      
+      var content =
+      [
+        this.getHeader()
+       ,{absolutePosition:{x:cm(2.2),y:cm(1.0)},text:this.vars.type=="inputBRTest"?"Überprüfung der Basalrate":"Meine Basalrate auf einen Blick",fontSize:"36",color:colText,bold:true}
+       ,{absolutePosition:{x:cm(this.vars.type=="inputBRTest"?17.5:20.5),y:cm(1.85)},text:dispDate,fontSize:"10",color:"#c0c0c0",bold:true}
+       ,{absolutePosition:{x:cm(2.2),y:cm(2.95)},canvas:[{type:"line",x1:0,y1:0,x2:cm(25.2),y2:0,lineWidth:cm(0.2),lineColor:this.vars.type=="inputBRTest"?"#2e4736":"#662c40"}]}
+       ,brArea,testArea,vertLegend,vertLines,horzLegend,horzLines,glucArea,glucValues
+       ,{absolutePosition:{x:cm(13.5),y:cm(14.0)},text:"Uhrzeit",fontSize:12}
+       ,brTable,brLegend
+      ];
+      
+      if(this.vars.type=="inputBRTest")
+        content.push({absolutePosition:{x:cm(27.5),y:cm(1.4)},image:"logomod2",height:cm(1.8),width:cm(1.8*187/221)});
+      else
+        content.push({absolutePosition:{x:cm(26.8),y:cm(0.9)},image:"logomod3",height:cm(1.8),width:cm(1.8*106/172)});
+        
+      return content;
+    },
+    getIllegalMark: function(xo,yo,x,y)
+    {
+      return [{absolutePosition:{x:cm(xo),y:cm(yo)},type:"ellipse",x:cm(x),y:cm(y),r1:3,r2:3}];
+    },
+    getBRMark: function(xo,yo,x,y,gluc,calc)
+    {
+      var ret = [{absolutePosition:{x:cm(xo),y:cm(yo)},type:"ellipse",x:cm(x),y:cm(y),r1:3,r2:3,color:"#f15741"}]
+      if(Math.abs(gluc-calc.firstGluc)>30)
+      {
+        ret[0].color = "#f00";
+        ret.push({type:"line",x1:cm(x-0.1),y1:cm(y-0.1),x2:cm(x+0.1),y2:cm(y+0.1),lineColor:"#000",lineWidth:cm(0.01)});
+        ret.push({type:"line",x1:cm(x+0.1),y1:cm(y-0.1),x2:cm(x-0.1),y2:cm(y+0.1),lineColor:"#000",lineWidth:cm(0.01)});
+      }
+        
+      return ret;
+    }
+  });
+</script>

@@ -1,0 +1,166 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-ajax/iron-request.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill-lite.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise.js"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-loader.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise-Statics.js"><link rel="prefetch" href="../../bower_components/google-chart/charts-loader.html"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-styles.html"></head><body><dom-module id="print-INPUT-datenmanagement">
+  <template>
+    <style is="custom-style">:host{display:none;}</style>
+    <img id="input" src="resources/INPUT.png">
+    <img id="diamant" src="resources/background.png">
+    <img id="sitelogo1" src="resources/INPUTmodul1.png">
+    <img id="sitelogo5" src="resources/INPUTmodul5.png">
+  </template>
+</dom-module>
+<script>
+  var lineWidth;
+  var colText;
+  var colLine;
+  Polymer(
+  {
+    is: "print-INPUT-datenmanagement",
+    getForm: function(vars)
+    {
+      colText = "#e74c51";
+      var ret = 
+      {
+        pageSize: "a4"
+       ,pageOrientation: "portrait"
+       ,pageMargins: [cm(0),cm(0),cm(0),cm(0)]
+       ,content: []
+       ,defaultStyle:
+        {
+          fontSize: 8
+        }
+       ,images: 
+        {
+          INPUT: _.getBase64Image(this.$.input)
+         ,diamant: _.getBase64Image(this.$.diamant)
+         ,sitelogo1: _.getBase64Image(this.$.sitelogo1)
+         ,sitelogo5: _.getBase64Image(this.$.sitelogo5)
+        }
+       ,styles:
+        {
+          dots:
+          {
+            lineColor:"#d69a2e"
+           ,lineWidth:cm(0.5)
+//           ,dash:[cm(0.1),cm(0.1)]
+          }
+        }
+      };
+      
+      this.vars = vars;
+      for(var i=0; i<vars.calc.length; i++)
+      {
+        var page = this.getPage(vars.calc[i],i);
+        for(var j=0; j<page.length; j++)
+          ret.content.push(page[j]);
+      
+        if(i<vars.calc.length-1)
+          ret.content[ret.content.length-1].pageBreak = "after";
+      }
+      
+      return ret;
+    },
+    getHeader: function()
+    {
+      var ret = { canvas:
+                  [
+                    {type: "rect",x:cm(0.0),y:0,w:cm(1.6),h:cm(0.55),color:"#d69a2e"}
+                   ,{type: "rect",x:cm(1.6),y:0,w:cm(1.6),h:cm(0.55),color:"#2e4736"}
+                   ,{type: "rect",x:cm(3.2),y:0,w:cm(1.6),h:cm(0.55),color:"#662c40"}
+                   ,{type: "rect",x:cm(4.8),y:0,w:cm(1.6),h:cm(0.55),color:"#343a49"}
+                   ,{type: "rect",x:cm(6.4),y:0,w:cm(1.6),h:cm(0.55),color:"#528c8e"}
+                   ,{type: "rect",x:cm(8.0),y:0,w:cm(1.6),h:cm(0.55),color:"#362946"}
+                   ,{type: "rect",x:cm(9.6),y:0,w:cm(1.6),h:cm(0.55),color:"#6b8133"}
+                   ,{type: "rect",x:cm(11.2),y:0,w:cm(1.6),h:cm(0.55),color:"#2a3b56"}
+                   ,{type: "rect",x:cm(12.8),y:0,w:cm(1.6),h:cm(0.55),color:"#862d2e"}
+                   ,{type: "rect",x:cm(14.4),y:0,w:cm(1.6),h:cm(0.55),color:"#607f6e"}
+                   ,{type: "rect",x:cm(16.0),y:0,w:cm(1.6),h:cm(0.55),color:"#273d3f"}
+                   ,{type: "rect",x:cm(17.6),y:0,w:cm(1.6),h:cm(0.55),color:"#a5916d"}
+                  ]
+                };
+      return ret;
+    },
+    getPage: function(calc,idx)
+    {
+      var avgGluc = Math.floor(calc.combosum / calc.combocount);
+      var lw = cm(0.03);
+      var colorModul = this.getHeader().canvas[this.vars.modul-1].color;
+      var num = "1";
+      if(this.vars.modul==5)
+        num = "2";
+        
+      var content =
+      [
+        this.getHeader()
+       ,{margin:[cm(1.6),cm(0.5),cm(0),cm(0)],text:"Mein Datenmanagement",color:colText,fontSize:37,bold:true}
+       ,{absolutePosition:{x:cm(16.8),y:cm(1.9)},canvas:[{type:"ellipse",x:cm(0),y:cm(0),r1:cm(0.45),r2:cm(0.45),color:colorModul}]}
+       ,{absolutePosition:{x:cm(18.4),y:cm(1.0)},image:"sitelogo"+this.vars.modul,height:cm(1.8),width:cm(1.5)}
+       ,{absolutePosition:{x:cm(12.57),y:cm(1.6)},text:num,alignment:"center",fontSize:14,color:"#fff",bold:true}
+       ,{absolutePosition:{x:cm(1.6),y:cm(2.8)},canvas:[{type:"rect",x:cm(0),y:cm(0),w:cm(17.7),h:cm(0.2),color:colorModul}]}
+       ,{absolutePosition:{x:cm(1.6),y:cm(4.7)},text:"In den letzten 7 Tagen:",fontSize:16,bold:true}
+       ,{absolutePosition:{x:cm(7.6),y:cm(4.9)},text:"("+_.fmtDate(calc.begdate)+" - "+_.fmtDate(calc.enddate)+")",fontSize:10,color:"#808080"}
+       ,{absolutePosition:{x:cm(1.6),y:cm(5.5)},text:"»",fontSize:16,color:colorModul}
+       ,{absolutePosition:{x:cm(2.0),y:cm(5.5)},text:"So häufig habe ich pro Tag gemessen:",fontSize:16}
+       ,{absolutePosition:{x:cm(2.0),y:cm(6.3)},text:Math.floor(calc.combocount/calc.daycount)+" Blutzucker, "+Math.floor(calc.librecount/calc.daycount)+" CGM",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.0),y:cm(6.9)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(17.3),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(1.6),y:cm(7.3)},text:"»",fontSize:16,color:colorModul}
+       ,{absolutePosition:{x:cm(2.0),y:cm(7.3)},text:"Mein mittlerer Glukosewert:",fontSize:16}
+       ,{absolutePosition:{x:cm(2.0),y:cm(8.1)},text:_.fmtNumber(avgGluc,0,0)+" "+_.getGlucInfo().unit,fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.0),y:cm(8.7)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(17.3),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(1.6),y:cm(9.1)},text:"»",fontSize:16,color:colorModul}
+       ,{absolutePosition:{x:cm(2.0),y:cm(9.1)},text:"So viel Prozent meiner Glukosewerte lagen",fontSize:16}
+       ,{absolutePosition:{x:cm(2.0),y:cm(10.3)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(9.9)},text:"unter "+_.glucFromData(70)+" "+_.getGlucInfo().unit+":",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(10.7)},text:Math.floor(calc.combo70/calc.combocount*100)+" %",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(11.3)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(2.0),y:cm(11.9)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(11.5)},text:"im Bereich zwischen "+_.glucFromData(70)+" und "+_.glucFromData(180)+" "+_.getGlucInfo().unit+":",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(12.3)},text:Math.floor(calc.combo70180/calc.combocount*100)+" %",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(12.9)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(2.0),y:cm(13.5)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(13.1)},text:"über "+_.glucFromData(180)+" "+_.getGlucInfo().unit+":",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(13.9)},text:Math.floor(calc.combo180/calc.combocount*100)+" %",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(14.5)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(2.0),y:cm(15.1)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(14.7)},text:"in meinem persönlichen Zielbereich:",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(15.5)},text:Math.floor(calc.combonorm/calc.combocount*100)+" %",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(16.1)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+       
+       ,{absolutePosition:{x:cm(2.0),y:cm(17.0)},text:"Falls CGM bzw. FGM:",fontSize:16,bold:true}
+       ,{absolutePosition:{x:cm(1.6),y:cm(18.0)},text:"»",fontSize:16,color:colorModul}
+       ,{absolutePosition:{x:cm(2.0),y:cm(18.0)},text:"So viele Stunden waren meine Glukosewerte",fontSize:16}
+       ,{absolutePosition:{x:cm(2.0),y:cm(19.2)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(18.8)},text:"unter "+_.glucFromData(70)+" "+_.getGlucInfo().unit+":",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(19.6)},text:_.fmtNumber(7*24*calc.libre70/calc.librecount,1)+" Stunden ("+Math.floor(calc.libre70/calc.librecount*100)+" %)",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(20.2)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(2.0),y:cm(20.8)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(20.4)},text:"im Bereich zwischen "+_.glucFromData(70)+" und "+_.glucFromData(180)+" "+_.getGlucInfo().unit+":",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(21.2)},text:_.fmtNumber(7*24*calc.libre70180/calc.librecount,1)+" Stunden ("+Math.floor(calc.libre70180/calc.librecount*100)+" %)",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(21.8)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(2.0),y:cm(22.4)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(22.0)},text:"über "+_.glucFromData(180)+" "+_.getGlucInfo().unit+":",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(22.8)},text:_.fmtNumber(7*24*calc.libre180/calc.librecount,1)+" Stunden ("+Math.floor(calc.libre180/calc.librecount*100)+" %)",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(23.4)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(2.0),y:cm(24.0)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(0.2),y2:cm(0),lineColor:colorModul,lineWidth:cm(0.05)}]}
+       ,{absolutePosition:{x:cm(2.5),y:cm(23.6)},text:"in meinem persönlichen Zielbereich:",fontSize:16}
+       ,{absolutePosition:{x:cm(2.5),y:cm(24.4)},text:_.fmtNumber(7*24*calc.librenorm/calc.librecount,1)+" Stunden ("+Math.floor(calc.librenorm/calc.librecount*100)+" %)",fontSize:13,color:"#0000ff",italic:true}
+       ,{absolutePosition:{x:cm(2.5),y:cm(25.0)},canvas:[{type:"line",x1:cm(0),y1:cm(0),x2:cm(16.8),y2:cm(0),style:"dots",lineWidth:lw,lineColor:colorModul}]}
+
+       ,{absolutePosition:{x:cm(2.0),y:cm(26.2)},image:"diamant",height:cm(2.7),width:cm(2.7)}
+       ,{absolutePosition:{x:cm(2.4),y:cm(26.8)},text:"DIAMANT",fontSize:12.5,color:"#00f",bold:true}
+       ,{absolutePosition:{x:cm(15.4),y:cm(26.4)},image:"INPUT",width:cm(4.0)}
+       ,{absolutePosition:{x:cm(0),y:cm(14.85)},canvas: [{ type: "line", x1: cm(0), y1: cm(0), x2: cm(0.5), y2: cm(0), lineWidth: cm(0.005), color: "#444" }]}
+      ];
+      
+      return content;
+    }
+  });
+</script></body></html>

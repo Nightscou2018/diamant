@@ -1,0 +1,312 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/responsive-table/responsive-table.html">
+<link rel="import" href="../../bower_components/zreptil-date-picker/zreptil-date-picker.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-resizable-behavior/iron-resizable-behavior.html"><link rel="prefetch" href="../../bower_components/iron-selector/iron-selectable.html"><link rel="prefetch" href="../../bower_components/iron-selector/iron-selection.html"><link rel="prefetch" href="../../bower_components/iron-icon/iron-icon.html"><link rel="prefetch" href="../../bower_components/iron-meta/iron-meta.html"><link rel="prefetch" href="../../bower_components/iron-flex-layout/iron-flex-layout.html"><link rel="prefetch" href="../../bower_components/iron-iconset-svg/iron-iconset-svg.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-button-behavior.html"><link rel="prefetch" href="../../bower_components/iron-behaviors/iron-button-state.html"><link rel="prefetch" href="../../bower_components/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"><link rel="prefetch" href="../../bower_components/iron-behaviors/iron-control-state.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-ripple-behavior.html"><link rel="prefetch" href="../../bower_components/paper-ripple/paper-ripple.html"><link rel="prefetch" href="../../bower_components/paper-material/paper-material-shared-styles.html"><link rel="prefetch" href="../../bower_components/paper-styles/shadow.html"><link rel="prefetch" href="../../bower_components/paper-styles/color.html"><link rel="prefetch" href="../../bower_components/paper-styles/default-theme.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-inky-focus-behavior.html"><link rel="prefetch" href="../../bower_components/iron-form-element-behavior/iron-form-element-behavior.html"><link rel="prefetch" href="../../bower_components/iron-input/iron-input.html"><link rel="prefetch" href="../../bower_components/iron-a11y-announcer/iron-a11y-announcer.html"><link rel="prefetch" href="../../bower_components/iron-validatable-behavior/iron-validatable-behavior.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-behavior.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-char-counter.html"><link rel="prefetch" href="../../bower_components/paper-styles/typography.html"><link rel="prefetch" href="../../bower_components/font-roboto/roboto.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-addon-behavior.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-container.html"><link rel="prefetch" href="../../bower_components/paper-input/paper-input-error.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animation-runner-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animatable-behavior.html"><link rel="prefetch" href="../../bower_components/paper-dialog-behavior/paper-dialog-behavior.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-overlay-behavior.html"><link rel="prefetch" href="../../bower_components/iron-fit-behavior/iron-fit-behavior.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-overlay-manager.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-overlay-backdrop.html"><link rel="prefetch" href="../../bower_components/iron-overlay-behavior/iron-focusables-helper.html"><link rel="prefetch" href="../../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html"><link rel="prefetch" href="../../bower_components/paper-behaviors/paper-checked-element-behavior.html"><link rel="prefetch" href="../../bower_components/iron-checked-element-behavior/iron-checked-element-behavior.html"><link rel="prefetch" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html"><link rel="prefetch" href="../../bower_components/iron-dropdown/iron-dropdown.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/opaque-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animation-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/web-animations.html"><link rel="prefetch" href="../../bower_components/web-animations-js/web-animations-next-lite.min.js"><link rel="prefetch" href="../../bower_components/iron-dropdown/iron-dropdown-scroll-manager.html"><link rel="prefetch" href="../../bower_components/iron-media-query/iron-media-query.html"><link rel="prefetch" href="../../bower_components/vaadin-date-picker/vaadin-date-picker-overlay.html"><link rel="prefetch" href="../../bower_components/vaadin-date-picker/vaadin-month-calendar.html"><link rel="prefetch" href="../../bower_components/vaadin-date-picker/vaadin-date-picker-helper.html"><link rel="prefetch" href="../../bower_components/vaadin-date-picker/vaadin-infinite-scroller.html"><link rel="prefetch" href="../../bower_components/vaadin-date-picker/vaadin-date-picker-icons.html"><link rel="prefetch" href="../../bower_components/vaadin-date-picker/vaadin-date-picker-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animated-pages.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animatable.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-animations.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/cascaded-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/fade-in-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/fade-out-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/hero-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-shared-element-animation-behavior.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/ripple-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/reverse-ripple-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/scale-down-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/scale-up-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-left-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-right-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-top-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-from-bottom-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-left-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-right-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-up-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/slide-down-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/animations/transform-animation.html"><link rel="prefetch" href="../../bower_components/neon-animation/neon-shared-element-animatable-behavior.html"></head><body><dom-module id="dlg-config">
+  <template>
+    <style include="responsive-table-style"></style>
+    <style is="custom-style">:host{@apply (hidden);@apply (--layout-vertical);@apply (--layout-flex);font-size:1em;}.food{@apply (--layout-horizontal);}paper-button{@apply (--diamant-button);}paper-dialog{width:50%;height:90%;display:flex;flex-direction:column;}#pnlFoot{padding:0.5em;display:flex;justify-content:flex-end;@apply (--layout-end);}.title{@apply (--layout-horizontal);align-items:center;padding:1em;}paper-dialog-scrollable{flex:1;}#pnlScroll{display:flex;flex:1;margin:0;padding:0;}#pnlTitle,#pnlFoot{flex-shrink:0;}#pnlTitle.title{justify-content:space-between;}.title>div:first-child{font-size:2em;font-weight:600;@apply (--layout-vertical);}.title>div:nth-child(2){@apply (--layout-horizontal);}.title>div>div:nth-child(2){font-size:0.5em;padding-top:0.25em;color:rgba(0,0,0,var(--light-secondary-opacity));}iron-pages>div{@apply (--layout-vertical);}#btnTimeAdd{position:fixed;right:28%;bottom:15%;}#b_tnPumpeAdd{position:absolute;right:1em;top:1em;}@media (max-width:33em){paper-dialog{width:90%;}.title>div{font-size:1.4em;}#btnTimeAdd{right:10%;}}@media (max-width:27em){.title>div{font-size:1.2em;}}@media (max-width:25em){.title>div{font-size:0.9em;}#markedList div{font-size:0.9em;}}.horz{@apply (--layout-horizontal);@apply (--layout-center);}paper-input{padding-right:1em;}paper-input.right{--paper-input-container-input:{text-align:right;};}paper-checkbox{padding-bottom:2em;}#listCalendars div{margin-top:0.1em;border-radius:0.3em;padding:0.2em;text-align:center;color:rgba(0,0,0,0.8);cursor:pointer;}#listCalendars div[active]{font-weight:bold;border:0.5em solid rgba(0,0,0,0.6);}</style>
+    <paper-dialog id="dlg" on-iron-overlay-closed="dlgClosed" modal="" entry-animation="scale-up-animation" exit-animation="scale-down-animation">
+      <div id="pnlTitle" class="title">
+        <div>
+          <div>{{title}}</div>
+          <div>{{subtitle}}</div>
+        </div>
+        <div>
+          <paper-icon-button on-tap="tapPrev" icon="chevron-left"></paper-icon-button>
+          <paper-icon-button on-tap="tapNext" icon="chevron-right"></paper-icon-button>
+          <paper-icon-button dialog-dismiss="" icon="cancel"></paper-icon-button>
+        </div>
+      </div>
+      <div id="pnlScroll">
+        <paper-dialog-scrollable>
+          <iron-pages id="pages" selected="0">
+            <div title="Personendaten">
+              <div class="horz">
+                <paper-input label="Vorname" id="vorname" value="{{config.firstname}}"></paper-input>
+                <paper-input label="Name" id="lastname" value="{{config.lastname}}"></paper-input>
+              </div>
+              <zreptil-date-picker id="birthdate" label="Geburtstag" value="{{config.birthdate}}"></zreptil-date-picker>
+              <paper-dropdown-menu label="Geschlecht" id="gender">
+                <paper-listbox class="dropdown-content" selected="{{gender}}">
+                  <paper-item>Männlich</paper-item>
+                  <paper-item>Weiblich</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input label="Webseite" id="url" value="{{config.url}}"></paper-input>
+              <paper-textarea label="Info" id="info" value="{{config.info}}"></paper-textarea>
+            </div>
+            <div title="Diabetesdaten">
+              <zreptil-date-picker id="diabseit" label="Diabetes seit" value="{{config.diabseit}}"></zreptil-date-picker>
+              <paper-input label="Bolus-Insulin" id="bolus" value="{{config.bolus}}"></paper-input>
+              <paper-input label="Basal-Insulin" id="basal" value="{{config.basal}}"></paper-input>
+              <paper-input label="Insulin-Schritte" type="number" id="iesteps" value="{{config.iesteps}}"></paper-input>
+              <div>Korrekturfaktoren für Ereignisse</div>
+              <div class="horz">
+                <paper-input name="event" class="right" label="Sport 1" type="number" max="100" min="-100" value="{{config.evtsport1}}"><div suffix="">%</div></paper-input>
+                <paper-input name="event" class="right" label="Sport 2" type="number" max="100" min="-100" value="{{config.evtsport2}}"><div suffix="">%</div></paper-input>
+                <paper-input name="event" class="right" label="Stress" type="number" max="100" min="-100" value="{{config.evtstress}}"><div suffix="">%</div></paper-input>
+              </div>
+              <div class="horz">
+                <paper-input name="event" class="right" label="Krankheit" type="number" max="100" min="-100" value="{{config.evtkrankheit}}"><div suffix="">%</div></paper-input>
+                <paper-input name="event" class="right" label="Periode" type="number" max="100" min="-100" value="{{config.evtperiode}}"><div suffix="">%</div></paper-input>
+              </div>
+            </div>
+            <div title="Pumpendaten">
+              <iron-pages id="pumpPages" selected="0">
+                <template is="dom-repeat" items="{{config.pumps}}" sort="sortPumps">
+                  <div>
+                    <div class="horz">
+                      <paper-icon-button hidden$="{{hasPump(index,-1)}}" on-tap="tapPrevPump" icon="chevron-left"></paper-icon-button>
+                      <zreptil-date-picker label="Pumpe seit" value="{{item.since}}"></zreptil-date-picker>
+                      <paper-icon-button hidden$="{{hasPump(index,1)}}" on-tap="tapNextPump" icon="chevron-right"></paper-icon-button>
+                      <paper-fab hidden$="{{!hasPump(index,1)}}" on-tap="tapAddPump" icon="add" mini=""></paper-fab>
+                    </div>
+                    <paper-input label="Bezeichnung" value="{{item.name}}"></paper-input>
+                    <paper-input label="Seriennummer" value="{{item.sn}}"></paper-input>
+                    <paper-input label="Firma" value="{{item.firma}}"></paper-input>
+                    <paper-input label="Adresse" value="{{item.firmaStrasse}}"></paper-input>
+                    <div class="horz">
+                      <paper-input style="width:60px" label="PLZ" value="{{item.firmaPLZ}}"></paper-input>
+                      <paper-input label="Ort" value="{{item.firmaOrt}}"></paper-input>
+                    </div>
+                    <paper-input label="Telefon" value="{{item.firmaTelefon}}"></paper-input>
+                    <paper-input label="Homepage" value="{{item.url}}"></paper-input>
+                  </div>
+                </template>
+              </iron-pages>
+            </div>
+            <div title="Zeitblöcke">
+              <table class="responsive-table">
+                <thead>
+                  <tr>
+                    <th>Zeitraum</th>
+                    <th>Zielbereich</th>
+                    <th>BE-Faktor</th>
+                    <th>Korrektur-Faktor</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                <template is="dom-repeat" items="{{config.zeiten}}">
+                  <tr on-tap="tapTime">
+                    <th data-title="Zeitraum" scope="row">{{from(index)}} bis {{to(item.time)}}</th>
+                    <td data-title="Zielbereich" scope="row"><b>{{getGluc(item.min)}}</b> {{getGlucUnit(rnd)}} bis <b>{{getGluc(item.max)}}</b> {{getGlucUnit(rnd)}}</td>
+                    <td data-title="BE-Faktor" scope="row"><b>{{getFactor(item.factor)}}</b> IE/BE</td>
+                    <td data-title="Korrektur-Faktor" scope="row"><b>{{getGluc(item.adjust)}}</b> {{getGlucUnit(rnd)}}</td>
+                    <td data-title="" scope="row"><paper-icon-button on-tap="tapDeleteTime" hidden$="{{mustNotDeleteTime(item.time)}}" icon="delete"></paper-icon-button></td>
+                  </tr>
+                </template>
+                </tbody>
+              </table>
+              <paper-fab id="btnTimeAdd" on-tap="tapAddTime" icon="add" mini=""></paper-fab>
+            </div>
+            <div title="Features">
+              <paper-checkbox checked="{{config.useCalendar}}">Google Kalender für Erinnerungen verwenden</paper-checkbox>
+              <div hidden$="{{!config.useCalendar}}">
+                <div>Bitte den Kalender auswählen, in den die Erinnerungen eingetragen werden sollen:</div>
+                <div id="listCalendars">
+                <template is="dom-repeat" items="{{calendarList}}">
+                  <div on-tap="tapCalendar" active$="{{isCurrentCalendar(item.id,rnd)}}" style="background-color:{{item.backgroundColor}}">{{item.summary}}</div>
+                </template>
+                </div>
+              </div>
+            </div>
+          </iron-pages>
+        </paper-dialog-scrollable>
+      </div>
+      <div id="pnlFoot" class="horz">
+        <paper-icon-button dialog-confirm="" icon="save"></paper-icon-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "dlg-config",
+    properties:
+    {
+      title: {type:String,value:"Einstellungen"}
+     ,subtitle: {type:String,value:""}
+     ,gender: {type:String,value:"-1"}
+     ,config: {type:Object,value:{}}
+     ,calendarList: {type:Array,value:[]}
+     ,rnd: {type:Number,value:0}
+    },
+    show: function()
+    {
+      this.config = _.driveData.cloneOf(_.config);
+      this.storeData();
+      this.setPage(0);
+      this.rnd = Math.random();
+      _.driveData.requestCalendarList(this,this.onCalendarListReceived);
+      this.$.dlg.toggle();
+    },
+    refreshDisplay: function()
+    {
+      this.rnd = Math.random();
+    },
+    onCalendarListReceived: function(self,list)
+    {
+      self.calendarList = list;
+    },
+    tapCalendar: function(e)
+    {
+      this.config.calendarId = e.model.item.id;
+      this.refreshDisplay();
+    },
+    isCurrentCalendar: function(id)
+    {
+      return this.config.calendarId == id;
+    },
+    from: function(idx)
+    {
+      if(idx == undefined || idx == 0)
+        return "00:00";
+      var time = Number(this.config.zeiten[idx-1].time);
+      return _.fmtNumber(Math.floor(time/60),0,2) + ":" + _.fmtNumber(time%60,0,2);
+    },
+    to: function(time)
+    {
+      var time = Number(time);
+      return _.fmtNumber(Math.floor(time/60),0,2) + ":" + _.fmtNumber(time%60,0,2);
+    },
+    getFactor: function(factor)
+    {
+      return _.fmtNumber(factor,1);
+    },
+    getGlucUnit: function(rnd)
+    {
+      return _.getGlucInfo().unit;
+    },
+    getGluc: function(gluc)
+    {
+      return _.glucFromData(gluc);
+    },
+    mustNotDeleteTime: function(time)
+    {
+      return this.config.zeiten.length < 2;
+    },
+    tapAddPump: function()
+    {
+      _.msg("Das Hinzufügen von Pumpendaten ist noch nicht möglich.");
+    },
+    sortPumps: function(a,b)
+    {
+      return a.since < b.since ? -1 : 1;
+    },
+    storeData: function()
+    {
+      if(!this.config)
+        return;
+
+      if(this.config.gender == 'm')
+        this.gender = 0;
+      else if(this.config.gender == 'w')
+        this.gender = 1;
+        
+      _.adjustConfig(this.config);
+    },
+    save: function()
+    {
+      this.storeData();
+      this.fire("save", {data:this.config});
+      this.$.dlg.close();
+    },
+    tapAddTime: function()
+    {
+      _.msg("Das Hinzufügen eines Zeitbereichs ist noch nicht möglich.");
+    },
+    tapTime: function(e)
+    {
+      _.msg("Das Ändern der Zeitbereiche ist noch nicht möglich.");
+    },
+    tapDeleteTime: function(e)
+    {
+      e.stopImmediatePropagation();
+      if(this.config.zeiten.length == 1)
+        return;
+      this.currentTime = e.model;
+      var from = "0:00";
+      if(e.model.index > 0)
+        from = _.fmtDataTime(this.config.zeiten[e.model.index-1].time);
+      _.confirm("Soll der Zeitraum von <b>" + from + " Uhr</b> bis <b>" + _.fmtDataTime(e.model.item.time) + " Uhr</b> wirklich gelöscht werden?", this.doDeleteTime.bind(this));
+    },
+    doDeleteTime: function()
+    {
+      this.splice("config.zeiten",this.currentTime.index,1);
+      _.adjustConfig(this.config);
+      this.notifyPath("config.zeiten." + (this.config.zeiten.length-1) + ".time",this.config.zeiten[this.config.zeiten.length-1].time);
+    },
+    tapNext: function()
+    {
+      this.setPage(1);
+    },
+    tapPrev: function()
+    {
+      this.setPage(-1);
+    },
+    tapNextPump: function()
+    {
+      this.setPumpPage(1);
+    },
+    tapPrevPump: function()
+    {
+      this.setPumpPage(-1);
+    },
+    setPage: function(diff)
+    {
+      var page = Number(this.$.pages.selected) + diff;
+      if(page >= this.$.pages.items.length)
+        page = 0;
+      if(page < 0)
+        page = this.$.pages.items.length - 1;
+      this.$.pages.selected = page;
+      this.subtitle = this.$.pages.selectedItem.attributes["title"].value;
+      this.$.pumpPages.selected = 0;
+    },
+    hasPump: function(idx,diff)
+    {
+      if(diff > 0)
+        return idx >= this.config.pumps.length-1;
+      return idx == 0;
+    },
+    setPumpPage: function(diff)
+    {
+      var page = Number(this.$.pumpPages.selected) + diff;
+      if(page >= 0 && page < this.$.pumpPages.items.length)
+        this.$.pumpPages.selected = page;
+    },
+    dlgClosed: function(event,closingReason)
+    {
+      if(event)
+      {
+        event.stopImmediatePropagation();
+        if(event.srcElement != this.$.dlg)
+          return;
+      }
+
+      if(closingReason.confirmed)
+      {
+        this.save();
+      }
+      else
+      {
+        this.config = _.driveData.cloneOf(_.config);
+        this.fire("cancel");
+      }
+
+    }
+  });
+</script></body></html>

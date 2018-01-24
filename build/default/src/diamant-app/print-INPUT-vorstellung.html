@@ -1,0 +1,618 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-ajax/iron-request.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill-lite.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise.js"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-loader.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise-Statics.js"><link rel="prefetch" href="../../bower_components/google-chart/charts-loader.html"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-styles.html"></head><body><dom-module id="print-INPUT">
+  <template>
+    <style is="custom-style">:host{display:none;}</style>
+    <google-chart id="chartbasal" hidden="" type="column"></google-chart>
+    <img id="input" src="resources/INPUT.png">
+    <img id="katheter" src="resources/katheter.png">
+    <img id="diamant" src="resources/background.png">
+    <img id="day0" src="resources/day0.png">
+    <img id="day1" src="resources/day1.png">
+    <img id="day2" src="resources/day2.png">
+    <img id="day3" src="resources/day3.png">
+    <img id="day4" src="resources/day4.png">
+    <img id="day5" src="resources/day5.png">
+    <img id="day6" src="resources/day6.png">
+  </template>
+</dom-module>
+<script>
+  var lineWidth;
+  var colText;
+  var colLine;
+  Polymer(
+  {
+    is: "print-INPUT",
+    getForm: function(vars)
+    {
+      var config = vars.config;
+      lineWidth = cm(0.03);
+      colText = "#e74c51";
+      colLine = "#606060";
+      this.vars = vars;
+      this.redHeader =
+      {
+        hLineWidth: function(i,node)
+        {
+          return (i===0?lineWidth:0);
+        }
+       ,hLineColor: function(i,node)
+        {
+          return colText;
+        }
+       ,vLineWidth: function(i,node)
+        {
+          return lineWidth;
+        }
+       ,vLineColor: function(i,node)
+        {
+          return (i===0||i===node.table.widths.length) ? colText : "white";
+        }
+       ,paddingTop: function(i,node){return cm(0.0);}
+       ,paddingBottom: function(i,node){return cm(0.0);}
+       ,paddingLeft: function(i,node){return cm(0.0);}
+       ,paddingRight: function(i,node){return cm(0.0);}
+      };
+      this.redTable =
+      {
+        hLineWidth: function(i,node)
+        {
+          return lineWidth;
+        }
+       ,hLineColor: function(i,node)
+        {
+          if(node.table.widths.length < 26)
+            return (i===0||i==node.table.body.length?colText:colLine);
+          return colText;
+        }
+       ,vLineWidth: function(i,node)
+        {
+          return lineWidth;
+        }
+       ,vLineColor: function(i,node)
+        {
+          if(node.table.body[0][1].text == "Notizen")
+            return (i===0||i==node.table.widths.length?colText:(i===2?colLine:"white"));
+          if(node.table.widths.length < 26)
+            return (i===0||i==node.table.widths.length?colText:colLine);
+          return (i===0||i==node.table.widths.length?colText:(i===1?"white":colLine));
+        }
+       ,paddingTop: function(i,node){return cm(0.0);}
+       ,paddingBottom: function(i,node){return cm(0.0);}
+       ,paddingLeft: function(i,node){return cm(0.0);}
+       ,paddingRight: function(i,node){return cm(0.0);}
+      };
+      this.glucHeaderLayout =
+      {
+        hLineWidth: function(i,node)
+        {
+          return lineWidth;
+        }
+       ,hLineColor: function(i,node)
+        {
+          return(i===0?colText:"white");
+        }
+       ,vLineWidth: function(i,node)
+        {
+          return lineWidth;
+        }
+       ,vLineColor: function(i,node)
+        {
+          return (i===0||i===node.table.widths.length) ? colText : "white";
+        }
+       ,paddingTop: function(i,node){return cm(0.0);}
+       ,paddingBottom: function(i,node){return cm(0.0);}
+       ,paddingLeft: function(i,node){return cm(0.0);}
+       ,paddingRight: function(i,node){return cm(0.0);}
+      };
+      this.glucTableLayout =
+      {
+        hLineWidth: function(i,node)
+        {
+          if(node.table.body[0][1].text == "Notizen")
+            return (i%3===0)?lineWidth:0;
+          return (i===0?0:lineWidth);
+        }
+       ,hLineColor: function(i,node)
+        {
+          if(i===node.table.body.length)
+            return colText;
+          
+          return (i%3===0)?colText:colLine;
+        }
+       ,vLineWidth: function(i,node)
+        {
+          return lineWidth;
+        }
+       ,vLineColor: function(i,node)
+        {
+          if(node.table.body[0][1].text == "Notizen")
+            return (i<3||i===node.table.widths.length)?colText:"#ffe0e0";
+          return (i<3||i===node.table.widths.length)?colText:colLine;
+        }
+       ,paddingTop: function(i,node){return cm(0.0);}
+       ,paddingBottom: function(i,node){return cm(0.0);}
+       ,paddingLeft: function(i,node){return cm(0.0);}
+       ,paddingRight: function(i,node){return cm(0.0);}
+      };
+      var ret = 
+      {
+        pageSize: "a4"
+       ,pageOrientation: "landscape"
+       ,pageMargins: [cm(0),cm(0),cm(0),cm(0)]
+       ,content: []
+       ,defaultStyle:
+        {
+          fontSize: 8
+        }
+       ,images: 
+        {
+          INPUT: _.getBase64Image(this.$.input)
+         ,katheter: _.getBase64Image(this.$.katheter)
+         ,diamant: _.getBase64Image(this.$.diamant)
+         ,day0: _.getBase64Image(this.$.day0)
+         ,day1: _.getBase64Image(this.$.day1)
+         ,day2: _.getBase64Image(this.$.day2)
+         ,day3: _.getBase64Image(this.$.day3)
+         ,day4: _.getBase64Image(this.$.day4)
+         ,day5: _.getBase64Image(this.$.day5)
+         ,day6: _.getBase64Image(this.$.day6)
+        }
+      };
+      
+      var begDate = new Date(vars.begDate);
+      
+      while(begDate < vars.endDate)
+      {
+        var endDate = new Date(begDate);
+        endDate.setDate(endDate.getDate() + 6);
+        var page = this.getPage(begDate,endDate);
+        for(var j=0; j<page.length; j++)
+          ret.content.push(page[j]);
+      
+        begDate.setDate(begDate.getDate() + 7);
+        if(begDate<vars.endDate)
+          ret.content[ret.content.length-1].pageBreak = "after";
+      }
+      return ret;
+    },
+    getPage: function(begDate,endDate)
+    {
+      var tables = this.getTables(begDate,endDate,this.vars,colText);
+      var headLine =         
+        { canvas:
+          [
+            {type: "rect",x:cm(0.0),y:0,w:cm(2.2),h:cm(0.55),color:"#d69a2e"}
+           ,{type: "rect",x:cm(2.2),y:0,w:cm(2.3),h:cm(0.55),color:"#2e4736"}
+           ,{type: "rect",x:cm(4.5),y:0,w:cm(2.3),h:cm(0.55),color:"#662c40"}
+           ,{type: "rect",x:cm(6.8),y:0,w:cm(2.25),h:cm(0.55),color:"#343a49"}
+           ,{type: "rect",x:cm(9.05),y:0,w:cm(2.3),h:cm(0.55),color:"#528c8e"}
+           ,{type: "rect",x:cm(11.35),y:0,w:cm(2.25),h:cm(0.55),color:"#362946"}
+           ,{type: "rect",x:cm(13.6),y:0,w:cm(2.3),h:cm(0.55),color:"#6b8133"}
+           ,{type: "rect",x:cm(15.9),y:0,w:cm(2.25),h:cm(0.55),color:"#2a3b56"}
+           ,{type: "rect",x:cm(18.15),y:0,w:cm(2.3),h:cm(0.55),color:"#862d2e"}
+           ,{type: "rect",x:cm(20.45),y:0,w:cm(2.3),h:cm(0.55),color:"#607f6e"}
+           ,{type: "rect",x:cm(22.75),y:0,w:cm(2.3),h:cm(0.55),color:"#273d3f"}
+           ,{type: "rect",x:cm(25.05),y:0,w:cm(2.3),h:cm(0.55),color:"#a5916d"}
+          ]
+        };
+
+      var ret =
+      [
+        headLine
+       ,{ 
+          margin: [cm(1.1),cm(0.9),cm(1.2),cm(0)]
+         ,columns:
+         [
+           {width: cm(9.2)
+           ,stack:
+            [
+              {text:"PROTOKOLL ZUR",fontSize:"14",color:colText,bold:true}
+             ,{text:"INSULINPUMPENTHERAPIE",fontSize:"14",color:colText,bold:true}
+            ]
+           }
+          ,{ width:cm(3.0)
+            ,text:
+            [
+              {text:"Zielwert:",fontSize:"8",color:"#000000"},
+              {text:"   " + _.fmtNumber(_.getZielwert(),0) + "   ",decoration:"underline",fontSize:"14"}
+            ]
+           }
+          ,{ width:cm(7.0)
+           ,stack:
+            [
+              {layout: this.redHeader
+              ,table:
+               {
+                 widths: [cm(1.35),cm(1.39),cm(4.2)]
+                ,body:
+                [
+                 [ {text:"von",alignment:"center",fillColor:colText,color:"#ffffff"}
+                  ,{text:"bis",alignment:"center",fillColor:colText,color:"#ffffff"}
+                  ,{text:"KE-/BE-Faktoren",alignment:"center",fillColor:colText,color:"#ffffff"}
+                 ]
+                ]
+               }
+              }
+             ,{layout: this.redTable
+               ,table:
+                {
+                  widths: [cm(1.35),cm(1.39),cm(4.2)]
+                 ,body:tables.beFaktorTable
+                }
+              }
+            ]
+           }
+          ,{width:cm(0.3),text:""}
+          ,{ width:cm(7.8)
+            ,stack:
+             [
+              { layout: this.redHeader
+               ,table:
+                {
+                  widths: [cm(1.35),cm(1.39),cm(5.2)]
+                 ,body:
+                 [
+                  [ {text:"von",alignment:"center",fillColor:colText,color:"#ffffff"}
+                   ,{text:"bis",alignment:"center",fillColor:colText,color:"#ffffff"}
+                   ,{text:"Korrekturregeln",alignment:"center",fillColor:colText,color:"#ffffff"}
+                  ]
+                 ]
+                }
+              }
+             ,{ layout: this.redTable
+               ,table:
+                {
+                  widths: [cm(1.35),cm(1.39),cm(5.2)]
+                 ,body:tables.ieFaktorTable
+                }
+              }
+             ]
+           }
+         ]
+        }
+        ,{margin:[cm(1.1),cm(-0.4),cm(1.2),cm(0.0)]
+         ,text:["Datum: vom "
+               ,{text:"   " + _.fmtDate(begDate) + "   ",decoration:"underline",bold:false,fontSize:14}
+               ," bis "
+               ,{text:"   " + _.fmtDate(endDate) + "   ",decoration:"underline",bold:false,fontSize:14}
+               ]
+         }
+        ,{margin:[cm(1.1),cm(0.2),cm(1.2),cm(0.0)]
+         ,stack:
+          [
+           {layout:this.redHeader
+           ,table:_.driveData.cloneOf(tables.br.head)
+           }
+          ,{layout:this.redTable
+           ,table:tables.br.before
+           }
+          ]
+         }
+        ,{margin:[cm(1.1),cm(0.1),cm(1.2),cm(0.0)]
+         ,layout:this.glucHeaderLayout
+         ,lineHeight:cm(0.04)
+         ,table:tables.glucHeader
+         }
+        ,{margin:[cm(1.1),cm(0.0),cm(1.2),cm(0.0)]
+         ,layout:this.glucTableLayout
+         ,lineHeight:cm(0.04)
+         ,table:tables.glucTable
+         }
+        ,{margin:[cm(1.1),cm(0.1),cm(1.2),cm(0.0)]
+         ,stack:
+          [
+           {layout:this.redHeader
+           ,table:_.driveData.cloneOf(tables.br.head)
+           }
+          ,{layout:this.redTable
+           ,table:tables.br.after
+           }
+          ]
+         }
+        ,{margin:[cm(2.0),cm(0.5),cm(0),cm(0)]
+         ,image:"diamant"
+         ,height:cm(2.0)
+         ,width:cm(2.0)
+         }
+        ,{margin:[cm(2.25),cm(-1.5),cm(0),cm(0)]
+         ,text:"DIAMANT"
+         ,fontSize: 10
+         ,color: "#00f"
+         ,bold: true
+         }
+        ,{margin:[cm(24.5),cm(-1.0),cm(0),cm(0)]
+         ,image:"INPUT"
+         ,width:cm(3.2)
+         ,pageBreak: "after"
+         }
+        ,headLine
+        ,{ 
+          margin: [cm(1.1),cm(0.9),cm(1.2),cm(0)]
+         ,text:"PROTOKOLL ZUR INSULINPUMPENTHERAPIE",fontSize:"14",color:colText,bold:true
+         }
+        ,{margin:[cm(1.1),cm(1.2),cm(1.2),cm(0.0)]
+        ,stack:
+         [
+          {layout:this.redHeader
+          ,table:_.driveData.cloneOf(tables.br.head)
+          }
+         ,{layout:this.redTable
+          ,table:tables.br.beforeNotes
+          }
+         ]
+        }
+       ,{margin:[cm(1.1),cm(0.1),cm(1.2),cm(0.0)]
+        ,layout:this.glucHeaderLayout
+        ,lineHeight:cm(0.04)
+        ,table:_.driveData.cloneOf(tables.glucHeader)
+        }
+       ,{margin:[cm(1.1),cm(0.0),cm(1.2),cm(0.0)]
+        ,layout:this.glucTableLayout
+        ,lineHeight:cm(0.04)
+        ,table:tables.glucTableNotes
+        }
+       ,{margin:[cm(1.1),cm(0.1),cm(1.2),cm(0.0)]
+        ,stack:
+         [
+          {layout:this.redHeader
+          ,table:_.driveData.cloneOf(tables.br.head)
+          }
+         ,{layout:this.redTable
+          ,table:tables.br.afterNotes
+          }
+         ]
+        }
+       ,{margin:[cm(2.0),cm(0.5),cm(0),cm(0)]
+        ,image:"diamant"
+        ,height:cm(2.0)
+        ,width:cm(2.0)
+        }
+       ,{margin:[cm(2.25),cm(-1.5),cm(0),cm(0)]
+        ,text:"DIAMANT"
+        ,fontSize: 10
+        ,color: "#00f"
+        ,bold: true
+        }
+       ,{margin:[cm(24.5),cm(-1.0),cm(0),cm(0)]
+        ,image:"INPUT"
+        ,width:cm(3.2)
+        }
+/*       
+        ,{layout: this.redHeader
+         ,margin: [cm(1.0),cm(3.0),cm(1.0),cm(1.0)]
+         ,table:
+          {
+            widths: [cm(1.65),cm(1.65),cm(1.65),cm(1.65),cm(1.65),cm(1.65),cm(1.65)]
+           ,body:
+           [
+            [{text:"Montag",alignment:"center",fillColor:colText,color:"#ffffff",margin:[cm(0.0),cm(0.32),cm(0.0),cm(0.32)]}
+            ,{text:"Dienstag",alignment:"center",fillColor:colText,color:"#ffffff",margin:[cm(0.0),cm(0.32),cm(0.0),cm(0.32)]}
+            ,{text:"Mittwoch",alignment:"center",fillColor:colText,color:"#ffffff",margin:[cm(0.0),cm(0.32),cm(0.0),cm(0.32)]}
+            ,{text:"Donnerstag",alignment:"center",fillColor:colText,color:"#ffffff",margin:[cm(0.0),cm(0.32),cm(0.0),cm(0.32)]}
+            ,{text:"Freitag",alignment:"center",fillColor:colText,color:"#ffffff",margin:[cm(0.0),cm(0.32),cm(0.0),cm(0.32)]}
+            ,{text:"Samstag",alignment:"center",fillColor:colText,color:"#ffffff",margin:[cm(0.0),cm(0.32),cm(0.0),cm(0.32)]}
+            ,{text:"Sonntag",alignment:"center",fillColor:colText,color:"#ffffff",margin:[cm(0.0),cm(0.32),cm(0.0),cm(0.32)]}
+            ]
+           ]
+          }
+         }
+*/
+      ];
+      
+      return ret;
+    },
+    getBRTables: function(begDate,endDate,colFill)
+    {
+      var head = [{text:"",fillColor:colFill,color:"white",alignment:"center"},{text:"Uhrzeit",fillColor:colFill,color:"white",alignment:"center"}];
+      var before = [{text:"Basalrate",marginTop:-cm(0.15),fillColor:colFill,color:"white",alignment:"center"},{text:"Insulin",alignment:"center",marginTop:cm(0.1)}];
+      var after = [{text:"Basalrate\nNEU",marginTop:-cm(0.3),fillColor:colFill,color:"white",alignment:"center"},{text:"Insulin",alignment:"center",marginTop:cm(0.1)}];
+      var notes = [{text:"Basalrate",marginTop:-cm(0.15),fillColor:colFill,color:"white",alignment:"center"},{text:"Notizen",alignment:"center",marginTop:cm(0.1)}];
+
+      var w = [cm(1.3),cm(1.7)];
+      
+      begDate = begDate.getFullYear()*10000+(begDate.getMonth()+1)*100+begDate.getDate();
+      var times = _.getProfileData(begDate).times;
+      endDate = endDate.getFullYear()*10000+(endDate.getMonth()+1)*100+endDate.getDate();
+      var checkTimes = _.getProfileData(endDate).times;
+      for(var i=0; i<24; i++)
+      {
+        w.push(cm(1.012));
+        head.push({text:""+i,fillColor:colFill,color:"white",alignment:"center"});
+        before.push({text:times[i]+"",alignment:"center",fontSize:12,color:"#000000"});
+        after.push({text:times[i]+"",alignment:"center",fontSize:12,color:(checkTimes[i]==times[i]?"#808080":"#000000")});
+        notes.push({text:"",alignment:"center",fontSize:12,color:"#000000"});
+      }
+      
+      var ret = 
+      {
+        head: {widths:w,body:[head]}
+       ,before: {widths:w,body:[before]}
+       ,after: {widths:w,body:[after]}
+       ,beforeNotes: {widths:w,body:[notes]}
+       ,afterNotes: {widths:w,body:[_.driveData.cloneOf(notes)]}
+      };
+      
+      ret.beforeNotes.body[0][0].text = "Basalrate";
+      ret.afterNotes.body[0][0].text = "Basalrate\nNEU";
+      ret.afterNotes.body[0][0].marginTop = -cm(0.3);
+      
+      return ret;
+    },
+    getTables: function(begDate,endDate,vars,colFill)
+    {
+      var ret = {};
+      ret.beFaktorTable = [];
+      ret.ieFaktorTable = [];
+      
+      for(var i=0; i<4; i++)
+      {
+        var be = [];
+        var ie = [];
+        for(var j=0; j<3; j++)
+        {
+          be.push({text:" ",color:"#000000",alignment:"center",margin:[cm(0.1),0,0,0]});
+          ie.push({text:" ",color:"#000000",alignment:"center",margin:[cm(0.1),0,0,0]});
+        }
+        ret.beFaktorTable.push(be);
+        ret.ieFaktorTable.push(ie);
+      }
+      
+      ret.glucHeader =
+      {
+        widths: [cm(1.3),cm(1.7)]
+       ,body:
+       [
+        [{text:"Uhrzeit",colSpan:2,fillColor:colFill,color:"white",alignment:"center"},{text:""}]
+       ]
+      };
+
+      ret.glucTable =
+      {
+        widths: [cm(1),cm(2)]
+       ,body:[]
+      };
+      
+      ret.glucTableNotes =
+      {
+        widths: [cm(1),cm(2)]
+       ,body:[]
+      };
+      
+      var bftIdx = [];
+      for(var day=0; day<7; day++)
+      {
+        var line = [
+                    [{image:"day"+(day==6?0:day+1),width:cm(1.0),rowSpan:3,alignment:"center",fillColor:colFill},{text:"Glukose",alignment:"center",marginTop:cm(0.1)}]
+                   ,[{text:""},{text:"KE/BE",alignment:"center",marginTop:cm(0.1)}]
+                   ,[{text:""},{text:"Bolusinsulin",alignment:"center",marginTop:cm(0.1)}]
+                   ];
+        var note = [
+                    [{image:"day"+(day==6?0:day+1),width:cm(1.0),rowSpan:3,alignment:"center",fillColor:colFill},{text:"Notizen",rowSpan:3,alignment:"center",marginTop:cm(0.7)}]
+                   ,[{text:""},{text:""}]
+                   ,[{text:""},{text:""}]
+                   ];
+        for(var i=0; i<24; i++)
+        {
+          if(ret.glucTable.widths.length < 26)
+          {
+            ret.glucTable.widths.push(cm(1.012));
+            ret.glucTableNotes.widths.push(cm(1.012));
+            ret.glucHeader.widths.push(cm(1.012));
+            ret.glucHeader.body[0].push({text:""+i,fillColor:colFill,color:"white",alignment:"center"});
+          }
+          var data = this.getDataForTime(begDate,vars,day,i);
+          var col = data.gluc>0?_.glucColor(data.gluc,_.fmtNumber(i*100,0,4),250,"#ffe0e0").color:"#ffe0e0";
+          var gluc = {text:data.gluc,alignment:"center",fontSize:11,fillColor:col};
+            
+          if(data.katheter)
+          {
+//            gluc.push({image:"katheter"});
+            gluc.bold = true;
+            gluc.fillColor = "#a0a0ff";
+          }
+          line[0].push(gluc);
+          line[1].push({text:data.be,alignment:"center",fontSize:11,fillColor:"#ffe0e0"});
+          line[2].push({text:data.ie,alignment:"center",fontSize:11,fillColor:"#ffe0e0"});
+          note[0].push({text:"",fillColor:"#ffe0e0"});
+          note[1].push({text:"",fillColor:"#ffe0e0"});
+          note[2].push({text:"",fillColor:"#ffe0e0"});
+          
+          if(data.betime.length > 0)
+          {
+            for(var j=0; j<data.betime.length && bftIdx.length < ret.beFaktorTable.length; j++)
+            {
+              var time = Number(data.betime[j].substr(0,2))*60 + Number(data.betime[j].substr(2,2));
+              var found = undefined;
+              for(var k=0; k<_.config.zeiten.length && !found; k++)
+              {
+                if(time <= Number(_.config.zeiten[k].time))
+                  found = k;
+              }
+              
+              if(found && bftIdx.indexOf(found) < 0)
+                bftIdx.push(found);
+            }
+          }
+        }
+        for(var i=0; i<line.length; i++)
+        {
+          ret.glucTable.body.push(line[i]);
+          ret.glucTableNotes.body.push(note[i]);
+        }
+        
+        bftIdx.sort(function(a,b){return a-b;});
+        
+        for(var i=0; i<bftIdx.length; i++)
+        {
+          var from = {time:0};
+          var idx = bftIdx[i];
+          if( idx > 0)
+            from = _.config.zeiten[bftIdx[i]-1];
+            
+          var t = ret.beFaktorTable[i];
+          var to = _.config.zeiten[bftIdx[i]];
+          t[0].text = Math.floor(from.time/60)+":"+(_.fmtNumber(from.time%60,0,2));
+          t[1].text = Math.floor(to.time/60)+":"+(_.fmtNumber(to.time%60,0,2));
+          t[2].text = _.fmtNumber(to.factor,1) + " IE pro BE";
+          t = ret.ieFaktorTable[i];
+          t[0].text = Math.floor(from.time/60)+":"+(_.fmtNumber(from.time%60,0,2));
+          t[1].text = Math.floor(to.time/60)+":"+(_.fmtNumber(to.time%60,0,2));
+          t[2].text = "1 IE senkt BZ um " + to.adjust + " mg/dl";
+        }
+      }
+      
+      ret.br = this.getBRTables(begDate,endDate,colFill);
+      
+      return ret;
+    },
+    getDataForTime: function(begDate,vars,idx,hour)
+    {
+      var ret = {gluc:"",be:0,ie:0,katheter:false,betime:[]};
+      var date = new Date(begDate);
+      date.setDate(date.getDate()+idx);
+      var day = undefined;
+      for(var i=0; i<vars.items.length && !day; i++)
+      {
+        if(_.inDateRange(vars.items[i].day,vars.items[i].month,vars.items[i].year,date,date))
+          day = vars.items[i];
+      }
+      if(day)
+      {
+        for(var i=0; i<day.times.length; i++)
+        {
+          if(Math.floor(Number(day.times[i].time)/100) == hour)
+          {
+            if(day.times[i].gluc)
+              ret.gluc = day.times[i].gluc;
+            var t1 = Number(day.times[i].bolusadjust);
+            if(isNaN(t1))t1 = 0;
+            var t2 = Number(day.times[i].bolusbe);
+            if(isNaN(t2))t2 = 0;
+            if(t1+t2 > 0)
+              ret.ie += t1+t2;
+            if(day.times[i].food)
+            {
+              ret.be += _.calcBE(day.times[i].food,vars.foodList);
+              ret.betime.push(""+day.times[i].time);
+            }
+            if(day.times[i].katheter)
+              ret.katheter = true;
+          }
+        }
+      }
+      
+      if(ret.ie == 0)
+        ret.ie = "";
+      else
+        ret.ie = _.fmtNumber(ret.ie,1);
+      
+      if(ret.be == 0)
+        ret.be = "";
+      else
+        ret.be = _.fmtNumber(ret.be,1);
+      
+      return ret;
+    }
+  });
+</script></body></html>

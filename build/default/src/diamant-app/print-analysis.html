@@ -1,0 +1,255 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"><link rel="prefetch" href="../../bower_components/iron-ajax/iron-request.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill-lite.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise.js"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-loader.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/promise-polyfill.html"><link rel="prefetch" href="../../bower_components/promise-polyfill/Promise-Statics.js"><link rel="prefetch" href="../../bower_components/google-chart/charts-loader.html"><link rel="prefetch" href="../../bower_components/google-chart/google-chart-styles.html"></head><body><dom-module id="print-analysis">
+  <template>
+    <style is="custom-style">:host{display:none;}</style>
+    <google-chart id="chartbasal" hidden="" type="column"></google-chart>
+    <img id="image" src="resources/noimage.print.png" hidden="">
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "print-analysis",
+    getForm: function(vars)
+    {
+      var config = vars.config;
+      var calc = vars.calc;
+      
+      var title = _.fmtDate(new Date());
+      var basal = _.drawChartBasal(this.$.chartbasal,"print");
+
+      var avgGluc = Math.floor(calc.combosum / calc.combocount);
+      var glucWarnColor = "#ffffff";
+      var glucWarnText = "";
+      var hba1c = (calc.combosum / calc.combocount+86)/33.3;
+      if(hba1c > 7)
+        glucWarnColor = _.blendColor("ffffff","ff0000",(hba1c-7)/2);
+        
+      var pumpList = [];
+      for(var i=0; i<config.pumps.length; i++)
+      {
+        var pump = {style:"persdata"};
+        pump.text = _.fmtDate(config.pumps[i].since);
+        pump.text += ", " + config.pumps[i].name;
+        pumpList.push(pump);
+      }
+      
+      var ret = 
+      {
+        pageSize: "a4",
+        pageMargins: [cm(1),cm(1),cm(1),cm(1)],
+        content: 
+        [
+          { text: config.firstname + " " + config.lastname, fontSize: 20, alignment: "center"}
+         ,{
+            margin: [cm(4.5),cm(0.5),0,0]
+           ,layout: "noBorders"
+           ,table: 
+            {
+              headerRows: 0,
+              widths: [cm(5),cm(8)],
+              body: 
+              [
+                [ {text:"Geburtstag:",style:"perstitle"}, {text:_.fmtDate(config.birthdate,"??.??.????"),style:"persdata"} ]
+               ,[ {text:"Diabetes seit:",style:"perstitle"}, {text:_.fmtDate(config.diabseit,"??.??.????"),style:"persdata"} ]
+               ,[ {text:"Pumpen:",style:"perstitle"}, pumpList ]
+               ,[ {text:"Insulin:",style:"perstitle"}, {text:config.bolus+" ",style:"persdata"} ]
+              ]
+            }
+          }
+//         ,{ text: "\nBerechnungswerte:", bold: true}
+         ,{ text: "\nAuswertung vom " + _.fmtDate(vars.begDate) + " bis " + _.fmtDate(vars.endDate), fontSize: 16, alignment: "center"}
+         ,{
+             margin: [cm(2.7),cm(0.5),0,0]
+            ,layout: "noBorders"
+            ,table: 
+            {
+              headerRows: 0
+              ,widths: [0,cm(7.3),cm(1.5),cm(4)]
+              ,body: 
+              [
+                [ {text:""}
+                 ,{text:"Ausgewertete Tage:",style:"infotitle"}
+                 ,{text:"" + calc.daycount,style:"infodata"} 
+                 ,{text:"",style:"infounit"}
+                ]
+               ,[ {text:""}
+                 ,{text:"Anzahl Messungen Combo:",style:"infotitle"}
+                 ,{text:"" + calc.combocount,style:"infodata"}
+                 ,{text:"(Ø " + Math.floor(calc.combocount/calc.daycount) + " Messungen am Tag)",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Anzahl Messungen Libre:",style:"infotitle"}
+                 ,{text:"" + calc.librecount,style:"infodata"}
+                 ,{text:" (Ø " + Math.floor(calc.librecount/calc.daycount) + " Messungen am Tag)",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Anzahl Ampullen:",style:"infotitle"}
+                 ,{text:"" + calc.ampullecount,style:"infodata"}
+                 ,{text:(calc.ampullecount > 0 ? " (Ø " + Math.floor(calc.daycount/calc.ampullecount) + " Tag" + (Math.floor(calc.daycount/calc.ampullecount)==1?"":"e") + " pro Ampulle)":""),style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Anzahl Katheter:",style:"infotitle"}
+                 ,{text:"" + calc.kathetercount,style:"infodata"}
+                 ,{text:(calc.kathetercount > 0 ? " (Ø " + Math.floor(calc.daycount/calc.kathetercount) + " Tag" + (Math.floor(calc.daycount/calc.kathetercount)==1?"":"e") + " pro Katheter)":""),style:"infounit"}
+                ]
+               ,[ {canvas: [{ type: "line", x1: 0, y1: 0, x2: cm(13.5), y2: 0, lineWidth: cm(0.01) }],colSpan:4,style:"infoline"} ]
+               ,[ {text:""}
+                 ,{text:"Werte im Zielbereich:",style:"infotitle"}
+                 ,{text:""+calc.combonorm,style:"infodata"}
+                 ,{text:"(" + Math.floor(calc.combonorm/calc.combocount*100) + "%)",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Werte über Zielbereich:",style:"infotitle"}
+                 ,{text:""+calc.combohigh,style:"infodata"}
+                 ,{text:"(" + Math.floor(calc.combohigh/calc.combocount*100) + "%)",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Werte unter Zielbereich:",style:"infotitle"}
+                 ,{text:""+calc.combolow,style:"infodata"}
+                 ,{text:"(" + Math.floor(calc.combolow/calc.combocount*100) + "%)",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Werte unter " + _.glucFromData(70) + " " + _.getGlucInfo().unit + ":",style:"infotitle"}
+                 ,{text:""+calc.combo70,style:"infodata"}
+                 ,{text:"(" + Math.floor(calc.combo70/calc.combocount*100) + "%)",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Werte zwischen " + _.glucFromData(70) + " " + _.getGlucInfo().unit 
+                      + " und " 
+                      + _.glucFromData(180) + " " + _.getGlucInfo().unit + ":",style:"infotitle"}
+                 ,{text:""+calc.combo70180,style:"infodata"}
+                 ,{text:"(" + Math.floor(calc.combo70180/calc.combocount*100) + "%)",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Werte über " + _.glucFromData(180) + " " + _.getGlucInfo().unit + ":",style:"infotitle"}
+                 ,{text:""+calc.combo180,style:"infodata"}
+                 ,{text:"(" + Math.floor(calc.combo180/calc.combocount*100) + "%)",style:"infounit"} 
+                ]
+               ,[ {canvas:[{type:"line",x1:cm(3.6),y1:cm(0.2),x2:cm(6.7),y2:cm(0.2),lineWidth:cm(0.1),lineColor:glucWarnColor}]}
+                 ,{text:"geschätzter HbA1c",style:"infotitle"}
+                 ,{text:_.fmtNumber(hba1c,1,0),style:["infodata", "hba1c"]}
+                 ,{text:"%",style:["infounit", "hba1c"]} 
+                ]
+               ,[ {canvas: [{ type: "line", x1: 0, y1: 0, x2: cm(13.5), y2: 0, lineWidth: cm(0.01) }],colSpan:4,style:"infoline"} ]
+               ,[ {canvas:[{type:"line",x1:cm(2.6),y1:cm(0.2),x2:cm(6.7),y2:cm(0.2),lineWidth:cm(0.1),lineColor:glucWarnColor}]}
+                 ,{text:"Ø Zuckerwert" + glucWarnText,style:"infotitle"}
+                 ,{text:_.fmtNumber(avgGluc,0,0),style:"infodata"}
+                 ,{text: _.getGlucInfo().unit,style:"infounit"}
+                ]
+               ,[ {text:""}
+                 ,{text:"Ø BE pro Tag",style:"infotitle"}
+                 ,{text:_.fmtNumber(calc.besum / calc.daycount,1,0),style:"infodata"}
+                 ,{text:"BE",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Ø BE pro Hauptmahlzeit",style:"infotitle"}
+                 ,{text:(calc.bemaincount>0?_.fmtNumber(calc.bemain / calc.bemaincount,1,0):"Keine"),style:"infodata"}
+                 ,{text:"BE",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Ø BE pro Zwischenmahlzeit",style:"infotitle"}
+                 ,{text:(calc.besmallcount>0?_.fmtNumber(calc.besmall / calc.besmallcount,1,0):"Keine"),style:"infodata"}
+                 ,{text:"BE",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Ø BE zur Korrektur",style:"infotitle"}
+                 ,{text:(calc.beadjustcount>0?_.fmtNumber(calc.beadjust / calc.beadjustcount,1,0):"Keine"),style:"infodata"}
+                 ,{text:"BE",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Ø Insulin pro Tag",style:"infotitle"}
+                 ,{text:_.fmtNumber((calc.iebolussum+calc.iebasalsum)/calc.daycount,1,0),style:"infodata"}
+                 ,{text:"IE",style:"infounit"} 
+                ]
+               ,[ {text:""}
+                 ,{text:"Ø Insulinverhältnis",style:"infotitle"}
+                 ,{text:_.fmtNumber(calc.iebolusprz,2,0) + "\n" + _.fmtNumber(calc.iebasalprz,2,0),style:"infodata"}
+                 ,{text:"% Bolus\n% Basal",style:"infounit"}
+                ]
+//*/                
+              ]
+            }
+          }
+         ,{ text:
+            [
+              "\nBasalprofil am ", 
+              { text: basal.date, bold: true}
+            ]
+           ,alignment: "center"            
+          }
+         ,{ text:
+            [
+              "gültig seit ",
+              { text: basal.since, bold: true}
+            ]
+           ,alignment: "center"
+           ,fontSize: 8
+          }
+         ,{
+            alignment: "center"
+           ,image: "basal"
+          }
+         ,{ text:
+            [
+              { text: _.fmtNumber(basal.ieSum,1,0) + " IE ", bold: true}
+             ,"am Tag"
+            ]
+           ,alignment: "center"            
+          }
+        ]
+       ,images: 
+        {
+          basal: _.getBase64Image(this.$.image)
+        }
+       ,styles: 
+        {
+          infoline:
+          {
+            margin: [0,cm(0.25),0,cm(0.25)]
+          },
+          perstitle: 
+          {
+            fontSize: 10
+           ,alignment: "right"
+          },
+          persdata:
+          {
+            fontSize: 10
+           ,color: "#0000ff"
+          },
+          infotitle: 
+          {
+            fontSize: 10
+           ,alignment: "left"
+          },
+          infodata:
+          {
+            fontSize: 10
+           ,alignment: "right"
+           ,color: "#0000ff"
+          },
+          infounit:
+          {
+            margin: [0,cm(0.07),0,0]
+           ,fontSize: 8
+           ,color: "#0000ff"
+          },
+          hba1c:
+          {
+            color: "#5050ff"
+          }
+        }
+      };
+      try
+      {
+        ret.images.basal = this.$.chartbasal.getImageURI();
+      }
+      catch(ex)
+      {
+      }
+      return ret;
+    }
+  });
+</script></body></html>

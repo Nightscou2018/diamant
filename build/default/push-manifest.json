@@ -1,0 +1,696 @@
+{
+  "src/diamant-app/diamant-app.html": {
+    "bower_components/polymer/polymer.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/polymer/polymer-mini.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/polymer/polymer-micro.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/font-roboto/roboto.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-signed-out.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-flex-layout/iron-flex-layout-classes.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/cloud-data/cloud-data.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/google-signin/google-signin.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/google-signin/google-signin-aware.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/google-apis/google-js-api.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-jsonp-library/iron-jsonp-library.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-icon/iron-icon.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-meta/iron-meta.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-flex-layout/iron-flex-layout.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-ripple/paper-ripple.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-a11y-keys-behavior/iron-a11y-keys-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-material/paper-material.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-styles/shadow.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-material/paper-material-shared-styles.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/google-signin/google-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-iconset-svg/iron-iconset-svg.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/google-signin/google-signin.css": {
+      "type": "style",
+      "weight": 1
+    },
+    "bower_components/google-apis/google-client-loader.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/cloud-data/import.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/filesaver/FileSaver.min.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "bower_components/jszip/dist/jszip.min.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "bower_components/cloud-data/cloud-data-overlay.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-button/paper-button.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-behaviors/paper-button-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-behaviors/iron-button-state.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-behaviors/iron-control-state.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-behaviors/paper-ripple-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-overlay-behavior/iron-overlay-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-fit-behavior/iron-fit-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-resizable-behavior/iron-resizable-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-overlay-behavior/iron-overlay-manager.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-overlay-behavior/iron-overlay-backdrop.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-overlay-behavior/iron-focusables-helper.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-signed-in.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-icons/iron-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-icon-button/paper-icon-button.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-behaviors/paper-inky-focus-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-styles/default-theme.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-styles/color.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-icons/maps-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-icons/image-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-icons/social-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-header-panel/paper-header-panel.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-toolbar/paper-toolbar.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-styles/typography.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-fab/paper-fab.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-dialog/paper-dialog.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-animation-runner-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-animatable-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-dialog-behavior/paper-dialog-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-tooltip/paper-tooltip.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/fade-in-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-animation-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/web-animations.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/web-animations-js/web-animations-next-lite.min.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/fade-out-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-drawer-panel/paper-drawer-panel.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-media-query/iron-media-query.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-selector/iron-selector.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-selector/iron-multi-selectable.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-selector/iron-selectable.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-selector/iron-selection.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-pages/iron-pages.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-toast/paper-toast.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-a11y-announcer/iron-a11y-announcer.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/resources/local-config.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/dlg-foodlist.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-input/paper-input.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-form-element-behavior/iron-form-element-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-input/iron-input.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-validatable-behavior/iron-validatable-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-input/paper-input-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-input/paper-input-char-counter.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-input/paper-input-addon-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-input/paper-input-container.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-input/paper-input-error.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/responsive-table/responsive-table.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-animated-pages.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-animatable.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-animations.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/cascaded-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/hero-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-shared-element-animation-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/opaque-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/ripple-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/reverse-ripple-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/scale-down-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/scale-up-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-from-left-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-from-right-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-from-top-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-from-bottom-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-left-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-right-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-up-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/slide-down-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/animations/transform-animation.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/neon-animation/neon-shared-element-animatable-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/dlg-input.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-input/paper-textarea.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-listbox/paper-listbox.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-menu-behavior/iron-menu-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-item/paper-item.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-item/paper-item-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-item/paper-item-shared-styles.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-icons/editor-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-dropdown-menu/paper-dropdown-menu.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-menu-button/paper-menu-button.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-dropdown/iron-dropdown.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-dropdown/iron-dropdown-scroll-manager.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-menu-button/paper-menu-button-animations.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-dropdown-menu/paper-dropdown-menu-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-dropdown-menu/paper-dropdown-menu-shared-styles.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-slider/paper-slider.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-range-behavior/iron-range-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-progress/paper-progress.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-checkbox/paper-checkbox.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-behaviors/paper-checked-element-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-checked-element-behavior/iron-checked-element-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/zreptil-time-picker/zreptil-time-picker.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/dlg-config.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/zreptil-date-picker/zreptil-date-picker.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/vaadin-date-picker/vaadin-date-picker.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/vaadin-date-picker/vaadin-date-picker-overlay.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/vaadin-date-picker/vaadin-month-calendar.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/vaadin-date-picker/vaadin-date-picker-helper.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/vaadin-date-picker/vaadin-infinite-scroller.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/vaadin-date-picker/vaadin-date-picker-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/vaadin-date-picker/vaadin-date-picker-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/dlg-print.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/pdfmake/build/pdfmake.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "bower_components/pdfmake/build/vfs_fonts.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "bower_components/paper-radio-group/paper-radio-group.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-menu-behavior/iron-menubar-behavior.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-radio-button/paper-radio-button.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-analysis.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/google-chart/google-chart.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-ajax/iron-request.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/promise-polyfill/promise-polyfill-lite.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/promise-polyfill/Promise.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "bower_components/google-chart/google-chart-loader.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/promise-polyfill/promise-polyfill.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/promise-polyfill/Promise-Statics.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "bower_components/google-chart/charts-loader.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/google-chart/google-chart-styles.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-diary.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-INPUT-protkoll.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-INPUT-protkoll-cgm.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-INPUT-datenmanagement.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-INPUT-basalrate.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-INPUT-faktoren.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/print-INPUT-trend.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-daydata.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-tabs/paper-tabs.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-tabs/paper-tabs-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/paper-tabs/paper-tab.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "bower_components/iron-icons/av-icons.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-monthdata.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-yeardata.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-tutorial.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-tutor-sign.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-welcome.html": {
+      "type": "document",
+      "weight": 1
+    },
+    "src/diamant-app/resources/globals.js": {
+      "type": "script",
+      "weight": 1
+    },
+    "src/diamant-app/diamant-app.html": {
+      "type": "document",
+      "weight": 1
+    }
+  }
+}

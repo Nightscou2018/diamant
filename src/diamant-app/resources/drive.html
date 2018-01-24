@@ -1,0 +1,150 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      // Your Client ID can be retrieved from your project in the Google
+      // Developer Console, https://console.developers.google.com
+      var CLIENT_ID = '866072595808-oi6f7ql7eetaeq7jjdp1hrb54jq9o1j7.apps.googleusercontent.com';
+
+      var SCOPES = ['https://www.googleapis.com/auth/drive'];
+
+      /**
+       * Check if current user has authorized this application.
+       */
+      function checkAuth() 
+      {
+        gapi.auth.authorize(
+          {
+            'client_id': CLIENT_ID,
+            'scope': SCOPES.join(' '),
+            'immediate': true
+          },function(authResult) 
+            {
+              var authorizeDiv = document.getElementById('authorize-div');
+              if (authResult && !authResult.error) 
+              {
+                // Hide auth UI, then load client library.
+                authorizeDiv.style.display = 'none';
+                gapi.client.load("drive", "v3", function()
+                {
+                  var request = gapi.client.drive.files.list(
+                  {
+                    "pageSize": 100,
+                    "fields": "nextPageToken, files(id, name, trashed)",
+                    "q": "name = 'diamant.food.json'"
+                  });
+
+                  request.execute(function(resp) 
+                  {
+                    appendPre('Files:');
+                    var files = resp.files;
+                    if (files && files.length > 0) 
+                    {
+                      for (var i = 0; i < files.length; i++) 
+                      {
+                        var file = files[i];
+                        appendPre(file.name + ' (' + file.id + ')');
+                        if(file.name == "diamant.food.json")
+                        {
+                          var accessToken = gapi.auth.getToken().access_token;
+                          var xhr = new XMLHttpRequest();
+                          
+                          xhr.open('GET', "https://www.googleapis.com/drive/v3/files/"+file.id+"?alt=media");
+                          xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+                          xhr.onload = function() 
+                          {
+                            haveit(xhr.responseText);
+                          };
+                          xhr.onerror = function() 
+                          {
+                            haveit(xhr.statusText);
+                          };
+                          xhr.send();
+                        }      
+                      }
+                    }
+                    else 
+                    {
+                      appendPre('No files found.');
+                    }
+                  });
+                });
+              }
+              else
+              {
+                // Show auth UI, allowing the user to initiate authorization by
+                // clicking authorize button.
+                authorizeDiv.style.display = 'inline';
+              }
+            });
+      }
+
+      /**
+       * Initiate auth flow in response to user clicking authorize button.
+       *
+       * @param {Event} event Button click event.
+       */
+      function handleAuthClick(event) 
+      {
+        gapi.auth.authorize(
+          {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
+          handleAuthResult);
+        return false;
+      }
+
+      function haveit(text)
+      {
+        _.msg(text);
+      }
+      
+      /**
+       * Download a file's content.
+       *
+       * @param {File} file Drive File instance.
+       * @param {Function} callback Function to call when the request is complete.
+       */
+      function downloadFile(file, callback) 
+      {
+        var accessToken = gapi.auth.getToken().access_token;
+        var xhr = new XMLHttpRequest();
+        
+        xhr.open('GET', "https://www.googleapis.com/drive/v3/files/"+file.id+"?alt=media");
+        xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        xhr.onload = function() 
+        {
+          callback(xhr.responseText);
+        };
+        xhr.onerror = function() 
+        {
+          callback(xhr.statusText);
+        };
+        xhr.send();
+      }      
+
+      /**
+       * Append a pre element to the body containing the given message
+       * as its text node.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendPre(message) 
+      {
+        var pre = document.getElementById('output');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+      handleAuthClick(event);
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=checkAuth">
+    </script>
+  </head>
+  <body>
+    <div id="authorize-div" style="display: none">
+      <span>Authorize access to Drive API</span>
+      <!--Button for the user to click to initiate auth sequence -->
+      <button id="authorize-button" onclick="handleAuthClick(event)">
+        Authorize
+      </button>
+    </div>
+    <pre id="output"></pre>
+  </body>
+</html>

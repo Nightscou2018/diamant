@@ -1,0 +1,108 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="prefetch" href="../../bower_components/polymer/polymer-mini.html"><link rel="prefetch" href="../../bower_components/polymer/polymer-micro.html"></head><body><dom-module id="diamant-tutor">
+  <template>
+    <style is="custom-style">#body{z-index:2000;position:absolute;}#body>img{width:100%;height:100%;}</style>
+     <div id="body" on-tap="tapBody" style="left:{{x}}%;top:{{y}}%;width:{{width}}em;height:{{height}}em" on-mousemove="mouseMove">
+      <svg viewBox="0 5 128 100" style="width:100%;height:1px;overflow: visible;" preserveAspectRatio="xMidYMin slice">
+        <path id="diamond" d="m 23.865739,20.351102 79.891081,0.19775 20.17052,24.125525 L 63.811283,124.36771 3.6952178,44.476627 Z" style="fill:#006cae;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"></path>
+        <path d="M 4.6471296,45.460373 C 62.644066,45.735918 62.644066,45.735918 121.83399,44.9929" style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3.98538136px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1">
+          <animate begin="indefinite" id="animline" attributeName="opacity" attributeType="CSS" dur="1s" f="1" t="0" fill="freeze"></animate>
+        </path>
+        <path id="eyes" d="M 41.707932,20.420042 C 22.533203,19.77119 23.60813,20.593561 23.60813,20.593561 c 0,0 10.677037,13.381253 18.480655,23.538755 8.268422,-8.905932 10.64576,-11.793499 20.868179,-23.610996 -4.812773,-0.190808 -14.772347,-0.0493 -21.249032,-0.101278 z m 40.772095,0.685334 C 74.982304,21.044206 71.666709,20.576377 63.055218,20.615652 72.581077,32.175549 73.332893,32.907601 82.903999,43.723884 93.493923,32.001617 103.66922,20.977349 103.66922,20.977349 c 0,0 0.97881,0 -21.189193,0.128027 z" style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1">
+          <animate begin="indefinite" id="animeyes" attributeName="d" attributeType="XML" dur="1s" f="M 41.707932,20.420042 C 22.533203,19.77119 23.60813,20.593561 23.60813,20.593561 c 0,0 10.677037,13.381253 18.480655,23.538755 8.268422,-8.905932 10.64576,-11.793499 20.868179,-23.610996 -4.812773,-0.190808 -14.772347,-0.0493 -21.249032,-0.101278 z m 40.772095,0.685334 C 74.982304,21.044206 71.666709,20.576377 63.055218,20.615652 72.581077,32.175549 73.332893,32.907601 82.903999,43.723884 93.493923,32.001617 103.66922,20.977349 103.66922,20.977349 c 0,0 0.97881,0 -21.189193,0.128027 z" t="m 47.679688,24.626953 c -7.507467,-0.06025 -11.329195,10.921875 -11.289063,18.751953 0.0339,6.614322 3.804262,16.096452 11.011719,16.134766 8.128592,0.04322 10.785591,-10.60494 10.730468,-15.990234 -0.08629,-8.429653 -3.976439,-18.844502 -10.453124,-18.896485 z m 32.24414,0.212891 c -7.497723,-0.06117 -11.31547,11.087826 -11.27539,19.037109 0.03385,6.715018 3.797989,16.341962 10.996093,16.380859 8.118046,0.04387 10.771849,-10.765143 10.716797,-16.232421 -0.08617,-8.557986 -3.969218,-19.132774 -10.4375,-19.185547 z" fill="freeze"></animate>
+          <animate begin="indefinite" id="animeyes1" attributeName="fill" attributeType="CSS" dur="1s" f="transparent" t="#ffffff" fill="freeze"></animate>
+        </path>
+        <path id="pupilleft" d="m 41.984127,43.060272 c 0.0061,0.190767 0.07703,-0.145882 0.20773,-0.150855 0.142577,-0.0049 0.202535,0.378237 0.215218,0.169731 0.0026,-0.201826 -0.08624,0.135498 -0.209066,0.133418 -0.148736,-0.0015 -0.198775,-0.32849 -0.213882,-0.152294 z" style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1">
+          <animate begin="indefinite" id="animpupilleft" attributeName="d" attributeType="XML" dur="1s" f="m 41.984127,43.060272 c 0.0061,0.190767 0.07703,-0.145882 0.20773,-0.150855 0.142577,-0.0049 0.202535,0.378237 0.215218,0.169731 0.0026,-0.201826 -0.08624,0.135498 -0.209066,0.133418 -0.148736,-0.0015 -0.198775,-0.32849 -0.213882,-0.152294 z" t="m 39.942139,51.439274 c 0.01138,2.637527 2.842654,6.400055 6.583135,6.407931 3.786377,0.008 6.743014,-3.788541 6.718723,-6.458385 -0.02403,-2.655049 -3.032674,-6.394592 -6.797799,-6.361623 -3.7264,0.03265 -6.515303,3.784291 -6.504059,6.412077 z" fill="freeze"></animate>
+        </path>
+        <path id="pupilright" d="m 82.779677,43.409848 c 0.0061,0.190767 0.07703,-0.145882 0.20773,-0.150855 0.142577,-0.0049 0.202535,0.378237 0.215218,0.169731 0.0026,-0.201826 -0.08624,0.135498 -0.209066,0.133418 -0.148736,-0.0015 -0.198775,-0.32849 -0.213882,-0.152294 z" style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:4px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1">
+          <animate begin="indefinite" id="animpupilright" attributeName="d" attributeType="XML" dur="1s" f="m 82.779677,43.409848 c 0.0061,0.190767 0.07703,-0.145882 0.20773,-0.150855 0.142577,-0.0049 0.202535,0.378237 0.215218,0.169731 0.0026,-0.201826 -0.08624,0.135498 -0.209066,0.133418 -0.148736,-0.0015 -0.198775,-0.32849 -0.213882,-0.152294 z" t="m 72.121563,51.622495 c 0.01138,2.637527 2.842654,6.400055 6.583135,6.407931 3.786377,0.008 6.743014,-3.788541 6.718723,-6.458385 -0.02403,-2.655049 -3.032674,-6.394592 -6.797799,-6.361623 -3.7264,0.03265 -6.515303,3.784291 -6.504059,6.412077 z" fill="freeze"></animate>
+        </path>
+        <path id="mouth" d="m 42.14896,45.767017 c 8.217412,-0.17093 8.133431,-0.0311 20.42806,-0.02981 9.003466,-0.0013 13.377851,-0.0013 20.512467,-0.03805 C 76.224778,71.013598 65.722472,113.40552 63.451181,121.18323 62.644066,113.05905 50.11658,72.91328 42.14896,45.767017 Z" style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+          <animate begin="indefinite" id="animmouth" attributeName="d" attributeType="XML" dur="1s" f="m 42.14896,45.767017 c 8.217412,-0.17093 8.133431,-0.0311 20.42806,-0.02981 9.003466,-0.0013 13.377851,-0.0013 20.512467,-0.03805 C 76.224778,71.013598 65.722472,113.40552 63.451181,121.18323 62.644066,113.05905 50.11658,72.91328 42.14896,45.767017 Z" t="m 43.347457,72.207624 c 5.448909,3.3172 9.671566,1.630895 20.637806,4.180863 7.816965,-1.845426 17.532663,-2.566788 23.268974,-3.341881 0.649799,12.658426 -0.0709,25.382002 -24.094713,24.063201 C 39.474651,97.291138 43.207318,76.019364 43.347457,72.207624 Z" fill="freeze"></animate>
+          <animate begin="indefinite" id="animmouth1" attributeName="fill" attributeType="CSS" dur="1s" f="transparent" t="#000000" fill="freeze"></animate>
+        </path>
+        <path id="teeth" d="m 43.003854,45.829478 c 13.524767,-0.09356 14.709687,-0.09356 19.617331,-0.223204 5.320305,0.129644 6.125499,0.525144 20.490053,0.312345 -7.448017,0.212799 -2.022434,-0.182701 -7.808252,0.0296 -7.794008,-0.212296 -8.63215,-0.212296 -12.364785,0.0041 -4.3604,-0.315247 -5.3918,-0.216372 -9.182306,-0.142785 -5.480717,-0.07359 -2.190448,-0.07359 -10.752041,0.01997 z" style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1">
+          <animate begin="indefinite" id="animteeth" attributeName="d" attributeType="XML" dur="1s" f="m 43.003854,45.829478 c 13.524767,-0.09356 14.709687,-0.09356 19.617331,-0.223204 5.320305,0.129644 6.125499,0.525144 20.490053,0.312345 -7.448017,0.212799 -2.022434,-0.182701 -7.808252,0.0296 -7.794008,-0.212296 -8.63215,-0.212296 -12.364785,0.0041 -4.3604,-0.315247 -5.3918,-0.216372 -9.182306,-0.142785 -5.480717,-0.07359 -2.190448,-0.07359 -10.752041,0.01997 z" t="m 44.245364,74.33091 c 11.407435,2.930275 17.383431,0.09361 19.494465,4.555024 2.943186,-3.748557 8.47451,-2.323264 22.279742,-4.837392 0.165366,8.377669 1.100614,11.465516 -8.244708,14.415964 -13.825389,0.0055 -13.882467,-0.289529 -14.055599,-9.611092 -0.10877,9.270292 -0.240357,9.582492 -10.161119,9.373508 -10.226722,0.304414 -9.604376,-7.058266 -9.312781,-13.896012 z" fill="freeze"></animate>
+          <animate begin="indefinite" id="animteeth1" attributeName="fill" attributeType="CSS" dur="1s" f="transparent" t="#ffffff" fill="freeze"></animate>
+        </path>
+     </svg>
+    </div>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "diamant-tutor",
+    properties:
+    {
+      x: {type:Number,value:50}
+     ,y: {type:Number,value:50}
+     ,width: {type:Number,value:8}
+     ,height: {type:Number,value:8}
+     ,viewX: {type:Array,value:[65,15]}
+     ,viewY: {type:Array,value:[65,15]}
+     ,rev: {type:Number,value:false}
+    },
+    arrayItem: function(change,idx)
+    {
+      return change.base[idx];
+    },
+    ready: function()
+    {
+      this.minViewX = -5;
+      this.maxViewX = 47;
+      this.minViewY = -5;
+      this.maxViewY = 65;
+      this.viewWid = this.maxViewX-this.minViewX;
+      this.viewHig = this.maxViewY-this.minViewY;
+      this.mouseMove({offsetX:0,offsetY:0});
+    },
+    tapBody: function()
+    {
+/*    
+      var a = "eyeopener 1s forwards ";
+      a += rev?"reverse":"normal";
+      this.$.eyeLeft.style.animation = "";
+      this.$.eyeRight.style.animation = "";
+      setTimeout(function(){this.$.eyeLeft.style.animation = a;this.$.eyeRight.style.animation = a;}.bind(this),1);
+*/      
+      this.anim(this.$.animline);
+      this.anim(this.$.animeyes);
+      this.anim(this.$.animeyes1);
+      this.anim(this.$.animpupilleft);
+      this.anim(this.$.animpupilright);
+      this.anim(this.$.animmouth);
+      this.anim(this.$.animmouth1);
+      this.anim(this.$.animteeth);
+      this.anim(this.$.animteeth1);
+      this.rev = !this.rev;
+    },
+    anim: function(elem)
+    {
+      elem.setAttribute("from",elem.attributes[this.rev?"t":"f"].value);
+      elem.setAttribute("to",elem.attributes[this.rev?"f":"t"].value);
+      elem.beginElement();
+    },
+    mouseMove: function(e)
+    {
+      this.setView(this.$.eyeLeft,0,e.offsetX,e.offsetY);
+      this.setView(this.$.eyeRight,1,e.offsetX,e.offsetY);
+    },
+    setView: function(eye,idx,x,y)
+    {/*    
+      var prz = x / this.$.body.clientWidth;
+      var xm = eye.offsetLeft + eye.offsetWidth / 2;
+      var ym = eye.offsetTop + eye.offsetHeight / 2;
+      var przX = 0.5;
+      var przY = 0.5;
+      this.set("viewX."+idx, this.minViewX + przX * this.viewWid);
+      this.set("viewY."+idx, this.minViewY + przY * this.viewHig);
+*/
+//      this.$.mouth.setAttribute("d", "M 43.740215,60.186323 63.740211,70.50633 83.460555,60.627003z");
+//      this.viewLeftX = this.minViewX + this.viewWid * prz;
+//      prz = e.offsetY / this.$.body.clientHeight;
+//      this.viewy = this.minViewY + this.viewHig * prz;
+    }
+  });
+</script></body></html>

@@ -1,0 +1,88 @@
+<html><head><link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
+
+<link rel="prefetch" href="../polymer/polymer-mini.html"><link rel="prefetch" href="../polymer/polymer-micro.html"><link rel="prefetch" href="../iron-flex-layout/iron-flex-layout.html"><link rel="prefetch" href="../paper-behaviors/paper-button-behavior.html"><link rel="prefetch" href="../iron-behaviors/iron-button-state.html"><link rel="prefetch" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"><link rel="prefetch" href="../iron-behaviors/iron-control-state.html"><link rel="prefetch" href="../paper-behaviors/paper-ripple-behavior.html"><link rel="prefetch" href="../paper-ripple/paper-ripple.html"><link rel="prefetch" href="../paper-material/paper-material-shared-styles.html"><link rel="prefetch" href="../paper-styles/shadow.html"><link rel="prefetch" href="../iron-fit-behavior/iron-fit-behavior.html"><link rel="prefetch" href="../iron-resizable-behavior/iron-resizable-behavior.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-overlay-manager.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-overlay-backdrop.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-focusables-helper.html"></head><body><dom-module id="cloud-data-overlay">
+  <style is="custom-style">:host{z-index:1000;background:white;}#cont{padding:2em;}.btnCancel{background:red;padding:20em;}</style>
+  <template>
+    <paper-material elevation="4">
+      <div id="cont"></div>
+      <paper-button id="btnCancel" on-tap="_cancelClick">Cancel</paper-button>
+    </paper-material>
+  </template>
+</dom-module>
+<script>
+  (function() 
+  {
+    Polymer(
+    {
+      is: "cloud-data-overlay",
+      properties:
+      {
+        /**
+          * Set to true to disable canceling the overlay by clicking outside it.
+          */
+        noCancelOnOutsideClick: {type: Boolean, reflectToAttribute: true, value: false},
+        /**
+          * Set to true to hide the overlay.
+          */
+        hideOverlay: {type: Boolean, value: false},
+        /**
+          * Text that should be shown in the middle of the screen.
+          */
+        text: {type: String, value: "", observer: "_textChanged"},
+        /**
+          * Set to true, to show a button that can be clicked to cancel
+          * then current progress. When clicking the button the property
+          * isCancelled of cloud-data-overlay is set to true and the
+          * event on-cancel-click is fired.
+          */
+        showCancelButton: {type: Boolean, value: false},
+        /**
+          * True, if the cancel-button was clicked.
+          */
+        isCanceled: {type: Boolean, value: false}
+      },
+      behaviors: [Polymer.IronOverlayBehavior],
+      ready: function()
+      {
+        this.backdropElement.style.zIndex = 10000000;
+      },
+      /**
+       * Show the given text in the middle of the screen and open the overlay
+       * if it is visible.
+       * 
+       * @param {String} text  text to display in the middle of the screen.
+       */
+      show: function(text)
+      {
+        this.isCanceled = false;
+        this.text = text;
+        if(!this.hideOverlay)
+          this.open();
+      },
+      /**
+        * Called when the button btnCancel is clicked.
+        */
+      _cancelClick: function()
+      {
+        this.isCanceled = true;
+        this.fire("on-cancel-click");
+        this.close();
+      },
+      /**
+       * Called when the text-property changes.
+       */
+      _textChanged: function()
+      {
+        this.$.cont.innerHTML = this.text;
+        if(!this.showCancelButton)
+          this.$.btnCancel.setAttribute("hidden","");
+        else
+          this.$.btnCancel.removeAttribute("hidden");
+      }
+    });
+  })();
+</script>
+</body></html>

@@ -1,0 +1,364 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<dom-module id="print-INPUT-trend">
+  <template>
+    <style is="custom-style">
+    :host
+    {
+      display: none;
+    }
+    </style>
+    <img id="input" src="resources/INPUT.png">
+    <img id="katheter" src="resources/katheter.png">
+    <img id="diamant" src="resources/background.png">
+  </template>
+</dom-module>
+<script>
+  var lineWidth;
+  var colText;
+  var colLine;
+  Polymer(
+  {
+    is: "print-INPUT-trend",
+    getForm: function(vars)
+    {
+      var config = vars.config;
+      lineWidth = cm(0.03);
+      colText = "#e74c51";
+      colLine = "#606060";
+      this.vars = vars;
+      var ret = 
+      {
+        pageSize: "a4"
+       ,pageOrientation: "landscape"
+       ,pageMargins: [cm(0),cm(0),cm(0),cm(0)]
+       ,content: []
+       ,defaultStyle:
+        {
+          fontSize: 8
+        }
+       ,images: 
+        {
+          INPUT: _.getBase64Image(this.$.input)
+         ,katheter: _.getBase64Image(this.$.katheter)
+         ,DIAMANT: _.getBase64Image(this.$.diamant)
+        }
+      };
+      
+      var begDate = new Date(vars.begDate);
+      while(begDate <= vars.endDate)
+      {
+        var endDate = new Date(begDate);
+        endDate.setDate(endDate.getDate() + 6);
+        var page = this.getPage(begDate,endDate);
+        for(var j=0; j<page.length; j++)
+          ret.content.push(page[j]);
+      
+        begDate.setDate(begDate.getDate() + 7);
+        if(begDate<=vars.endDate)
+          ret.content[ret.content.length-1].pageBreak = "after";
+      }
+      return ret;
+    },
+    getHeader: function()
+    {
+      var ret = { canvas:
+                  [
+                    {type: "rect",x:cm(0.0),y:0,w:cm(2.2),h:cm(0.55),color:"#d69a2e"}
+                   ,{type: "rect",x:cm(2.2),y:0,w:cm(2.3),h:cm(0.55),color:"#2e4736"}
+                   ,{type: "rect",x:cm(4.5),y:0,w:cm(2.3),h:cm(0.55),color:"#662c40"}
+                   ,{type: "rect",x:cm(6.8),y:0,w:cm(2.25),h:cm(0.55),color:"#343a49"}
+                   ,{type: "rect",x:cm(9.05),y:0,w:cm(2.3),h:cm(0.55),color:"#528c8e"}
+                   ,{type: "rect",x:cm(11.35),y:0,w:cm(2.25),h:cm(0.55),color:"#362946"}
+                   ,{type: "rect",x:cm(13.6),y:0,w:cm(2.3),h:cm(0.55),color:"#6b8133"}
+                   ,{type: "rect",x:cm(15.9),y:0,w:cm(2.25),h:cm(0.55),color:"#2a3b56"}
+                   ,{type: "rect",x:cm(18.15),y:0,w:cm(2.3),h:cm(0.55),color:"#862d2e"}
+                   ,{type: "rect",x:cm(20.45),y:0,w:cm(2.3),h:cm(0.55),color:"#607f6e"}
+                   ,{type: "rect",x:cm(22.75),y:0,w:cm(2.3),h:cm(0.55),color:"#273d3f"}
+                   ,{type: "rect",x:cm(25.05),y:0,w:cm(2.3),h:cm(0.55),color:"#a5916d"}
+                  ]
+                };
+      return ret;
+    },
+    getFooter: function(pageBreak)
+    {
+      var ret = 
+      {stack:
+       [
+        {absolutePosition:{x:cm(2.0),y:cm(18.0)},image:"DIAMANT",height:cm(2.0),width:cm(2.0)}
+       ,{absolutePosition:{x:cm(2.25),y:cm(18.5)},text:"DIAMANT",fontSize: 10,color: "#00f",bold: true}
+       ,{absolutePosition:{x:cm(23.4),y:cm(17.9)},image:"INPUT",width:cm(4.05)}
+       ,{absolutePosition:{x:cm(14.85),y:cm(20.1)},canvas: [{ type: "line", x1: cm(0), y1: cm(0), x2: cm(0), y2: cm(0.5), lineWidth: cm(0.005), color: "#444" }]}
+       ]
+      };
+      
+      if(pageBreak)
+        ret.pageBreak = "after";
+        
+      return ret;
+    },
+    getPage: function(begDate,endDate)
+    {
+      var date = new Date(begDate);
+      var colModul = "#362946";
+/*      
+      var glucMax = 0;
+      for(var date=new Date(begDate); date < endDate; date.setDate(date.getDate()+1))
+      {
+        var day = this.getDataForDate(date);
+        for(var j=0; j<day.times.length; j++)
+        {
+          var time = day.times[j];
+          if(time.gluc && Number(time.gluc) > glucMax)
+            glucMax = Number(time.gluc);
+        }
+      }
+*/      
+      var glucMax = this.vars.glucMax;
+      glucMax *= 1.1;
+      
+      var gridHeight = 12.48;
+      var gridWidth = 23.0;
+      var gridLines = glucMax/10;
+      while(gridLines > 30)
+        gridLines *= 0.5;
+      var lineHeight = gridHeight / gridLines;
+      var colWidth = gridWidth / 24;
+      
+      var lw = cm(0.01);
+      var lc = "#eee";
+      var lw0 = cm(0.05);
+      var lc0 = "#000";
+      var xo = 3.35;
+      var yo = 4.6;
+      var vertLines = {absolutePosition:{x:cm(xo),y:cm(yo-0.2)},canvas:[]};
+      var horzLines = {absolutePosition:{x:cm(xo-0.2),y:cm(yo)},canvas:[]};
+      var horzLegend = {stack:[]};
+      for(var i=0; i<25; i++)
+      {
+        vertLines.canvas.push({type:"line",x1:cm(i*colWidth),y1:0
+                                          ,x2:cm(i*colWidth),y2:cm(lineHeight*gridLines+0.4)
+                                          ,lineWidth:i==0||i==24?lw0:lw,lineColor:i==0||i==24?lc0:lc});
+        if(i<24)
+        {
+          vertLines.canvas.push({type:"line",x1:cm((i+0.5)*colWidth),y1:cm(lineHeight*gridLines+0.2)
+                                            ,x2:cm((i+0.5)*colWidth),y2:cm(lineHeight*gridLines+0.3)
+                                            ,lineWidth:lw,lineColor:lc});
+          horzLegend.stack.push({absolutePosition:{x:cm(xo+i*colWidth),y:cm(yo+gridLines*lineHeight+0.3)},text:_.fmtNumber(i,0)});
+        }
+      }
+      
+      var vertLegend = {stack:[]};
+      for(var i=0; i<=gridLines; i++)
+      {
+        horzLines.canvas.push({type:"line",x1:0,                  y1:cm((gridLines-i)*lineHeight)-lw/2
+                                          ,x2:cm(24*colWidth+0.4),y2:cm((gridLines-i)*lineHeight)-lw/2
+                                          ,lineWidth:i==0?lw0:lw,lineColor:i==0?lc0:lc});
+        var v = i*(glucMax/gridLines);
+        vertLegend.stack.push({absolutePosition:{x:cm(xo+24*colWidth+0.3),y:cm(yo+(gridLines-i)*lineHeight-0.15)},text:i==0?"0":_.glucFromData(v)});
+        vertLegend.stack.push({absolutePosition:{x:cm(xo-0.8),y:cm(yo+(gridLines-i)*lineHeight-0.15)},text:i==0?"0":_.glucFromData(v)});
+      }
+      
+      // Zielbereich
+      var targetArea = {absolutePosition:{x:cm(xo),y:cm(yo)},canvas:[]};
+      var xl = 0;
+      for(var i=0; i<_.config.zeiten.length; i++)
+      {
+        var time = _.config.zeiten[i];
+        var x = Number(time.time)/1439*gridWidth;
+        var yMin = gridHeight - Number(time.min)/glucMax*gridHeight;
+        var yMax = gridHeight - Number(time.max)/glucMax*gridHeight;
+        targetArea.canvas.push({absolutePosition:{x:cm(xo),y:cm(yo)},type:"rect"
+                                                                      ,x:cm(xl)
+                                                                      ,y:cm(yMax)
+                                                                      ,w:cm(x-xl)
+                                                                      ,h:cm(yMin-yMax)
+                                                                      ,color:"#e0e0ff",fillOpacity:0.5,strokeOpacity:0.5});
+        xl = x;
+      }
+      
+      var pureLayout =
+      {
+        hLineWidth: function(i, node) {return 0;},
+        vLineWidth: function(i, node) {return 0;},
+        hLineColor: function(i, node) {return 0;},
+        vLineColor: function(i, node) {return 0;},
+        paddingLeft: function(i, node) { return 0; },
+        paddingRight: function(i, node) { return 0; },
+        paddingTop: function(i, node) { return 0; },
+        paddingBottom: function(i, node) { return 0; }
+      };
+      var dayLines = {absolutePosition:{x:cm(xo),y:cm(yo)},canvas:[]};
+      var dayPoints = {absolutePosition:{x:cm(xo),y:cm(yo)},stack:[]};
+      var colors = ["#0d007b","#fdef2d","#fe9394","#a9f6f3","#5c9468","#f8e3d2","#884cb0"];
+      colors = ["#d69a2e","#2e4736","#662c40","#343a49","#528c8e","#362946","#6b8133"];
+      var colorsText = ["#000000","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff","#ffffff"];
+      var weekDays = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+      var shortDays = ["Mo","Di","Mi","Do","Fr","Sa","So"];
+      var textX = [0.16,0.13,0.15,0.15,0.13,0.15,0.15];
+      var textY = [0.14,0.15,0.14,0.15,0.15,0.15,0.15];
+      var dayLegend = {absolutePosition:{x:cm(xo),y:cm(19.0)}
+                      ,table:{body:[[]],widths:[]}
+                      ,layout:pureLayout};
+      var yl = undefined;
+      var tl = undefined;
+      var hasKatheterData = false;
+      var hasTrendData = false;
+      for(var date=new Date(begDate); date <= endDate; date.setDate(date.getDate()+1))
+      {
+        var day = this.getDataForDate(date);
+        var dayIdx = date.getDay() - 1;
+        while(dayIdx < 0)
+          dayIdx += 7;
+
+        var info = {stack:[{text:weekDays[dayIdx],color:colors[dayIdx],fontSize:12}
+                          ,{text:_.fmtDate(date),color:colors[dayIdx],fontSize:10}
+                          ]};
+        if(day.times.length > 0)
+        {
+          dayLegend.table.body[0].push(info);
+          dayLegend.table.widths.push(cm(gridWidth/7));
+          
+          var xb = xl;
+          var xl = undefined;
+          for(var j=0; j<day.times.length; j++)
+          {
+            var time = day.times[j];
+            if(time.gluc)
+            {
+              var t = Math.floor(Number(time.time)/100)*60+Number(time.time)%100;
+              var x = t/1439*gridWidth;
+              var y = gridHeight - Number(time.gluc)/glucMax*gridHeight;
+              var c = colors[dayIdx];
+              
+              if(xl == undefined && yl != undefined && t > 0)
+              {
+                xl = 0;
+                var yb = yl;
+                yl += ((y-yl)*(1440-tl)/(t+(1440-tl)));
+                if(dayIdx < 7 && tl < 1439)
+                {
+                  dayLines.canvas.push({absolutePosition:{x:cm(xo),y:cm(yo)}
+                                      ,type: "line"
+                                      ,x1:cm(xb),y1:cm(yb)
+                                      ,x2:cm(gridWidth),y2:cm(yl)
+                                      ,lineWidth:cm(0.03),lineColor:c});
+                }
+                c = colors[dayIdx-1];
+              }
+
+              if(time.info)
+              {
+                if(time.info.stdabw < 25)
+                {
+                  if(_.$.localcfg.isDebug)
+                  {
+                    dayPoints.stack.push({absolutePosition:{x:cm(xo+x-textX[dayIdx]),y:cm(yo)},text:_.fmtNumber(time.info.average,0),fontSize:7,color:"#000"});
+                    dayPoints.stack.push({absolutePosition:{x:cm(xo+x-textX[dayIdx]),y:cm(yo+0.3)},text:_.fmtNumber(time.info.varianz,2),fontSize:7,color:"#000"});
+                    dayPoints.stack.push({absolutePosition:{x:cm(xo+x-textX[dayIdx]),y:cm(yo+0.6)},text:_.fmtNumber(time.info.stdabw,2),fontSize:7,color:"#000"});
+                  }
+                  var x1 = x - 0.35;
+                  var y1 = gridHeight - Number(time.info.max)/glucMax*gridHeight - 0.3;
+                  var y2 = gridHeight - Number(time.info.min)/glucMax*gridHeight + 0.3;
+                  dayLines.canvas.push({absolutePosition:{x:cm(xo),y:cm(yo)}
+                                       ,type:"rect"
+                                       ,x:cm(x1),y:cm(y1),w:cm(0.7),h:cm(y2-y1)
+                                       ,color:"#fbb",lineColor:"#f44"});
+                  hasTrendData = true;
+                }
+              }
+              dayPoints.stack.push({absolutePosition:{x:cm(xo),y:cm(yo)},canvas:[{type:"ellipse",x:cm(x),y:cm(y),r1:6,r2:6,color:colors[dayIdx]}]});
+              if(time.katheter)
+              {
+                var p = dayPoints.stack[dayPoints.stack.length-1];
+                p.canvas[0] = {type:"rect",x:cm(x-0.25),y:cm(y-0.25),w:cm(0.5),h:cm(0.5),color:colors[dayIdx]};
+                hasKatheterData = true;
+              }
+              dayPoints.stack.push({absolutePosition:{x:cm(xo+x-textX[dayIdx]),y:cm(yo+y-textY[dayIdx])},text:shortDays[dayIdx],fontSize:7,color:colorsText[dayIdx]});
+              if(xl != undefined)
+              {
+                dayLines.canvas.push({absolutePosition:{x:cm(xo),y:cm(yo)}
+                                    ,type: "line"
+                                    ,x1:cm(xl),y1:cm(yl)
+                                    ,x2:cm(x),y2:cm(y)
+                                    ,lineWidth:cm(0.03),lineColor:c});
+              }
+              xl = x;
+              yl = y;
+              tl = t;
+            }
+          }
+        }
+      }
+      
+      var dataLegend = {absolutePosition:{x:cm(26.25),y:cm(3.5)}
+                       ,table:
+                       {
+                         widths:[cm(0.4),cm(3.0)]
+                        ,body:[]
+                        
+                       }
+                       ,layout:pureLayout
+                       ,lineHeight:cm(0.05)};
+      dataLegend.table.body.push([{canvas:[{type:"ellipse",x:cm(0.15),y:cm(0.15),r1:4,r2:4,color:"#000"}]}
+                                 ,{text:"Daten",fontSize:8}]);
+      if(hasKatheterData)
+      {
+        dataLegend.absolutePosition.y -= cm(0.5);
+        dataLegend.absolutePosition.x = Math.min(dataLegend.absolutePosition.x,cm(24.4));
+        dataLegend.table.body.push([{canvas:[{type:"rect",x:cm(0),y:cm(0),w:cm(0.3),h:cm(0.3),color:"#000"}]}
+                                  ,{text:"Katheter gewechselt",fontSize:8}]);
+      }
+      if(hasTrendData)
+      {
+        dataLegend.absolutePosition.y -= cm(0.5);
+        dataLegend.absolutePosition.x = Math.min(dataLegend.absolutePosition.x,cm(24.9));
+        dataLegend.table.body.push([{canvas:[{type:"rect",x:cm(0),y:cm(0),w:cm(0.3),h:cm(0.3),color:"#fbb",lineColor:"#f44"}]}
+                                   ,{text:"Trend erkennbar",fontSize:8}]);
+      }
+      
+      var content =
+      [
+        this.getHeader()
+       ,{absolutePosition:{x:cm(2.2),y:cm(2.6)},text:this.vars.trendInfo>0?"Wochentrend":"Erkennen Sie ein Muster?",fontSize:"30",color:colText,bold:true}
+//       ,{absolutePosition:{x:cm(this.vars.type=="inputBRTest"?17.5:20.5),y:cm(1.85)},text:dispDate,fontSize:"10",color:"#c0c0c0",bold:true}
+       ,{absolutePosition:{x:cm(2.2),y:cm(3.94)},canvas:[{type:"line",x1:0,y1:0,x2:cm(25.2),y2:0,lineWidth:cm(0.2),lineColor:colModul}]}
+       ,targetArea
+       ,vertLegend,vertLines,horzLegend,horzLines
+       ,dayLines,dayPoints
+       ,{absolutePosition:{x:cm(13.5),y:cm(18.0)},text:"Uhrzeit",fontSize:12}
+       ,dayLegend,dataLegend
+      ];
+      
+      return content;
+    },
+    getDataForDate: function(date)
+    {
+      var day = undefined;
+      for(var i=0; i<this.vars.items.length && !day; i++)
+      {
+        if(_.inDateRange(this.vars.items[i].day,this.vars.items[i].month,this.vars.items[i].year,date,date))
+          day = this.vars.items[i];
+      }
+      if(!day)
+        day = {times:[]};
+      return day;
+    },
+    getIllegalMark: function(xo,yo,x,y)
+    {
+      return [{absolutePosition:{x:cm(xo),y:cm(yo)},type:"ellipse",x:cm(x),y:cm(y),r1:3,r2:3}];
+    },
+    getBRMark: function(xo,yo,x,y,gluc,calc)
+    {
+      var ret = [{absolutePosition:{x:cm(xo),y:cm(yo)},type:"ellipse",x:cm(x),y:cm(y),r1:3,r2:3,color:"#f15741"}]
+      if(Math.abs(gluc-calc.firstGluc)>30)
+      {
+        ret[0].color = "#f00";
+        ret.push({type:"line",x1:cm(x-0.1),y1:cm(y-0.1),x2:cm(x+0.1),y2:cm(y+0.1),lineColor:"#000",lineWidth:cm(0.01)});
+        ret.push({type:"line",x1:cm(x+0.1),y1:cm(y-0.1),x2:cm(x-0.1),y2:cm(y+0.1),lineColor:"#000",lineWidth:cm(0.01)});
+      }
+        
+      return ret;
+    }
+  });
+</script>

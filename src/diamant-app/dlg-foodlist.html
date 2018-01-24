@@ -1,0 +1,766 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-overlay-behavior/iron-overlay-behavior.html">
+<link rel="import" href="../../bower_components/responsive-table/responsive-table.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
+<dom-module id="dlg-foodlist">
+  <template>
+    <style include="responsive-table-style"></style>
+    <style is="custom-style">
+    :host
+    {
+      @apply(hidden);
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+      font-size: 1em;
+    }
+    .food
+    {
+      @apply(--layout-horizontal);
+    }
+    .food>div:nth-child(1)
+    {
+      min-width: 50px;
+      text-align: right;
+      padding-right: 10px;
+    }
+    .food>div:nth-child(2)
+    {
+      min-width: 80px;
+    }
+    .food>div:nth-child(3)
+    {
+      width: 200px;
+    }
+    .list
+    {
+      @apply(--layout-scroll);
+      @apply(--layout-flex);
+    }
+    paper-dialog
+    {
+      --paper-dialog:
+      {
+        *
+        {
+          margin-top: 0;
+        }
+      };
+    }
+    #pnlFootEdit,#pnlFootSelect
+    {
+      padding: 1em;
+      display: flex;
+      justify-content: space-between;
+    }
+    .title
+    {
+      @apply(--layout-horizontal);
+      align-items: center;
+      padding: 1em;
+    }
+    #pnlTitle.title
+    {
+      justify-content: space-between;
+    }
+    .title>div
+    {
+      font-size: 2em;
+      font-weight: 600;
+      @apply(--layout-horizontal);
+    }
+    tbody tr
+    {
+      cursor: pointer;
+    }
+    #markedList
+    {
+      @apply(--layout-vertical);
+    }
+    #markedList div,#titleFilter
+    {
+      font-size: 1.2em;
+      color: #777;
+      padding: 0.5em 0;
+      @apply(--layout-horizontal);
+      @apply(--layout-baseline);
+    }
+    #dialer
+    {
+      display: flex;
+      @apply(--layout-horizontal);
+      @apply(--layout-wrap);
+      max-width: 30em;
+      justify-content: center;
+    }
+    #dialer paper-button
+    {
+      @apply(--diamant-button);
+      background: var(--color-secondary-back);
+      color: var(--color-secondary-font);
+      font-weight: bold;
+      margin: 0.1em 0.1em;
+    }
+    #markedList div div
+    {
+      font-size: 0.75em;
+      padding-left: 1.0em;
+    }
+    @media(max-width:33em)
+    {
+      .title>div
+      {
+        font-size: 1.4em;
+      }
+    }
+    @media(max-width:27em)
+    {
+      .title>div
+      {
+        font-size: 1.2em;
+      }
+    }
+    @media(max-width:25em)
+    {
+      .title>div
+      {
+        font-size: 0.9em;
+      }
+      #markedList div
+      {
+        font-size: 0.9em;
+      }
+    }
+    #pnlSearch div, #editSearch
+    {
+      width: 100%;
+    }
+    #pnlSearch
+    {
+      @apply(--layout-flex);
+    }
+    #titleFilter
+    {
+      @apply(--layout-horizontal);
+      justify-content: space-between;
+    }
+    #lblSearch
+    {
+      font-size: 0.75em;
+      align-self: flex-end;
+    }
+    #btnPage
+    {
+      @apply(--layout-self-start);
+      font-size: 0.8em;
+      padding: 0;
+    }
+    #pnlHead
+    {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      justify-content: space-between;
+    }
+    #pnlDial,#pnlDial div
+    {
+      @apply(--layout-horizontal);
+      @apply(--layout-center);
+      text-transform: uppercase;
+    }
+    #pnlDial div div
+    {
+      padding-right: 1em;
+    }
+    .dialtext
+    {
+      font-weight: bold;
+    }
+    .menge paper-input
+    {
+      width: 4em;
+      padding-right: 1em;
+    }
+    .menge paper-dropdown-menu
+    {
+      width: 7em;
+      padding-right: 1em;
+    }
+    #mengelist
+    {
+      width: 9em;
+    }
+    .menge div
+    {
+      width: 12em;
+    }
+    .werte paper-input
+    {
+      width: 5em;
+      padding-right: 1em;
+    }
+    .werte paper-input:first-child
+    {
+      width: 6em;
+    }
+    .horz
+    {
+      @apply(--layout-horizontal);
+    }
+    .vert
+    {
+      @apply(--layout-vertical);
+    }
+    #defmenge
+    {
+      width: 8em;
+      text-align: right;
+    }
+    #defmenge div[suffix]
+    {
+      width: 5em;
+      text-align: left;
+    }
+    #defmengeinfo
+    {
+      font-size: 0.8em;
+      color: #444;
+    }
+    div[prefix],div[suffix]
+    {
+      font-size: 75%;
+    }
+    div[suffix]
+    {
+      padding-left: 0.5em;
+    }
+    </style>
+    <paper-dialog id="dlg" on-iron-overlay-closed="dlgClosed" modal>
+      <div id="pnlHead">
+        <div id="pnlSearch" class="title" hidden>
+          <paper-icon-button on-tap="tapSearch" icon="search" hidden$="{{hideSearch}}"></paper-icon-button>
+          <div><paper-input id="editSearch" placeholder="Liste durchsuchen" on-keyup="doFilter"></paper-input></div>
+        </div>
+        <div id="pnlDial" hidden>
+          <paper-icon-button on-tap="closeDial" icon="apps"></paper-icon-button>
+          <div><div>{{dialTitle}}</div><div class="dialtext">{{dialText}}</div></div>
+        </div>
+        <div id="pnlTitle" class="title">
+          <paper-icon-button on-tap="openDial" icon="apps"></paper-icon-button>
+          <paper-icon-button on-tap="tapSearch" icon="search" hidden$="{{hideSearch}}"></paper-icon-button>
+          <div>{{title}}</div>
+        </div>
+        <div id="pnlEdit" class="title">
+          <div>Nahrungsmittel Eingabe</div>
+        </div>
+        <paper-icon-button on-tap="tapCancel" icon="cancel"></paper-icon-button>
+      </div>
+      <paper-dialog-scrollable>
+        <iron-pages id="pages" selected="0" on-iron-select="pageChanged">
+          <div id="foodList">
+            <div id="titleFilter" hidden>
+              Gefilterte Liste
+              <div id="lblSearch"></div>
+            </div>
+            <table class="responsive-table">
+              <thead>
+                <th scope="col">Name</th>
+                <th scope="col">Menge</th>
+                <th scope="col">Einheit</th>
+                <th scope="col">BE</th>
+              </thead>
+              <tbody>
+                <template id="foodListTemplate" is="dom-repeat" items="{{foodList}}" sort="sort">
+                  <tr on-tap="tapFood">
+                    <th scope="row">{{item.name}}</th>
+                    <td data-title="Menge">{{getMenge(item)}}</td>
+                    <td data-title="Einheit">{{getEinheit(item.einheit,item.defmenge)}}</td>
+                    <th data-title="BE">{{calcBESingle(item)}} BE</th>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div id="markedList">
+            <div>Ausgewählte Nahrungsmittel<div>{{beSum}} BE</div></div>
+            <table class="responsive-table">
+              <thead>
+                <th scope="col">Name</th>
+                <th scope="col">Menge</th>
+                <th scope="col">Einheit</th>
+                <th scope="col">BE</th>
+              </thead>
+              <tbody>
+                <template id="markedTemplate" is="dom-repeat" items="{{marked}}" sort="sortMarked">
+                  <tr on-tap="tapMarked">
+                    <th scope="row">{{item.food.name}}</th>
+                    <td data-title="Menge">{{getMengeMarked(item)}}</td>
+                    <td data-title="Einheit">{{getEinheit(item.einheit,item.menge)}}</td>
+                    <td data-title="BE">{{calcBE(item)}} BE</td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div id="dialer">
+            <template is="dom-repeat" items="{{dialList}}">
+              <paper-button raised on-tap="dial">{{item}}</paper-button>
+            </template>
+          </div>
+          <div id="editor">
+            <paper-input value="{{food.name}}" label="Name"></paper-input>
+            <paper-dropdown-menu label="Kategorie" noink no-animations>
+              <paper-listbox class="dropdown-content" attr-for-selected="value" selected="{{food.category}}">
+                <paper-item></paper-item>
+                <paper-item value="brot">Brot</paper-item>
+                <paper-item value="burgerking">Burger King</paper-item>
+                <paper-item value="eis">Eis</paper-item>
+                <paper-item value="eismann">Eismann</paper-item>
+                <paper-item value="mcdonalds">McDonalds</paper-item>
+                <paper-item value="mikrowelle">Mikrowelle</paper-item>
+                <paper-item value="obst">Obst</paper-item>
+                <paper-item value="suesses">Süssigkeiten</paper-item>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <div class="horz menge">
+              <paper-input type="number" min="0" maxLength="3" size="3" align="right" value="{{food.menge}}" label="Menge"></paper-input>
+              <paper-dropdown-menu label="Einheit" noink no-animations>
+                <paper-listbox id="mengelist" class="dropdown-content" attr-for-selected="value" selected="{{food.einheit}}">
+                  <paper-item></paper-item>
+                  <paper-item value="gramm">Gramm</paper-item>
+                  <paper-item value="becher">Becher</paper-item>
+                  <paper-item value="stueck">Stück</paper-item>
+                  <paper-item value="riegel">Riegel</paper-item>
+                  <paper-item value="dosen">Dose</paper-item>
+                  <paper-item value="scheiben">Scheibe</paper-item>
+                  <paper-item value="tueten">Tüte</paper-item>
+                  <paper-item value="glaeser">Glas</paper-item>
+                  <paper-item value="tafeln">Tafel</paper-item>
+                  <paper-item value="milliliter">Milliliter</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <div class="vert">
+                <div id="defmengeinfo">
+                  Die Auswahlmenge ist die Menge,
+                  die jeweils dazu gezählt wird,
+                  wenn dieses Nahrungsmittel zu 
+                  einer Mahlzeit hinzugefügt wird.
+                </div>
+                <paper-input id="defmenge" type="number" min="0" maxLength="3" size="3" value="{{food.defmenge}}" label="Auswahl Menge"><div suffix>{{getEinheit(food.einheit,food.defmenge)}}</div></paper-input>
+              </div>
+            </div>
+            <div class="horz werte">
+              <paper-input type="number" min="0" maxLength="3" size="3" step="1" align="right" value="{{food.kcal}}" label="Kalorien"><div suffix>kcal</div></paper-input>
+              <paper-input type="number" min="0" maxLength="3" size="3" step="0.1" align="right" value="{{food.eiweiss}}" label="Eiweiss"><div suffix>g</div></paper-input>
+              <paper-input type="number" min="0" maxLength="3" size="3" step="0.1" align="right" value="{{food.kh}}" label="Kohlehydrate"><div suffix>g</div></paper-input>
+              <paper-input type="number" min="0" maxLength="3" size="3" step="0.1" align="right" value="{{food.fett}}" label="Fett"><div suffix>g</div></paper-input>
+            </div>
+            <paper-textarea label="Info" id="info" value="{{food.info}}"></paper-textarea>
+          </div>
+        </iron-pages>
+      </paper-dialog-scrollable>
+      <div id="pnlFootEdit" hidden class="horz">
+        <div></div>
+        <div id="foot0">
+          <paper-fab id="btnAdd" mini on-tap="tapAdd" icon="add"></paper-fab>
+        </div>
+        <div id="foot1" hidden></div>
+        <div id="foot2" hidden></div>
+        <div id="foot3" hidden>
+          <paper-icon-button id="btnSave" mini on-tap="tapSave" icon="save"></paper-icon-button>
+        </div>
+      </div>
+      <div id="pnlFootSelect" class="horz">
+        <div class="horz">
+          <paper-fab id="btnPage" mini on-tap="tapPage"></paper-fab>
+        </div>
+        <div class="horz">
+          <paper-button dialog-confirm><iron-icon icon="save"></iron-icon></paper-button>
+        </div>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "dlg-foodlist",
+    properties:
+    {
+      marked: {type: Array, value:[]},
+      beSum: {type: Number, value:0},
+      foodList: {type: Array, value:[]},
+      food: {type: Object, value: {}},
+      title: {type: String, value:"Nahrungsmittel Liste"},
+      editable: {type: Boolean, value: false},
+      dialList: {type: Array, value: []},
+      dialTitle: {type: String, value:""},
+      dialText: {type: String, value:""},
+      hideSearch: {type:Boolean, value:false}
+    },
+    ready: function()
+    {
+      var dial = "abcdefghijklmnopqrstuvwxyzäöü_.-<";
+      for(var i=0; i<dial.length; i++)
+        this.push("dialList",dial.substr(i,1));
+    },
+    getMenge: function(item)
+    {
+      if(this.editable)
+        return item.menge;
+      
+      var ret = "+ " + item.defmenge;
+      var idx = this.findMarked(item);
+      if(idx >= 0)
+        ret += " (" + this.marked[idx].menge + ")";
+      else
+        ret += " (0)";
+      return ret;
+    },
+    tapCancel: function()
+    {
+      if(this.$.pages.selected == 3)
+      {
+        this.$.pages.selected = 0;
+        return;
+      }
+      this.fire("closed");
+      this.$.dlg.close();
+    },
+    dial: function(e)
+    {
+      if(e.model.item == "<")
+      {
+        if(this.dialText.length > 0)
+          this.dialText = this.dialText.substr(0,this.dialText.length - 1)
+      }
+      else
+      {
+        this.dialText += e.model.item;
+      }
+      this.$.editSearch.value = this.dialText;
+      this.doFilter();
+      while(this.foodList.length == 0 && this.$.editSearch.value.length > 0)
+      {
+        this.$.editSearch.value = this.$.editSearch.value.substr(0, this.$.editSearch.value.length-1);
+        this.doFilter();
+      }
+      if(this.foodList.length <= (_.isSmall?5:10) && e.model.item != "")
+      {
+        this.$.pages.selected = 0;
+        this.updateControls();
+      }
+      this.dialText = this.$.editSearch.value;
+      this.dialTitle = this.foodList.length + " / " + _.foodList.length;
+    },
+    closeDial: function()
+    {
+      this.$.pages.selected = 0;
+    },
+    dialKey: function(e)
+    {
+      switch(e.keyCode)
+      {
+        case 8:
+          this.dialer.dial({model:{item:"<"}});
+          break;
+        default:
+          this.dialer.dial({model:{item:String.fromCharCode(e.keyCode)}});
+          break;
+      }
+    },
+    openDial: function()
+    {
+      if(!_.isSmall)
+      {
+        document.dialer = this;
+        document.onkeydown = this.dialKey;
+      }
+      this.dialText = "";
+      this.$.editSearch.value = "";
+      this.$.pages.selected = 2;
+    },
+    show: function(marked,animate)
+    {
+      if(!marked)
+        marked = [];
+      this.$.pnlSearch.hidden = true;
+      this.$.pnlTitle.hidden = !this.$.pnlSearch.hidden;
+      this.marked = marked;
+      this.foodList = _.foodList;
+      this.calcBESum();
+      this.$.pnlFootEdit.hidden = !this.editable;
+      this.$.pnlFootSelect.hidden = this.editable;
+      this.$.pages.selected = marked.length == 0 ? 0 : 1;
+      this.updateControls();
+      this.$.dlg.entryAnimation = animate?"scale-up-animation":undefined;
+      this.$.dlg.exitAnimation = animate?"scale-down-animation":undefined;
+      this.$.dlg.open();
+      this.hideSearch = _.isSmall;
+      if(!_.isSmall)
+        setTimeout(function(){this.tapSearch();}.bind(this),50);
+    },
+    close: function()
+    {
+      this.fire("closed");
+    },
+    calcBESingle: function(item)
+    {
+      if(!this.editable)
+        return _.fmtNumber(item.defmenge * item.kh / item.menge / 12.0,1);
+      return _.fmtNumber(item.kh / 12.0,1);
+    },
+    calcBE: function(item)
+    {
+      return _.fmtNumber(item.menge * item.food.kh / item.food.menge / 12.0,1);
+    },
+    calcBESum: function()
+    {
+      this.beSum = 0;
+      for(var i=0; i<_.foodList.length; i++)
+      {
+        for(var j=0; j<this.marked.length; j++)
+        {
+          if(this.marked[j].id == _.foodList[i].id)
+          {
+            this.marked[j].food = _.foodList[i];
+            this.beSum += this.marked[j].menge * this.marked[j].food.kh / this.marked[j].food.menge / 12.0;
+          }
+        }
+      }
+      this.beSum = _.fmtNumber(this.beSum,1);
+      this.updateControls();
+    },
+    getMengeMarked: function(item)
+    {
+      var ret = item.food.defmenge;
+      if(!this.editable)
+      {
+        ret = "- " + ret;
+        var idx = this.findMarked(item);
+        if(idx >= 0)
+          ret += " (" + this.marked[idx].menge + ")";
+      }
+      
+      return ret;
+    },
+    getEinheit: function(einheit,count)
+    {
+      return _.getEinheit(einheit,count);
+    },
+    tapPage: function()
+    {
+      var idx = Number(this.$.pages.selected);
+      switch(idx)
+      {
+        case 0:
+          idx = 1;
+          break;
+        case 1:
+          idx = 0;
+          break;
+        case 2:
+          break;
+        case 3:
+          break;
+      }
+      this.$.pages.selected = idx;
+      this.updateControls();
+    },
+    updateControls: function()
+    {
+      document.onkeydown = "";
+      switch(Number(this.$.pages.selected))
+      {
+        case 0:
+        case 2:
+          this.$.btnPage.label = _.fmtNumber(this.beSum,1);
+          this.$.btnPage.icon = "";
+          break;
+        case 1:
+          this.$.btnPage.icon = "maps:local-dining";
+          if(this.marked.length == 0)
+          {
+            this.$.pages.selected = 0;
+            this.updateControls();
+          }
+          break;
+      }
+    },
+    init: function()
+    {
+    },
+    doFilter: function()
+    {
+      try
+      {
+        var regex = new RegExp(this.$.editSearch.value, "i");
+        this.foodList = _.foodList.filter(function(d, idx, array)
+        {
+          return regex.test(d.name) || regex.test(d.category);
+        });
+        this.$.lblSearch.innerText = this.foodList.length + " / " + _.foodList.length;
+        this.$.titleFilter.hidden = this.foodList.length == _.foodList.length;
+      }
+      catch(err)
+      {
+        _.msg(err);
+      }
+    },
+    findMarked: function(item)
+    {
+      for(var i=0; i<this.marked.length; i++)
+      {
+        if(item.id == this.marked[i].id)
+          return i;
+      }
+      return -1;
+    },
+    sortMarked: function(a,b)
+    {
+      return a.food.name < b.food.name ? -1 : 1;
+    },
+    sort: function(a,b)
+    {
+      return a.name > b.name ? 1 : -1;
+    },
+    tapSearch: function()
+    {
+      this.$.pnlSearch.hidden = !this.$.pnlSearch.hidden;
+      this.$.pnlTitle.hidden = !this.$.pnlSearch.hidden;
+      if(this.$.pnlSearch.hidden)
+      {
+        this.$.titleFilter.hidden = true;
+        this.foodList = _.foodList;
+      }
+      else
+      {
+        this.doFilter();
+        this.$.editSearch.inputElement.focus();
+      }
+    },
+    pageChanged: function()
+    {
+      this.$.pnlTitle.hidden = true;
+      this.$.pnlSearch.hidden = true;
+      this.$.pnlDial.hidden = true;
+      this.$.pnlEdit.hidden = true;
+      switch(this.$.pages.selected)
+      {
+        case 0:
+          this.$.pnlTitle.hidden = false;
+          break;
+        case 1:
+          this.$.pnlSearch.hidden = false;
+          break;
+        case 2:
+          this.$.pnlDial.hidden = false;
+          this.dial({model:{item:""}});
+          break;
+        case 3:
+          this.$.pnlEdit.hidden = false;
+          break;
+      }
+      var list = document.querySelectorAll("#pnlFootEdit>div");
+      for(var i=1; i<list.length; i++)
+        list[i].hidden = list[i].id != ("foot" + this.$.pages.selected);
+    },
+    dlgClosed: function(event,closingReason)
+    {
+      if(event)
+      {
+        event.stopImmediatePropagation();
+        if(event.srcElement != this.$.dlg)
+          return;
+      }
+
+      if(closingReason.confirmed)
+      {
+        this.saveMarked();
+      }
+      else
+      {
+        this.fire("cancel");
+      }
+    },
+    saveMarked: function()
+    {
+      this.fire("save-marked", {data: this.marked});
+    },
+    tapSave: function()
+    {
+      var idx = undefined;
+      for(var i=0; i<_.foodList.length && !idx; i++)
+      {
+        if(_.foodList[i].id == this.food.id)
+          idx = i;
+      }
+      
+      if(idx)
+        _.foodList[idx] = this.food;
+      else
+        _.foodList.push(this.food);
+      _.driveData.saveData(this,_.foodList,"json",this.saveDone);
+      this.$.dlg.hidden = true;
+    },
+    saveDone: function(self,status,data)
+    {
+      self.$.pages.selected = 0;
+      self.$.dlg.hidden = false;
+      self.doFilter();
+    },
+    tapAdd: function(e)
+    {
+      var maxId = -1;
+      for(var i=0; i<_.foodList.length; i++)
+      {
+        if(Number(_.foodList[i].id) > maxId)
+          maxId = _.foodList[i].id;
+      }
+      this.food = {id:maxId+1};
+      this.$.pages.selected = 3;
+    },
+    tapMarked: function(e)
+    {
+      var food = e.model.item.food;
+      var menge = Number(e.model.item.menge) - Number(food.defmenge);
+      var idx = this.findMarked(food);
+      this.splice("marked",idx,1);
+      if(menge > 0)
+        this.push("marked",{id:food.id,menge:menge,food:food});
+      this.calcBESum();
+    },
+    tapFood: function(e)
+    {
+      if(this.editable)
+      {
+        this.food = _.driveData.cloneOf(e.model.item);
+        this.$.pages.selected = 3;
+      }
+      else
+      {
+        var idx = this.findMarked(e.model.item);
+        if(idx < 0)
+        {
+          this.push("marked",{id:e.model.item.id,menge:e.model.item.defmenge,food:e.model.item});
+        }
+        else
+        {
+          var menge = Number(this.marked[idx].menge) + Number(e.model.item.defmenge);
+          this.splice("marked",idx,1,{id:e.model.item.id,menge:menge,food:e.model.item});
+        }
+        this.calcBESum();
+        var idx = this.foodList.indexOf(e.model.item);
+        this.notifyPath("foodList.#" + idx, e.model.item);
+//        var idx = this.foodList.indexOf(e.model.item);
+//        this.splice("foodList", idx, 1, e.model.item);
+      }
+    }
+  });
+</script>
