@@ -259,7 +259,7 @@
     <iron-pages id="pages" class="layout flex scroll">
       <div id="list" class="layout flex">
         <paper-fab id="today" class="second" hidden on-tap="tapToday" mini icon="today"></paper-fab>
-        <paper-fab on-tap="tapImport" icon="cloud-download"></paper-fab>
+        <paper-fab id="import" on-tap="tapImport" hidden icon="cloud-download"></paper-fab>
         <paper-fab on-tap="tapAdd" icon="add"></paper-fab>
         <table class="responsive-table">
           <thead>
@@ -567,6 +567,7 @@
     },
     adjustDayButtons: function()
     {
+      this.$.import.hidden = !_.config.nsok;
       if(!_.dateData.isToday)
         return;
 
@@ -967,11 +968,11 @@ treatments {"_id":"5a6655c831eb7e982c64ef07",
       var begTime = data.date.idDate.substr(0,4)+"-"+data.date.idDate.substr(4,2)+"-"+data.date.idDate.substr(6.8) + "T" + _.fmtTime(data.time.time) + ":00.000Z";
       var endTime = data.date.idDate.substr(0,4)+"-"+data.date.idDate.substr(4,2)+"-"+data.date.idDate.substr(6.8) + "T23:59:59.000Z";
       begTime = data.date.idDate.substr(0,4)+"-"+data.date.idDate.substr(4,2)+"-"+data.date.idDate.substr(6.8) + "T15:00:00.000Z";
-      var url = "https://diamant-ns.herokuapp.com/api/v1/entries.json?count=5000&find[dateString][$gt]=" + begTime + "&find[dateString][$lte]=" + endTime;
+      var url = _.config.nsurl + "entries.json?count=5000&find[dateString][$gt]=" + begTime + "&find[dateString][$lte]=" + endTime;
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url);
-//      xhr.setRequestHeader("api_secret", "3141592653589793");
 //      xhr.open("POST", "https://diamant-ns.herokuapp.com/api/v1/entries.json");
+//      xhr.setRequestHeader("api_secret", _.config.nsapi);
 //      var data = JSON.stringify(json);
       var self = this;
       var time = data.time;

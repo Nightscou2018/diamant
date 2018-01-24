@@ -169,6 +169,28 @@
       font-weight: bold;
       border: 0.5em solid rgba(0,0,0,0.6)
     }
+    #btnCheckNS
+    {
+      align-self: start;
+      border: 1px solid var(--paper-green-200);
+      padding: 1em;
+
+      --paper-checkbox-checked-color: var(--paper-green-500);
+      --paper-checkbox-checked-ink-color: var(--paper-green-500);
+      --paper-checkbox-unchecked-color: var(--paper-green-900);
+      --paper-checkbox-unchecked-ink-color: var(--paper-green-900);
+      --paper-checkbox-label-color: var(--paper-green-500);
+      --paper-checkbox-label-spacing: 0;
+      --paper-checkbox-margin: 8px 16px 8px 0;
+      --paper-checkbox-vertical-align: top;
+    }
+    paper-checkbox .subtitle 
+    {
+      display: block;
+      font-size: 0.8em;
+      margin-top: 2px;
+      max-width: 150px;
+    }
     </style>
     <paper-dialog id="dlg" on-iron-overlay-closed="dlgClosed" modal entry-animation="scale-up-animation" exit-animation="scale-down-animation">
       <div id="pnlTitle" class="title">
@@ -278,6 +300,16 @@
                 </div>
               </div>
             </div>
+            <div title="Verbindung zu Nightscout">
+              <paper-input label="NightscoutURL" value="{{config.nsurl}}"></paper-input>
+              <paper-input label="NightscoutAPI" value="{{config.nsapi}}"></paper-input>
+              <paper-checkbox id="btnCheckNS" on-tap="tapCheckNS">
+                Nightscout verwenden
+                <span class="subtitle">
+                  Beim Ankreuzen wird eine Testverbindung zu Nightscout aufgebaut.
+                </span>
+              </paper-checkbox>
+            </div>
           </iron-pages>
         </paper-dialog-scrollable>
       </div>
@@ -298,6 +330,7 @@
      ,gender: {type:String,value:"-1"}
      ,config: {type:Object,value:{}}
      ,calendarList: {type:Array,value:[]}
+     ,nsok: {type:String,value:""}
      ,rnd: {type:Number,value:0}
     },
     show: function()
@@ -308,6 +341,7 @@
       this.rnd = Math.random();
       _.driveData.requestCalendarList(this,this.onCalendarListReceived);
       this.$.dlg.toggle();
+      this.setNSOk();
     },
     refreshDisplay: function()
     {
@@ -466,7 +500,48 @@
         this.config = _.driveData.cloneOf(_.config);
         this.fire("cancel");
       }
-
+    },
+    setNSOk: function()
+    {
+      this.$.btnCheckNS.checked = this.config.nsok;
+    },
+    tapCheckNS: function()
+    {
+      this.config.nsok = false;
+      if (!this.$.btnCheckNS.checked)
+        return;
+        
+      var self = this;
+      if (!this.config.nsurl.endsWith("/"))
+      {
+        self.config.nsurl += "/";
+        self.notifyPath("config.nsurl", self.config.nsurl);
+      }
+      var url = this.config.nsurl + "status.json";
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+      xhr.onload=function()
+      {
+        if(xhr.status != 200)
+        {
+          _.msg("Die Verbindung konnte leider nicht hergestellt werden. (Status " + xhr.status + ")", 3);
+          self.setNSOk();
+          return;
+        }
+        var data = JSON.parse(xhr.responseText);
+        self.config.nsok = data.apiEnabled;
+        if (self.config.nsok)
+          _.msg("Die Verbindung war erfolgreich! " + data.name + ", Version " + data.version);
+        else
+          _.msg("Es konnte zwar eine Verbindung hergestellt werden, aber die API ist auf dem Server nicht aktiv.", 3);
+        self.setNSOk();
+      };
+      xhr.onerror=function()
+      {
+        _.msg("Die Verbindung konnte leider nicht hergestellt werden. (Status " + xhr.status + ")", 3);
+        self.setNSOk();
+      };
+      xhr.send();
     }
   });
 </script>
