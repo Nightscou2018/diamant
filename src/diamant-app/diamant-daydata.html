@@ -1,0 +1,1076 @@
+﻿<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/google-chart/google-chart.html">
+<link rel="import" href="../../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/zreptil-date-picker/zreptil-date-picker.html">
+<link rel="import" href="../../bower_components/zreptil-time-picker/zreptil-time-picker.html">
+<link rel="import" href="../../bower_components/responsive-table/responsive-table.html">
+<link rel="import" href="dlg-input.html">
+<dom-module id="diamant-daydata">
+  <template>
+    <style include="responsive-table-style"></style>
+    <style _is="custom-style">
+    :host
+    {
+      @apply(hidden);
+      @apply(--layout-vertical);
+      @apply(--layout-flex);
+      font-size: 1.0em;
+      --paper-tab-ink: var(--paper-light-blue-500);
+      --paper-tabs-selection-bar-color: var(--paper-light-blue-600);
+    }
+    paper-button
+    {
+      @apply(--diamant-button);
+    }
+    paper-button#btnhome
+    {
+      background: var(--color-button-back);
+      --paper-button-ink-color: var(--color-button-ink);
+      color: var(--color-button-font);
+    }
+    .row{border-bottom:1px solid black;padding:5px 0px 5px 5px;}
+    .row:hover
+    {
+      background: var(--color-background);
+      cursor: pointer;
+    }
+    .head
+    {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid red;
+      flex-shrink: 0;
+    }
+    .head>div
+    {
+      @apply(--layout-self-center);
+      padding-right: 1.0em;
+      padding-left: 1.0em;
+    }
+    #controls
+    {
+      flex-shrink: 0;
+    }
+    .data>div{padding-right:1.0em;white-space:nowrap;}
+    .time
+    {
+      flex: 1 0;
+      text-align:left;
+    }
+    .gluc
+    {
+      flex: 2 0;
+      text-align:right;
+      white-space: pre;
+    }
+    .trend
+    {
+      width: 3em;
+    }
+    .trend iron-icon
+    {
+      fill: var(--color-libre);
+    }
+    .be
+    {
+      flex: 2 0;
+      text-align: right;
+    }
+    .type
+    {
+      flex: 4 0;
+      padding-right: 0px;
+    }
+
+    .gluc>div>div:first-child
+    {
+      color: var(--color-gluc);
+      font-weight: bold;
+    }
+    .gluc>div>div:nth-child(2)
+    {
+      color: var(--color-libre);
+      font-weight: bold;
+    }
+    tr[gluc]
+    {
+      cursor: pointer;
+    }
+    google-chart
+    {
+      width: 100%;
+      height: 85vh;
+    }
+    paper-fab[icon="add"]
+    {
+      position: fixed;
+      right:  1.3em;
+      bottom: 0.5em;
+      z-index: 100;
+      --paper-fab-background: var(--color-accent-back);
+      --paper-fab-iron-icon:
+      {
+        color: var(--color-accent-font);
+      };
+    }
+    paper-fab[icon="cloud-download"]
+    {
+      position: fixed;
+      right:  4.8em;
+      bottom: 0.5em;
+      z-index: 100;
+      --paper-fab-background: var(--paper-light-blue-500);
+      --paper-fab-iron-icon:
+      {
+        color: var(--color-accent-font);
+      };
+    }
+    paper-fab#today
+    {
+      position: fixed;
+      right: 1.3em;
+      bottom: 3.5em;
+    }
+    .second
+    {
+      --paper-fab-background: var(--color-fab-second-back);
+      --paper-fab-iron-icon:
+      {
+        color: var(--color-fab-second-front);
+      };
+    }
+    #fabBasal
+    {
+      position: fixed;
+      right:  1.3em;
+      bottom: 0.5em;
+      --paper-fab-background: var(--color-basal-back);
+      --paper-fab-iron-icon:
+      {
+        color: var(--color-basal-font);
+      };
+    }
+    google-chart
+    {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: transparent;
+    }
+    @media(max-width:40em)
+    {
+      paper-fab[icon="add"]
+      {
+        position: fixed;
+        right:  -1em;
+        bottom: -1em;
+        z-index: 100;
+        width: 5em;
+        height: 5em;
+      }
+      paper-fab[icon="cloud-download"]
+      {
+        position: fixed;
+        right:  -6em;
+        bottom: -1em;
+        z-index: 100;
+        width: 5em;
+        height: 5em;
+      }
+      .trend
+      {
+        width: inherit;
+      }
+    }
+    #basalTable tr td
+    {
+      text-align: left;
+      vertical-align: center;
+      white-space: nowrap;
+    }
+    #basalTable tr td:first-child
+    {
+      background-image: url("resources/basal.png");
+      background-repeat: no-repeat;
+      width: 20em;
+    }
+    #basalTable tr td:nth-child(2) paper-input
+    {
+      text-align: right;
+    }
+    div[suffix]
+    {
+      padding-left: 0.5em;
+      font-size: 0.75em;
+    }
+    .title
+    {
+      @apply(--layout-horizontal);
+      align-items: center;
+      padding: 1em;
+      margin-top: 1em;
+    }
+    #pnlTitle.title
+    {
+      justify-content: space-between;
+    }
+    .title>div
+    {
+      @apply(--layout-horizontal);
+    }
+    .title>div>div
+    {
+      font-size: 2em;
+      font-weight: 600;
+      @apply(--layout-vertical);
+    }
+    .title>div>paper-fab
+    {
+      margin-right: 1em;
+    }
+    .title>div>div>div:nth-of-type(2)
+    {
+      font-size: 0.5em;
+      padding-top: 0.25em;
+      color: rgba(0,0,0,var(--light-secondary-opacity));
+    }
+    paper-dialog-scrollable
+    {
+      --paper-dialog-scrollable:
+      {
+        padding: 0 1em;
+      };
+    }
+    </style>
+    <iron-pages id="pages" class="layout flex scroll">
+      <div id="list" class="layout flex">
+        <paper-fab id="today" class="second" hidden on-tap="tapToday" mini icon="today"></paper-fab>
+        <paper-fab id="import" on-tap="tapImport" hidden icon="cloud-download"></paper-fab>
+        <paper-fab on-tap="tapAdd" icon="add"></paper-fab>
+        <table class="responsive-table">
+          <thead>
+            <tr>
+              <th scope="col">Zeit</th>
+              <th scope="col">Gluc<br>FreeStyle</th>
+              <th scope="col">Tendenz</th>
+              <th scope="col">Art</th>
+              <th scope="col">BE</th>
+              <th scope="col">[[bolusname]]</th>
+              <th scope="col">Info</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template id="timelist" is="dom-repeat" items="{{times}}" sort="sorttime">
+              <tr on-tap="editData" style="{{glucStyle(item,rnd)}}">
+                <th scope="row">{{fmtTime(item.time)}}</th>
+                <td class="gluc" data-title="Gluc" data-subtitle="FreeStyle">
+                  <div class="layout vertical">
+                    <div>{{fmtGluc(item,rnd)}}</div>
+                    <div>{{fmtGlucLibre(item,rnd)}}</div>
+                  </div>
+                </td>
+                <td class="trend" data-title="Tendenz">
+                  <iron-icon icon="myicons:arrow-{{item.arrowlibre}}"></iron-icon>
+                </td>
+                <td data-title="Art">&nbsp;{{fmtType(item.typ)}}</td>
+                <td data-title="BE">&nbsp;{{calcBE(item.food)}}</td>
+                <td data-title="Insulin">&nbsp;{{calcIE(item)}}</td>
+                <td data-title="Info">
+                  <iron-icon icon="myicons:sensor" hidden$="{{hasSensor(item,rnd)}}"></iron-icon>
+                  <iron-icon icon="myicons:katheter" hidden$="{{hasKatheter(item,rnd)}}"></iron-icon>
+                  <iron-icon icon="myicons:ampulle" hidden$="{{hasAmpulle(item,rnd)}}"></iron-icon>
+                  <iron-icon icon="description" hidden$="{{hasInfo(item,rnd)}}"></iron-icon>&nbsp;
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <div class="layout flex">
+        <google-chart id="chartbasal" hidden type="column"></google-chart>
+        <google-chart id="chartiebe" hidden type="combo"></google-chart>
+        <google-chart id="chartgluc" hidden type="combo"></google-chart>
+        <paper-fab id="fabBasal" on-tap="editBasal" icon="image:edit"></paper-fab>
+      </div>
+    </iron-pages>
+    <paper-dialog id="dlgBasal" modal>
+      <div id="pnlTitle" class="title">
+        <div>
+          <paper-fab id="basaltoday" class="second" hidden$="{{isBasalToday(basallist.since)}}" on-tap="tapBasalToday" mini icon="today"></paper-fab>
+          <div>
+            <div>Basalprofil</div>
+            <div>
+              vom {{basallist.since}}
+            </div>
+          </div>
+        </div>
+        <paper-icon-button dialog-dismiss icon="cancel"></paper-icon-button>
+      </div>
+      <paper-dialog-scrollable>
+        <table id="basalTable">
+        <template id="tplBasalList" is="dom-repeat" items="{{basallist}}">
+          <tr>
+            <td style="{{getBasalStyle(item.value,basallistMax)}}">{{item.label}}</td>
+            <td>
+              <paper-input no-label-float type="number" value="{{item.value}}" step="0.1" min="0" max="{{basallistMax}}"><div suffix>IE</div></paper-input>
+            </td>
+          </tr>
+        </template>
+        </table>
+        </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-icon-button on-tap="tapDeleteBasal" icon="delete"></paper-icon-button>
+        <paper-icon-button on-tap="tapSaveBasal" icon="save"></paper-icon-button>
+      </div>
+    </paper-dialog>
+  </template>
+</dom-module>
+<script>
+  Polymer(
+  {
+    is: "diamant-daydata",
+    properties:
+    {
+      data: {type:Object,observer:"dataChanged",value:{}}
+     ,times: {type:Array,value: []}
+     ,pages: {type:Object,value: {}}
+     ,mouseData: {type:Object,value:undefined}
+     ,basallist: {type:Array}
+     ,bolusname: {type:String,value:"IE"}
+     ,charts: {type:Array,value:[]}
+     ,anim: {type:Object,value:{entry:[],exit:[]}}
+     ,dialOpen: {type:Boolean,value:false}
+     ,rnd: {type:Number,value:0}
+    },
+    behaviors:
+    [
+      Polymer.IronResizableBehavior,
+      Polymer.NeonAnimationRunnerBehavior
+    ],
+    listeners:
+    {
+      "iron-resize": "_resizeHandler"
+    },
+    getBasalStyle: function(value,max)
+    {
+      return "background-size:" + _.fmtNumber(value/max*100,0) + "% 100%";
+    },
+    ready: function()
+    {
+      this.$.pages.selected = 0;
+      this.updateCharts();
+    },
+    initCharts: function()
+    {
+      this.charts["Gluc"] = {ctrl:_.$.tool0Gluc,chart:this.$.chartgluc};
+      this.charts["Basal"] = {ctrl:_.$.tool0Basal,chart:this.$.chartbasal};
+      this.charts["IEBE"] = {ctrl:_.$.tool0IEBE,chart:this.$.chartiebe};
+      this.charts["Gluc"].ctrl.active = true;
+      this.charts["Gluc"].chart.hidden = false;
+      this.charts["Basal"].ctrl.active = true;
+      this.charts["Basal"].chart.hidden = false;
+      this.charts["IEBE"].ctrl.active = true;
+      this.charts["IEBE"].chart.hidden = false;
+    },
+    activated: function()
+    {
+      var dayFound = undefined;
+      for(var i = 0; i<_.monthData.length && !dayFound; i++)
+      {
+        if(_.monthData[i].day == _.dateData.day)
+        {
+          dayFound = _.monthData[i];
+          _.dateData.dataIdx = i;
+        }
+      }
+
+      if(!dayFound)
+      {
+        dayFound = {day:_.dateData.day,times:[]};
+        _.dateData.dataIdx = _.monthData.length;
+      }
+
+      this.data = dayFound;
+
+      var times = [];
+      for(var i=0; i<this.data.times.length; i++)
+        times.push(this.data.times[i]);
+
+      this.set("times",times);
+      this.bolusname = _.config.bolus;
+      _.updateKatheterProgress();
+      this.adjustDayButtons();
+    },
+    refreshDisplay: function()
+    {
+      this.set("rnd", Math.random());
+    },
+    tapToday: function()
+    {
+      _.dateData = _.getDateData(new Date(),true);
+      this.activated();
+    },
+    tapBasalToday: function()
+    {
+      this.set("basallist.since", _.fmtDate(new Date()));
+    },
+    isBasalToday: function(date)
+    {
+      var check = new Date();
+      var ret = Number(date.substr(0,2)) == check.getDate()
+             && Number(date.substr(3,2)) == check.getMonth() + 1
+             && Number(date.substr(6,4)) == check.getFullYear();
+      return ret;
+    },
+    editData: function(e)
+    {
+      _.showDlgInput(e.model.item);
+    },
+    tapAdd: function()
+    {
+      _.showDlgInput();
+    },
+    sorttime: function(a,b)
+    {
+      return Number(a.time) < Number(b.time) ? -1 : 1;
+    },
+    dataChanged: function()
+    {
+    },
+    hasKatheter: function(item,rnd)
+    {
+      return !item.katheter;
+    },
+    hasSensor: function(item,rnd)
+    {
+      return !item.sensor;
+    },
+    hasAmpulle: function(item,rnd)
+    {
+      return !item.ampulle;
+    },
+    hasInfo: function(item,rnd)
+    {
+      return !item.info;
+    },
+    glucStyle: function(item,rnd)
+    {
+      var ret = "";
+
+      if(item == undefined)
+        return "";
+      if(item.gluc == undefined && (item.arrowlibre == "" || item.arrowlibre == "equal" || item.arrowlibre.endsWith("up") ))
+        ret = _.glucColor(item.gluclibre,_.dateData.idDate,item.time,250);
+      else
+        ret = _.glucColor(item.gluc,_.dateData.idDate,item.time,250);
+      return ret.rgba == "" ? "" : ("background:" + ret.rgba);
+    },
+    fmtTime: function(time)
+    {
+      return _.fmtTime(time);
+    },
+    fmtType: function(typ)
+    {
+      return _typeList[typ];
+    },
+    _fmtGluc: function(gluc)
+    {
+      if(gluc == undefined || gluc == "0" || gluc == "")
+        return "-";
+
+      return _.glucFromData(gluc) + " " + _.getGlucInfo().unit;
+    },
+    fmtGluc: function(item,rnd)
+    {
+      return this._fmtGluc(item.gluc);
+    },
+    fmtGlucLibre: function(item,rnd)
+    {
+      return this._fmtGluc(item.gluclibre);
+    },
+    calcIE: function(item)
+    {
+      if(item == undefined)
+        return "";
+      var ret = 0.0;
+
+      if(item.bolusbe)
+        ret += Number(item.bolusbe);
+      if(item.bolusadjust)
+        ret += Number(item.bolusadjust);
+      ret = _.fmtNumber(ret,1);
+      if(ret == "0.0" || ret == NaN)
+        ret = "";
+      else
+        ret += " IE";
+      return ret;
+    },
+    calcBEValue: function(food)
+    {
+      if(!_)
+        return;
+
+      return _.calcBEValue(food,_.foodList);
+    },
+    calcBE: function(food)
+    {
+      var ret = this.calcBEValue(food);
+      if(ret == 0.0)
+        ret = "";
+      else
+        ret += " BE";
+      return ret;
+    },
+    verifyData: function()
+    {
+      if(_.yearData[_.dateData.month-1].length == 0)
+        _.driveData.requestData(_.dateData.dataId,"json",_,_.monthLoaded);
+      else
+        _.monthLoaded(_,"ok",_.yearData[_.dateData.month-1]);
+      this.refreshDisplay();
+    },
+    tapPrev: function()
+    {
+      var year = _.dateData.year;
+      _.dateData.addDay(-1);
+      if(year != _.dateData.year)
+      {
+        _.dateData.addDay(1);
+        return;
+      }
+      this.verifyData();
+    },
+    tapNext: function()
+    {
+      var year = _.dateData.year;
+      _.dateData.addDay(1);
+      if(year != _.dateData.year)
+      {
+        _.dateData.addDay(-1);
+        return;
+      }
+      this.verifyData();
+    },
+    adjustDayButtons: function()
+    {
+      this.$.import.hidden = !_.config.nsok;
+      if(!_.dateData.isToday)
+        return;
+
+      if(this.data.day && !this.hidden)
+        _.dateData.day = this.data.day;
+      this.updateCharts();
+      this.$.today.hidden = _.dateData.isToday();
+    },
+    execTool: function(id)
+    {
+      switch(id)
+      {
+        case "Display":
+          this.toolDisplay();
+          break;
+        case "Gluc":
+        case "Basal":
+        case "IEBE":
+          this.toggleChart(id);
+          break;
+      }
+    },
+    toolDisplay: function()
+    {
+      var idx = Number(this.$.pages.selected) + 1;
+      if(idx >= this.$.pages.children.length)
+        idx = 0;
+      this.$.pages.selected = idx;
+      _.$.pnlGraph.hidden = (idx != 1);
+      _.$.pnlInfo.hidden = !_.$.pnlGraph.hidden;
+      if(idx == 1)
+        this.updateCharts();
+    },
+    toggleChart: function(id)
+    {
+      this.charts[id].chart.hidden = !this.charts[id].ctrl.active;
+      if(this.charts["Gluc"].chart.hidden && this.charts["Basal"].chart.hidden && this.charts["IEBE"].chart.hidden)
+      {
+        this.charts[id].chart.hidden = false;
+        this.charts[id].ctrl.active = true;
+      }
+      if(!this.charts[id].chart.hidden && this.charts[id].chart.rows.length > 0)
+        this.charts[id].chart.redraw();
+      this.$.fabBasal.hidden = this.charts["Basal"].chart.hidden;
+    },
+    editBasal: function()
+    {
+      var profile = _.getProfileForDate(_.dateData.year*10000+_.dateData.month*100+Number(_.dateData.day));
+      var list = [];
+      list.since = profile.since;
+      this.basallistMax = 0;
+      for(var i=0; i<profile.profile.length; i+=4)
+      {
+        var v = Number(profile.profile.substr(i,4)) / 100;
+        var l = (i/4) + ":00 - " + ((i/4)+1) + ":00";
+        list.push({value: v,label: l,org: v});
+        if(v > this.basallistMax)
+          this.basallistMax = v;
+      }
+      this.basallistMax *= 1.25;
+      this.basallist = list;
+      this.$.tplBasalList.render();
+      this.$.dlgBasal.toggle();
+    },
+    tapSaveBasal: function()
+    {
+      this.profile = "";
+      var isChanged = false;
+      for(var i=0; i<this.basallist.length; i++)
+      {
+        this.profile += _.fmtNumber(this.basallist[i].value*100,0,4);
+        if(this.basallist[i].value != this.basallist[i].org)
+          isChanged = true;
+      }
+
+      if(!isChanged)
+      {
+        _.msg("Die Basalrate wurde nicht geändert - Speicherung abgebrochen.",3000);
+        return;
+      }
+
+      if(Number(Math.floor(_.fmtDateForProfile(this.basallist.since)/10000) < Math.floor(Number(_.fmtDateForProfile(new Date()))/10000)))
+      {
+        _.confirm("Soll die Basalrate vom " + this.basallist.since + " geändert werden?<br>"
+                 ,this.doSaveBasal.bind(this));
+      }
+      else
+      {
+        this.doSaveBasal();
+      }
+    },
+    doSaveBasal: function()
+    {
+      var p = this.findBasal(this.basallist.since);
+      if(p.index >= 0)
+      {
+        p.value.profile = this.profile;
+      }
+      else
+      {
+        p = {value:{time:p.value*10000,profile:this.profile},index:_.config.profiles.length};
+        _.config.profiles.push(p.value);
+      }
+      _.driveData.saveData(_,_.config,"json",_.saveDlgConfigDone);
+      this.$.dlgBasal.close();
+    },
+    findBasal: function(date)
+    {
+      var check = Number(date.substr(6,4))*10000
+                 +Number(date.substr(3,2))*100
+                 +Number(date.substr(0,2));
+      var ret = {index:-1,value:check};
+      for(var i=0; i<_.config.profiles.length && ret.index < 0; i++)
+      {
+        if(Number(_.config.profiles[i].time)/10000 == check)
+          ret = {value:_.config.profiles[i],index:i};
+      }
+      return ret;
+    },
+    tapDeleteBasal: function()
+    {
+      _.confirm("Soll die Basalrate vom <b>" + this.basallist.since + "</b> wirklich gelöscht werden?", this.doDeleteBasal.bind(this));
+    },
+    doDeleteBasal: function()
+    {
+      var p = this.findBasal(this.basallist.since);
+      if(p.index >= 0)
+      {
+        _.config.profiles.splice(p.index,1);
+        _.driveData.saveData(_,_.config,"json",_.saveDlgConfigDone);
+        this.$.dlgBasal.close();
+      }
+    },
+    _addTime2Rows: function(time, timediff, rows)
+    {
+      var v1 = time.gluc?Number(time.gluc):null;
+      var v2 = time.gluclibre?Number(time.gluclibre):null;
+      var v3 = Number(time.bolusbe);
+      if(!v3)v3=0;
+      var v3a = Number(time.bolusadjust);
+      if(v3a)v3 += v3a;
+      if(v3 == 0)v3 = null;
+      var v4 = Number(this.calcBEValue(time.food));
+      if(v4 == 0)v4 = null;
+      var tip = time.time.substr(0,2) + ":" + time.time.substr(2) + " Uhr\n";
+      var t1 = tip + "Combo " + v1 + " " + _.getGlucInfo().unit;
+      var t2 = tip + "Libre " + v2 + " " + _.getGlucInfo().unit;
+      rows[0].push([Number(time.time.substr(0,2))+Number(time.time.substr(2,2))/100+timediff,v1,t1,v2,t2,null,null,v1>=80 && v1<=140]);
+      if(timediff == 0 && (v3 != null || v4 != null))
+      {
+        t1 = tip + v3 + " IE";
+        t2 = tip + v4 + " BE";
+        rows[1].push([Number(time.time.substr(0,2))+Number(time.time.substr(2,2))/100+timediff,v3,t1,v4,t2]);
+      }
+    },
+    _collectChartData: function()
+    {
+      var rows = [[],[],[]];
+      var data = undefined;
+
+      if(_.dateData.dataIdx > 0)
+        data = _.monthData[_.dateData.dataIdx-1];
+      else if(_.dateData.month > 1 && _.yearData[_.dateData.month-2].length > 0)
+        data = _.yearData[_.dateData.month-2][_.yearData[_.dateData.month-2].length-1];
+
+      if(data)
+      {
+        var hasGluc = false;
+        var hasLibre = false;
+        var list = data.times;
+        for(var i=list.length-1; i>0 && (!hasGluc || !hasLibre); i--)
+        {
+          hasGluc = hasGluc && time.gluc != undefined;
+          hasLibre = hasLibre && time.libre != undefined;
+        }
+        while(i >= 0 && i < list.length)
+        {
+          var time = list[i];
+          this._addTime2Rows(time,-24,rows);
+          i++
+        }
+      }
+
+      if(this.times)
+      {
+        for(var i=0; i<this.times.length; i++)
+          this._addTime2Rows(this.times[i],0,rows);
+      }
+
+      data = undefined;
+
+      if(_.dateData.dataIdx < _.monthData.length - 1)
+        data = _.monthData[_.dateData.dataIdx+1]
+      else if(_.dateData.month < 12 && _.yearData[_.dateData.month].length > 0)
+        data = _.yearData[_.dateData.month][0];
+
+      if(data)
+      {
+        var hasGluc = false;
+        var hasLibre = false;
+        var list = data.times;
+        for(var i=0; i<list.length && (!hasGluc || !hasLibre); i++)
+        {
+          var time = list[i];
+          this._addTime2Rows(time,24,rows);
+          hasGluc = hasGluc && time.gluc != undefined;
+          hasLibre = hasLibre && time.libre != undefined;
+        }
+      }
+      var t = 0;
+      var min0, max0;
+      for(var i=0; i<_.config.zeiten.length; i++)
+      {
+        var time = _.config.zeiten[i];
+        var min = Number(time.min);
+        var max = Number(time.max);
+        if(i == 0)
+        {
+          min0 = min;
+          max0 = max;
+        }
+        rows[0].push([Math.floor(t/60)+(t%60)/100,null,null,null,null,min,max,true]);
+        t = Number(time.time);
+      }
+      rows[0].push([24,null,null,null,null,min0,max0,true]);
+      return rows;
+    },
+    _resizeHandler: function()
+    {
+      this.updateCharts();
+    },
+    updateCharts: function()
+    {
+      if(!_.config || _.$.pages.selectedItem != this)
+        return;
+
+      var title = "";
+      if(this.data.day)
+        title = _.fmtFullDate(new Date(_.dateData.year,_.dateData.month-1,this.data.day),"W, D");//(this.data.day<10?"0":"") + this.data.day + _.dateData.dateSuffix;
+
+      if(this.$.pages.selected == 1)
+      {
+        var rows = this._collectChartData();
+        this.drawChartGluc(rows[0]);
+        this.drawChartIEBE(rows[1]);
+        title = _.drawChartBasal(this.$.chartbasal, _.ismicro?"micro":(_.issmall?"small":"normal")).title;
+        icon = "list";
+      }
+      else
+      {
+        icon = "timeline";
+      }
+
+      _.$.tool0Display.icon = icon;
+      document.querySelector(".title").innerHTML = title;
+    },
+    drawChartGluc: function(rows)
+    {
+      var chart = this.$.chartgluc;
+      chart.options = {chartArea:{left:"auto",top:"10%",width:"90%",height:"60%"}
+                                 ,interpolateNulls:true
+                                 ,seriesType:"line"
+                                 ,pointSize:7
+                                 ,pointShape:"star"
+                                 ,lineWidth:1
+                                 //,curveType: "function"
+                                 ,backgroundColor: "transparent"
+                                 ,series:
+                                 [
+                                   {type:"line",color:"#008"}
+                                  ,{type:"line",color:"#050","lineDashStyle":[4,4],lineWidth:2}
+                                  ,{type:"line",color:"#aaa",visibleInLegend:false,pointSize:0}
+                                  ,{type:"line",color:"#aaa",visibleInLegend:false,pointSize:0}
+                                 ]
+                                 ,hAxis:
+                                 {
+                                   viewWindow:{min:0,max:24}
+                                  ,gridlines:{color:"transparent"}
+                                 }
+                                 ,vAxis:
+                                 {
+                                   gridlines:{color:"transparent"}
+                                 }
+                                 ,legend:{position:"top"}
+                                };
+
+      chart.options.hAxis.ticks = [];
+      for(var i=0; i<24; i+=2)
+        chart.options.hAxis.ticks.push({v:i,f:i+":00"});
+
+      if(_.ismicro)
+        chart.options.chartArea.height = "80%";
+      chart.cols = [{label:"Zeit",type:"number"}
+                   ,{label:"Combo",type:"number"}
+                   ,{role:"tooltip",type:"string"}
+                   ,{label:"Libre",type:"number"}
+                   ,{role:"tooltip",type:"string"}
+                   ,{label:"Min",type:"number"}
+                   ,{label:"Max",type:"number"}
+                   ,{role:"scope",type:"boolean"}];
+
+      chart.rows = rows;
+      if(rows.length > 0 && !chart.hidden)
+        chart.redraw();
+    },
+    drawChartIEBE: function(rows)
+    {
+      var chart = this.$.chartiebe;
+      chart.options = {chartArea:{left:"auto",top:"10%",width:"90%",height:"60%"}
+                                 ,interpolateNulls:false
+                                 ,seriesType:"bars"
+                                 ,bar:{groupWidth:"50"}
+                                 ,backgroundColor: "transparent"
+                                 ,series:
+                                 [
+                                   {type:"bars",color:"#aa0",targetAxisIndex:1,dataOpacity:0.3,strokeColor:"#000",strokeWidth:4}
+                                  ,{type:"bars",color:"#e61",targetAxisIndex:1,dataOpacity:0.5}
+                                 ]
+                                 ,hAxis:
+                                 {
+                                   viewWindow:{min:0,max:24}
+                                  ,gridlines:{color:"transparent"}
+                                 }
+                                 ,vAxis:
+                                 {
+                                   gridlines:{color:"transparent"}
+                                 }
+                                 ,legend:{position:"top",alignment:"end"}
+                                };
+      chart.options.hAxis.ticks = [];
+      for(var i=0; i<24; i+=2)
+        chart.options.hAxis.ticks.push({v:i,f:i+":00"});
+      if(_.ismicro)
+        chart.options.chartArea.height = "80%";
+      chart.cols = [{label:"Zeit",type:"number"}
+                   ,{label:"Insulin",type:"number"}
+                   ,{role:"tooltip",type:"string"}
+                   ,{label:"BE",type:"number"}
+                   ,{role:"tooltip",type:"string"}];
+      chart.rows = rows;
+      chart.hidden = rows.length == 0 || !this.charts["IEBE"].ctrl.active;
+      if(rows.length > 0)
+        chart.redraw();
+    },
+    tapImport: function()
+    {
+      var date = _.dateData;
+      var data = undefined;
+      if(this.times.length > 0)
+      {
+        data = this.times[this.times.length-1];
+        data.date = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8);
+        data = {date:_.dateData,time:data};
+      }
+      this.importFromNightscout(data,"entries");
+    },
+    importFromNightscout: function(data,type)
+    {
+/*
+treatments {"_id":"5a6655c831eb7e982c64ef07",
+            "boluscalc":{"profile":"Default",
+                         "eventTime":"2018-01-22T21:21:09.094Z",
+                         "targetBGLow":"120",
+                         "targetBGHigh":"120",
+                         "isf":"90",
+                         "ic":"6",
+                         "iob":"0",
+                         "cob":"0",
+                         "insulincob":"0",
+                         "bg":"57",
+                         "insulinbg":"-0.7000000000000001",
+                         "bgdiff":"-63",
+                         "carbs":"36",
+                         "gi":"2",
+                         "insulincarbs":"6",
+                         "othercorrection":"0",
+                         "insulin":"5.300000000000001",
+                         "roundingcorrection":"8.881784197001252e-16",
+                         "carbsneeded":"0"},
+                         "enteredBy":"",
+                         "eventType":"Bolus Wizard",
+                         "glucose":57,
+                         "glucoseType":"Sensor",
+                         "units":"mg/dl",
+                         "carbs":36,
+                         "insulin":5.3,
+                         "created_at":"2018-01-22T21:21:12.558Z"}
+*/
+      var date = _.dateData;
+      if(data !== undefined)
+        date = data.date;
+      var time = "0000";
+      if(data != undefined)
+        time = data.time.time;
+
+      var begTime = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8) + "T" + _.fmtTime(time) + ":00.000Z";
+      var endTime = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8) + "T23:59:59.000Z";
+//      begTime = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8) + "T15:00:00.000Z";
+      var field = "";
+      switch(type)
+      {
+        case "entries": field = "dateString";break;
+        case "treatments": field = "created_at";break;
+        default: return;
+      }
+
+      var url = _.config.nsurl + type + ".json?count=5000&find[" + field +"][$gt]=" + begTime + "&find[" + field +"][$lte]=" + endTime;
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url);
+//      xhr.open("POST", "https://diamant-ns.herokuapp.com/api/v1/entries.json");
+//      xhr.setRequestHeader("api_secret", _.config.nsapi);
+//      var data = JSON.stringify(json);
+      var self = this;
+      var d = data;
+      var t = type;
+      xhr.onload=function()
+      {
+        if(xhr.status != 200)
+        {
+          alert("Es ist ein Fehler aufgetreten: " + xhr.responseText + "\n" + xhr.status);
+          return;
+        }
+        var list = JSON.parse(xhr.responseText);
+        var saveData = [];
+        if (d != undefined)
+          saveData.push(d.time);
+        var src = "";
+        list.sort(function(a,b){return a.date<b.date?-1:1});
+//        _.msg(JSON.stringify(list));return;
+        var lastarrow = "";
+        for(var i=0; i<list.length; i++)
+        {
+          var item = list[i];
+/*
+entries {"_id":"5a66509331eb7e982c64a6b7",
+         "date":1516635630000,
+         "dateString":"2018-01-22T15:40:30.000Z",
+         "rssi":100,
+         "device":"glimp://libre/0M00024ZYUW",
+         "direction":"SingleUp",
+         "rawbg":170,
+         "sgv":170,
+         "type":"sgv"}
+*/
+          switch(t)
+          {
+            case "entries":
+              var srcDate = item.dateString;
+    //          var srcDate = item.created_at;
+              var date = srcDate.substr(0,10);
+              var data = {time:srcDate.substr(11,2)+srcDate.substr(14,2)};
+              data.gluclibre = item.sgv;
+              data.source = item.device;
+              if(data.source != src && src != "")
+                data.sensor = true;
+              src = data.source;
+              data.date = date;
+              switch(item.direction)
+              {
+                case "Flat":
+                  data.arrowlibre = "equal";
+                  break;
+                case "FortyFiveUp":
+                  data.arrowlibre = "up";
+                  break;
+                case "FortyFiveDown":
+                  data.arrowlibre = "down";
+                  break;
+                case "SingleUp":
+                  data.arrowlibre = "fastup";
+                  break;
+                case "SingleDown":
+                  data.arrowlibre = "fastdown";
+                  break;
+              }
+    //          data.org = item;
+    //          this.data.times.push(data);
+              if(data.arrowlibre != "equal" || lastarrow != "equal")
+                saveData.push(data);
+              lastarrow = data.arrowlibre;
+              break;
+            case "treatments":
+              break;
+          }
+        }
+        switch(t)
+        {
+          case "entries":
+//            self.importFromNightscout(saveData,"treatments");
+//            break;
+          case "treatments":
+            self.set("times", saveData);
+            self.set("rnd", Math.random());
+            _.msg(url+JSON.stringify(saveData));
+            break;
+        }
+      };
+      xhr.onerror=function()
+      {
+        alert("FÄÄÄÄÄÄHLÄÄÄÄÄÄRRRR: " + Error().stack + "\n" + xhr.status);
+      };
+      xhr.send();
+//*/
+    }
+  });
+</script>
