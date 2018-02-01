@@ -130,10 +130,24 @@
     paper-fab[icon="cloud-download"]
     {
       position: fixed;
-      right:  4.8em;
+      left:  0.5em;
       bottom: 0.5em;
       z-index: 100;
       --paper-fab-background: var(--paper-light-blue-500);
+      --paper-fab-keyboard-focus-background: var(--paper-blue-700);
+      --paper-fab-iron-icon:
+      {
+        color: var(--color-accent-font);
+      };
+    }
+    #removeimport
+    {
+      position: fixed;
+      left:  2.7em;
+      bottom: 0.1em;
+      z-index: 100;
+      --paper-fab-background: var(--paper-red-500);
+      --paper-fab-keyboard-focus-background: var(--paper-red-700);
       --paper-fab-iron-icon:
       {
         color: var(--color-accent-font);
@@ -177,15 +191,6 @@
       {
         position: fixed;
         right:  -1em;
-        bottom: -1em;
-        z-index: 100;
-        width: 5em;
-        height: 5em;
-      }
-      paper-fab[icon="cloud-download"]
-      {
-        position: fixed;
-        right:  -6em;
         bottom: -1em;
         z-index: 100;
         width: 5em;
@@ -255,10 +260,16 @@
         padding: 0 1em;
       };
     }
+    iron-icon[src]
+    {
+      --iron-icon-height: 2.0625em;
+      --iron-icon-width: 1.5em;
+    }
     </style>
     <iron-pages id="pages" class="layout flex scroll">
       <div id="list" class="layout flex">
         <paper-fab id="today" class="second" hidden on-tap="tapToday" mini icon="today"></paper-fab>
+        <paper-fab id="removeimport" on-tap="tapRemoveImport" hidden mini src="resources/nightscout.png" i_con="cloud"></paper-fab>
         <paper-fab id="import" on-tap="tapImport" hidden icon="cloud-download"></paper-fab>
         <paper-fab on-tap="tapAdd" icon="add"></paper-fab>
         <table class="responsive-table">
@@ -293,7 +304,8 @@
                   <iron-icon icon="myicons:sensor" hidden$="{{hasSensor(item,rnd)}}"></iron-icon>
                   <iron-icon icon="myicons:katheter" hidden$="{{hasKatheter(item,rnd)}}"></iron-icon>
                   <iron-icon icon="myicons:ampulle" hidden$="{{hasAmpulle(item,rnd)}}"></iron-icon>
-                  <iron-icon icon="description" hidden$="{{hasInfo(item,rnd)}}"></iron-icon>&nbsp;
+                  <iron-icon icon="description" hidden$="{{hasInfo(item,rnd)}}"></iron-icon>
+                  <iron-icon src="resources/nightscout.png" hidden$="{{hasImport(item,'nightscout',rnd)}}"></iron-icon>&nbsp;
                 </td>
               </tr>
             </template>
@@ -467,13 +479,17 @@
     {
       return !item.info;
     },
+    hasImport: function(item,id,rnd)
+    {
+      return !item.import || item.import.indexOf(id) < 0;
+    },
     glucStyle: function(item,rnd)
     {
       var ret = "";
 
       if(item == undefined)
         return "";
-      if(item.gluc == undefined && (item.arrowlibre == "" || item.arrowlibre == "equal" || item.arrowlibre.endsWith("up") ))
+      if(item.gluc == undefined && item.arrowlibre != undefined && (item.arrowlibre == "" || item.arrowlibre == "equal" || item.arrowlibre.endsWith("up") ))
         ret = _.glucColor(item.gluclibre,_.dateData.idDate,item.time,250);
       else
         ret = _.glucColor(item.gluc,_.dateData.idDate,item.time,250);
@@ -567,7 +583,8 @@
     },
     adjustDayButtons: function()
     {
-      this.$.import.hidden = !_.config.nsok;
+      this.$.import.hidden = !_.config.nightscout.active;
+      this.$.removeimport.hidden = !_.config.nightscout.active || !_.config.nightscout.maydelimp;
       if(!_.dateData.isToday)
         return;
 
@@ -912,7 +929,38 @@
       if(rows.length > 0)
         chart.redraw();
     },
+    tapRemoveImport: function()
+    {
+      _.confirm("Hiermit werden alle Datensätze für diesen Tag gelöscht, die von Nightscout importiert wurden.<br>"
+                  +"Soll ich fortfahren?"
+                  ,[{action:this.doRemoveImport.bind(this),title:"Ja"}
+                   ,{title:"Nein"}]);
+    },
+    doRemoveImport: function()
+    {
+      var times = [];
+      for(var i=0; i<this.times.length; i++)
+      {
+        if(!this.times[i].import || this.times[i].import.indexOf("nighscout") >= 0)
+          times.push(this.times[i]);
+      }
+      this.set("times",times);
+      _.saveDayData(this.times);
+    },
     tapImport: function()
+    {
+      if(_.config.nightscout.askimp)
+      {
+      _.confirm("Sollen die Daten für diesen Tag von Nightscout importiert werden?"
+                  ,[{action:this.doImport.bind(this),title:"Ja"}
+                   ,{title:"Nein"}]);
+      }
+      else
+      {
+        this.doImport();
+      }
+    },
+    doImport: function()
     {
       var date = _.dateData;
       var data = undefined;
@@ -922,9 +970,200 @@
         data.date = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8);
         data = {date:_.dateData,time:data};
       }
-      this.importFromNightscout(data,"entries");
+      _.self = this;
+      this.importFromNightscout(data,"entries",_.self.entriesDone);
     },
-    importFromNightscout: function(data,type)
+    findData: function(list,srcDate)
+    {
+      var d = new Date(Date.parse(srcDate));
+      var data = {isNew:true,time:_.fmtDateTime(d,"hM"),date:_.fmtDateTime(d,"y-m-d")};
+      data.orgTime = data.time;
+      var check = Number(data.time);
+      for(var i=0; i<list.length; i++)
+      {
+        if(list[i].date != data.date)
+          continue;
+         
+        if(_.config.nightscout.merge)
+        {
+          if(list[i].orgTime != undefined)
+          {
+            if(Math.abs(Number(list[i].orgTime)-check) <= _.config.nightscout.mergetime)
+            {
+              delete list[i].isNew;
+              return list[i];
+            }
+          }
+          else
+          {
+            if(Math.abs(Number(list[i].time)-check) <= _.config.nightscout.mergetime)
+            {
+              list[i].orgTime = list[i].time;
+              delete list[i].isNew;
+              return list[i];
+            }
+          }
+        }
+      }
+      return data;
+    },
+    entriesDone: function(data)
+    {
+      _.self.importFromNightscout(data,"treatments",_.self.treatmentsDone);
+    },
+    treatmentsDone: function(srcData)
+    {
+      var saveData = _.driveData.cloneOf(_.self.times);
+      var src = "";
+      var list = srcData.result;
+      list.sort(function(a,b)
+      {
+        var da = a.dateString ? a.dateString : a.created_at;
+        var db = b.dateString ? b.dateString : b.created_at;
+        return da<db?-1:1
+      });
+      var lastarrow = "";
+      var lastgluc = -1;
+      var lastdir = 0;
+      for(var i=0; i<list.length; i++)
+      {
+        var item = list[i];
+        var dataFound = undefined;
+        var data = undefined;
+        var forceAdd = false;
+        if(item.dateString)
+        {
+          data = _.self.findData(saveData,item.dateString);
+          data.gluclibre = item.sgv;
+          data.device = item.device;
+          if(item.device != src && src != "")
+            data.sensor = true;
+          src = data.device;
+          switch(item.direction)
+          {
+            case "Flat":
+              data.arrowlibre = "equal";
+              break;
+            case "FortyFiveUp":
+              data.arrowlibre = "up";
+              break;
+            case "FortyFiveDown":
+              data.arrowlibre = "down";
+              break;
+            case "SingleUp":
+              data.arrowlibre = "fastup";
+              break;
+            case "SingleDown":
+              data.arrowlibre = "fastdown";
+              break;
+          }
+        }
+        else if(item.created_at)
+        {
+          data = _.self.findData(saveData,item.created_at);
+          forceAdd = data.isNew;
+          data.gluclibre = item.glucose;
+          if(item.carbs > 0)
+          {
+            // 65 ist die Id fuer BE. Muss flexibilisiert werden.
+            if(!data.food)
+              data.food = [];
+            
+            var idx = -1;
+            var menge = _.round(item.carbs/12,2);
+            for(var j=0; j<data.food.length; j++)
+            {
+              if(data.food[j].id == 65)
+                idx = j;
+            }
+            if(idx >= 0)
+              data.food[idx].menge = menge;
+            else
+              data.food.push({id:65,menge:menge,import:"nightscout"});
+          }
+          if(item.boluscalc)
+          {
+            data.bolusbe = _.round(item.boluscalc.insulincarbs,1);
+            data.bolusadjust = _.round(item.boluscalc.insulin - item.boluscalc.insulincarbs,1);
+            
+            if(data.bolusbe+data.bolusadjust == 0)
+            {
+              delete data.bolusbe;
+              delete data.bolusadjust;
+            }
+          }
+          else
+          {
+            if(item.carbs > 0)
+              data.bolusbe = _.round(item.enteredinsulin ? item.enteredinsulin : item.insulin,1);
+            else
+              data.bolusadjust = _.round(item.enteredinsulin ? item.enteredinsulin : item.insulin,1);
+          }
+          if(item.eventType == "Site Change")
+            data.katheter = true;
+          if(item.eventType == "Sensor Change")
+            data.sensor = true;
+          if(item.eventType == "Insulin Change")
+            data.ampulle = true;
+            
+          if(item.duration > 0)
+          {
+            if(item.splitNow)
+              data.bolusnow = _.round(item.enteredinsulin * item.splitNow / 100);
+            else if(item.splitExt)
+              data.bolusnow = _.round(item.enteredinsulin * (100-item.splitNow) / 100);
+            data.bolustime = _.floor(item.duration/15)*15;
+          }
+        }
+        
+        if(data)
+        {
+          if(data.isNew)
+          {
+            if(!data.import)
+              data.import = "nightscout";
+            else if(data.import.indexOf("nightscout") < 0)
+              data.import += " nightscout";
+          }
+          var dir = data.gluclibre < lastgluc ? 0 : 1;
+          
+          var doSave = data.isNew;
+          if(!doSave && _.config.nightscout.importfirst && i == 0)
+            doSave = true;
+          if(!doSave && _.config.nightscout.importlast && i == list.length - 1)
+            doSave = true;
+            
+          if(doSave && _.config.nightscout.importchanging)
+//            doSave = data.arrowlibre != "equal" || lastarrow != "equal";
+            doSave = dir != lastdir && lastdir >= 0;
+            
+          doSave = doSave || forceAdd;
+          
+//          (data.isNew 
+//              && (
+//              dir != lastdir && lastdir >= 0 ||
+//              (i == 0 || i == list.length - 1 || data.arrowlibre != "equal" || lastarrow != "equal")
+//             )
+//             )||forceAdd
+          if(doSave)
+            saveData.push(data);
+          lastdir = dir;
+          lastgluc = data.gluclibre;
+          lastarrow = data.arrowlibre;
+        }
+      }
+      for(var i=0; i<saveData.length; i++)
+      {
+        delete saveData[i].isNew;
+        delete saveData[i].orgTime;
+      }
+      _.self.set("times",saveData);
+      _.$.pages.selectedItem.activated();
+      _.saveDayData(saveData);
+      _.debug({url:srcData.url,src:list,times:saveData});
+      _.self.notifyPath("times", saveData, true);
+    },
+    importFromNightscout: function(data,type,callback)
     {
 /*
 treatments {"_id":"5a6655c831eb7e982c64ef07",
@@ -946,26 +1185,36 @@ treatments {"_id":"5a6655c831eb7e982c64ef07",
                          "othercorrection":"0",
                          "insulin":"5.300000000000001",
                          "roundingcorrection":"8.881784197001252e-16",
-                         "carbsneeded":"0"},
-                         "enteredBy":"",
-                         "eventType":"Bolus Wizard",
-                         "glucose":57,
-                         "glucoseType":"Sensor",
-                         "units":"mg/dl",
-                         "carbs":36,
-                         "insulin":5.3,
-                         "created_at":"2018-01-22T21:21:12.558Z"}
+                         "carbsneeded":"0"
+                        },
+            "enteredBy":"",
+            "eventType":"Bolus Wizard",
+            "glucose":57,
+            "glucoseType":"Sensor",
+            "units":"mg/dl",
+            "carbs":36,
+            "insulin":5.3,
+            "created_at":"2018-01-22T21:21:12.558Z"}
 */
-      var date = _.dateData;
+      var date = _.driveData.cloneOf(_.dateData);
       if(data !== undefined)
         date = data.date;
       var time = "0000";
       if(data != undefined)
         time = data.time.time;
+      else
+        data = {date:date,time:{time:time},result:[]}
 
-      var begTime = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8) + "T" + _.fmtTime(time) + ":00.000Z";
-      var endTime = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8) + "T23:59:59.000Z";
-//      begTime = date.idDate.substr(0,4)+"-"+date.idDate.substr(4,2)+"-"+date.idDate.substr(6.8) + "T15:00:00.000Z";
+      var begDate = date.asDate();
+      begDate.setHours(Number(time.substr(0,2)));
+      begDate.setMinutes(Number(time.substr(2,2)));
+      begDate.setHours(0);
+      begDate.setMinutes(0);
+      var begTime = begDate.toISOString();
+      begDate.setHours(23);
+      begDate.setMinutes(59);
+      begDate.setSeconds(59);
+      var endTime = begDate.toISOString();
       var field = "";
       switch(type)
       {
@@ -974,100 +1223,35 @@ treatments {"_id":"5a6655c831eb7e982c64ef07",
         default: return;
       }
 
-      var url = _.config.nsurl + type + ".json?count=5000&find[" + field +"][$gt]=" + begTime + "&find[" + field +"][$lte]=" + endTime;
+      var url = _.config.nightscout.url + type + ".json?count=5000&find[" + field +"][$gt]=" + begTime + "&find[" + field +"][$lte]=" + endTime;
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url);
 //      xhr.open("POST", "https://diamant-ns.herokuapp.com/api/v1/entries.json");
-//      xhr.setRequestHeader("api_secret", _.config.nsapi);
+//      xhr.setRequestHeader("api_secret", _.config.nightscout.api);
 //      var data = JSON.stringify(json);
       var self = this;
       var d = data;
-      var t = type;
+      if(!d.url)
+        d.url = [];
+      d.url.push(url);
       xhr.onload=function()
       {
         if(xhr.status != 200)
         {
-          alert("Es ist ein Fehler aufgetreten: " + xhr.responseText + "\n" + xhr.status);
+          _.msg("Es ist ein Fehler aufgetreten: " + xhr.responseText + "\n" + xhr.status);
           return;
         }
         var list = JSON.parse(xhr.responseText);
-        var saveData = [];
-        if (d != undefined)
-          saveData.push(d.time);
-        var src = "";
-        list.sort(function(a,b){return a.date<b.date?-1:1});
-//        _.msg(JSON.stringify(list));return;
-        var lastarrow = "";
+        if(d.result === undefined)
+          d.result = [];
         for(var i=0; i<list.length; i++)
-        {
-          var item = list[i];
-/*
-entries {"_id":"5a66509331eb7e982c64a6b7",
-         "date":1516635630000,
-         "dateString":"2018-01-22T15:40:30.000Z",
-         "rssi":100,
-         "device":"glimp://libre/0M00024ZYUW",
-         "direction":"SingleUp",
-         "rawbg":170,
-         "sgv":170,
-         "type":"sgv"}
-*/
-          switch(t)
-          {
-            case "entries":
-              var srcDate = item.dateString;
-    //          var srcDate = item.created_at;
-              var date = srcDate.substr(0,10);
-              var data = {time:srcDate.substr(11,2)+srcDate.substr(14,2)};
-              data.gluclibre = item.sgv;
-              data.source = item.device;
-              if(data.source != src && src != "")
-                data.sensor = true;
-              src = data.source;
-              data.date = date;
-              switch(item.direction)
-              {
-                case "Flat":
-                  data.arrowlibre = "equal";
-                  break;
-                case "FortyFiveUp":
-                  data.arrowlibre = "up";
-                  break;
-                case "FortyFiveDown":
-                  data.arrowlibre = "down";
-                  break;
-                case "SingleUp":
-                  data.arrowlibre = "fastup";
-                  break;
-                case "SingleDown":
-                  data.arrowlibre = "fastdown";
-                  break;
-              }
-    //          data.org = item;
-    //          this.data.times.push(data);
-              if(data.arrowlibre != "equal" || lastarrow != "equal")
-                saveData.push(data);
-              lastarrow = data.arrowlibre;
-              break;
-            case "treatments":
-              break;
-          }
-        }
-        switch(t)
-        {
-          case "entries":
-//            self.importFromNightscout(saveData,"treatments");
-//            break;
-          case "treatments":
-            self.set("times", saveData);
-            self.set("rnd", Math.random());
-            _.msg(url+JSON.stringify(saveData));
-            break;
-        }
+          d.result.push(list[i]);
+        callback(d);
+        return;
       };
       xhr.onerror=function()
       {
-        alert("FÄÄÄÄÄÄHLÄÄÄÄÄÄRRRR: " + Error().stack + "\n" + xhr.status);
+        _.msg("Es ist ein Fehler aufgetreten: " + Error().stack + "\n" + xhr.status);
       };
       xhr.send();
 //*/

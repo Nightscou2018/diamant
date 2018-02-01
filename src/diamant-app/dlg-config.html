@@ -15,7 +15,7 @@
 <dom-module id="dlg-config">
   <template>
     <style include="responsive-table-style"></style>
-    <style is="custom-style">
+    <style>
     :host
     {
       @apply(hidden);
@@ -184,12 +184,36 @@
       --paper-checkbox-margin: 8px 16px 8px 0;
       --paper-checkbox-vertical-align: top;
     }
+    .subarea>div:first-child
+    {
+      color: #505050;
+      padding: 1em 0;
+      font-weight: bold;
+    }
+    .subarea
+    {
+      display: flex;
+      flex-direction: column;
+    }
     paper-checkbox .subtitle 
     {
       display: block;
       font-size: 0.8em;
       margin-top: 2px;
       max-width: 150px;
+    }
+    #tabNS paper-checkbox
+    {
+      padding-bottom: 0;
+    }
+    #chkMerge
+    {
+      padding-right: 1em;
+    }
+    paper-input#mergetime
+    {
+      width: 4em;
+      text-align: right;
     }
     </style>
     <paper-dialog id="dlg" on-iron-overlay-closed="dlgClosed" modal entry-animation="scale-up-animation" exit-animation="scale-down-animation">
@@ -300,15 +324,28 @@
                 </div>
               </div>
             </div>
-            <div title="Verbindung zu Nightscout">
-              <paper-input label="NightscoutURL" value="{{config.nsurl}}"></paper-input>
-              <paper-input label="NightscoutAPI" value="{{config.nsapi}}"></paper-input>
+            <div id="tabNS" title="Verbindung zu Nightscout">
+              <paper-input label="URL" value="{{config.nightscout.url}}"></paper-input>
+              <paper-input label="API-Schlüssel" value="{{config.nightscout.api}}"></paper-input>
               <paper-checkbox id="btnCheckNS" on-tap="tapCheckNS">
                 Nightscout verwenden
                 <span class="subtitle">
                   Beim Ankreuzen wird eine Testverbindung zu Nightscout aufgebaut.
                 </span>
               </paper-checkbox>
+              <div class="subarea" hidden$="{{isNSActive(rnd)}}">
+                <div>Import Einstellungen</div>
+                <paper-checkbox checked="{{config.nightscout.askimp}}">Vor dem Import nachfragen</paper-checkbox>
+                <paper-checkbox checked="{{config.nightscout.maydelimp}}">Löschen importierter Daten ermöglichen</paper-checkbox>
+                <div class="horz">
+                  <paper-checkbox id="chkMerge" checked="{{config.nightscout.merge}}">Werte zusammenfassen, die innerhalb von</paper-checkbox>
+                  <paper-input id="mergetime" no-label-float="true" type="number" min="2" max="15" value="{{config.nightscout.mergetime}}"></paper-input>
+                  Minuten erfasst wurden
+                </div>
+                <paper-checkbox checked="{{config.nightscout.importfirst}}">Ersten Wert immer importieren</paper-checkbox>
+                <paper-checkbox checked="{{config.nightscout.importlast}}">Letzten Wert immer importieren</paper-checkbox>
+                <paper-checkbox checked="{{config.nightscout.importchanging}}">Nur Werte importieren, deren Tendenz sich ändert</paper-checkbox>
+              </div>
             </div>
           </iron-pages>
         </paper-dialog-scrollable>
@@ -330,18 +367,18 @@
      ,gender: {type:String,value:"-1"}
      ,config: {type:Object,value:{}}
      ,calendarList: {type:Array,value:[]}
-     ,nsok: {type:String,value:""}
+     ,nsactive: {type:String,value:""}
      ,rnd: {type:Number,value:0}
     },
     show: function()
     {
       this.config = _.driveData.cloneOf(_.config);
       this.storeData();
-      this.setPage(0);
+      this.setPage(_.$.localcfg.isDebug?5:0);
       this.rnd = Math.random();
       _.driveData.requestCalendarList(this,this.onCalendarListReceived);
       this.$.dlg.toggle();
-      this.setNSOk();
+      this.setNSActive();
     },
     refreshDisplay: function()
     {
@@ -350,6 +387,10 @@
     onCalendarListReceived: function(self,list)
     {
       self.calendarList = list;
+    },
+    isNSActive: function(rnd)
+    {
+      return !this.config || !this.config.nightscout || !this.config.nightscout.active;
     },
     tapCalendar: function(e)
     {
@@ -501,23 +542,26 @@
         this.fire("cancel");
       }
     },
-    setNSOk: function()
+    setNSActive: function()
     {
-      this.$.btnCheckNS.checked = this.config.nsok;
+      this.$.btnCheckNS.checked = this.config.nightscout.active;
     },
     tapCheckNS: function()
     {
-      this.config.nsok = false;
+      this.config.nightscout.active = false;
       if (!this.$.btnCheckNS.checked)
+      {
+        this.refreshDisplay();
         return;
+      }
         
       var self = this;
-      if (!this.config.nsurl.endsWith("/"))
+      if (!this.config.nightscout.url.endsWith("/"))
       {
-        self.config.nsurl += "/";
-        self.notifyPath("config.nsurl", self.config.nsurl);
+        self.config.nightscout.url += "/";
+        self.notifyPath("config.nightscout.url", self.config.nightscout.url);
       }
-      var url = this.config.nsurl + "status.json";
+      var url = this.config.nightscout.url + "status.json";
       var xhr = new XMLHttpRequest();
       xhr.open("GET", url);
       xhr.onload=function()
@@ -525,21 +569,23 @@
         if(xhr.status != 200)
         {
           _.msg("Die Verbindung konnte leider nicht hergestellt werden. (Status " + xhr.status + ")", 3);
-          self.setNSOk();
+          self.setNSActive();
           return;
         }
         var data = JSON.parse(xhr.responseText);
-        self.config.nsok = data.apiEnabled;
-        if (self.config.nsok)
+        self.config.nightscout.active = data.apiEnabled;
+        if (self.config.nightscout.active)
           _.msg("Die Verbindung war erfolgreich! " + data.name + ", Version " + data.version);
         else
           _.msg("Es konnte zwar eine Verbindung hergestellt werden, aber die API ist auf dem Server nicht aktiv.", 3);
-        self.setNSOk();
+        self.setNSActive();
+        self.refreshDisplay();
       };
       xhr.onerror=function()
       {
         _.msg("Die Verbindung konnte leider nicht hergestellt werden. (Status " + xhr.status + ")", 3);
-        self.setNSOk();
+        self.setNSActive();
+        self.refreshDisplay();
       };
       xhr.send();
     }

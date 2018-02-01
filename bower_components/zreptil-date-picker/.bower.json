@@ -14,14 +14,13 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
   "homepage": "https://github.com/zreptil/zreptil-date-picker",
-  "_release": "b6d2019f20",
+  "_release": "b7977a4502",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "b6d2019f20e5ab7cbde57131c6f49d936ba4b7a9"
+    "commit": "b7977a45020504c10aca478a76654d640f25a7e8"
   },
-  "_source": "git://github.com/zreptil/zreptil-date-picker.git",
+  "_source": "https://github.com/zreptil/zreptil-date-picker.git",
   "_target": "*",
-  "_originalSource": "zreptil/zreptil-date-picker",
-  "_direct": true
+  "_originalSource": "zreptil/zreptil-date-picker"
 }

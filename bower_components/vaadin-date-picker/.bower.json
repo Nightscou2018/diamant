@@ -49,12 +49,12 @@
     "web-component-tester": "^6.0.0-prerelease.7"
   },
   "homepage": "https://github.com/vaadin/vaadin-date-picker",
-  "version": "1.2.3",
-  "_release": "1.2.3",
+  "version": "1.2.4",
+  "_release": "1.2.4",
   "_resolution": {
     "type": "version",
-    "tag": "v1.2.3",
-    "commit": "d1cf6399c803e812468987888626e36483aec9c8"
+    "tag": "v1.2.4",
+    "commit": "5867b13a8b94da712b1f05c570918174199d6719"
   },
   "_source": "https://github.com/vaadin/vaadin-date-picker.git",
   "_target": "^1.1.3",

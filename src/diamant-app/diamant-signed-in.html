@@ -76,8 +76,8 @@
         </defs>
       </svg>
     </iron-iconset-svg>
-    <style is="custom-style">
-    :root
+    <style>
+    html
     {
       --diamant-button:
       {
@@ -985,13 +985,17 @@
       this.driveData.isDebug = this.$.localcfg.isDebug;
       this.driveData.showControl = this;
     },
-    debug: function(obj)
+    debug: function(obj,json=false)
     {
       if(!this.driveData.isDebug)
         return;
-      var win = window.open("","_blank");
+      var win = window.open("","_blank","left=1000,top=0,height=900,width=700");
       var urlCreator = window.URL || window.webkitURL;
-      var blob = new Blob([JSON.stringify(obj)],{type:"plain/text"});
+      var blob;
+      if(json)
+        blob = new Blob([obj],{type:"application/json"});
+      else
+        blob = new Blob([JSON.stringify(obj,null,2)],{type:"text/plain"});
       win.location.href = urlCreator.createObjectURL(blob);
     },
     changeFlagDisplay: function(flag,ctrl)
@@ -1039,6 +1043,9 @@
         config.times[i].values = v;
       }
       config.zeiten[config.zeiten.length-1].time = "1439";
+      if(!config.nightscout)config.nightscout = {url:"",api:"",active:false,askimp:false,merge:true,mergetime:2};
+      config.nightscout.mergetime = Number(config.nightscout.mergetime);
+
       return config;
     },
     tapTool: function(e)
@@ -1125,11 +1132,28 @@
 
      self.config = self.adjustConfig(data);
     },
+    saveDayData: function(times)
+    {
+      var day = Number(_.dateData.day);
+      var dayFound = _.findDayData(day);
+      
+      if(dayFound == undefined)
+      {
+        dayFound = {day:day};
+        _.monthData.push(dayFound);
+      }
+      
+      dayFound.times = times;
+      
+      _.sortMonthData();
+      _.driveData.saveData(_,_.monthData,"json",_.saveDlgInputDone);
+    },
     saveDlgInput: function(e,timeData)
     {
       if(e)
         e.stopImmediatePropagation();
 
+      delete timeData.data.import;
       this._saveDlgInputData = timeData;
       var day = Number(this.dateData.day);
       var time = Number(timeData.data.time);
@@ -1200,7 +1224,11 @@
       var dayIdx = this.findDayDataIdx(day);
 
       if(dayIdx < 0)
+      {
+        location.reload(true);
+        this.msg("Der Datensatz konnte nicht gefunden werden, Seite wird neu geladen");
         return;
+      }
 
       var timeFound = undefined;
       for(var i=0; i<this.monthData[dayIdx].times.length && !timeFound; i++)
@@ -1210,6 +1238,7 @@
           this.splice("monthData.#" + dayIdx + ".times", i, 1);
           this.sortMonthData();
           this.driveData.saveData(this,this.monthData,"json",this.saveDlgInputDone);
+          this.$.pages.selectedItem.activated();
           return;
         }
       }
@@ -2191,6 +2220,11 @@
           console.log(text);
         });
       });
+    }
+    ,round: function(val,precision)
+    {
+      var f = Math.pow(10,precision);
+      return Math.round(val*f)/f;
     }
   });
 </script>

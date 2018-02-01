@@ -14,14 +14,13 @@
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
   "homepage": "https://github.com/zreptil/zreptil-time-picker",
-  "_release": "565e675ad9",
+  "_release": "d1a54f8c45",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "565e675ad9e4b0c12d61a1456d17fc37105dac70"
+    "commit": "d1a54f8c451c732d8f2f3ec6516a5e206e70269e"
   },
-  "_source": "git://github.com/zreptil/zreptil-time-picker.git",
+  "_source": "https://github.com/zreptil/zreptil-time-picker.git",
   "_target": "*",
-  "_originalSource": "zreptil/zreptil-time-picker",
-  "_direct": true
+  "_originalSource": "zreptil/zreptil-time-picker"
 }

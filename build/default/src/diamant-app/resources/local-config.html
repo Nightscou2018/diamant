@@ -10,7 +10,8 @@
     properties:
     {
       isAdmin: {type:Boolean,value:true}
-     ,dataPrefix: {type:String,value:"diamant."}
+     ,dataPrefix: {type:String,value:"test."}
+//     ,dataPrefix: {type:String,value:"diamant."}
 //     ,gaId: {type:String,value:"UA-64740824-3"}//reptilefarm.de
      ,gaId: {type:String,value:"UA-64740824-2"}//zreptil.de
      ,isDebug: {type:Boolean,value:true}
@@ -33,6 +34,7 @@
       [
         {"min":"80","max":"140","factor":"2","adjust":"90","time":"1439"}
       ];
+      data.nightscout = {url:"",api:"",active:false,askimp:false,merge:true,mergetime:2};
     },
     initFoodList: function(data)
     {
