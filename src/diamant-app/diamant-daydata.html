@@ -1160,7 +1160,7 @@
       _.self.set("times",saveData);
       _.$.pages.selectedItem.activated();
       _.saveDayData(saveData);
-      _.debug({url:srcData.url,src:list,times:saveData});
+      _.debug({url:srcData.url,src:list,times:saveData},_.config.nightscout.debug);
       _.self.notifyPath("times", saveData, true);
     },
     importFromNightscout: function(data,type,callback)

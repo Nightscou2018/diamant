@@ -204,7 +204,7 @@
     }
     #tabNS paper-checkbox
     {
-      padding-bottom: 0;
+      padding-bottom: 1em;
     }
     #chkMerge
     {
@@ -336,6 +336,7 @@
               <div class="subarea" hidden$="{{isNSActive(rnd)}}">
                 <div>Import Einstellungen</div>
                 <paper-checkbox checked="{{config.nightscout.askimp}}">Vor dem Import nachfragen</paper-checkbox>
+                <paper-checkbox checked="{{config.nightscout.debug}}">Nach dem Import Datenfenster anzeigen</paper-checkbox>
                 <paper-checkbox checked="{{config.nightscout.maydelimp}}">Löschen importierter Daten ermöglichen</paper-checkbox>
                 <div class="horz">
                   <paper-checkbox id="chkMerge" checked="{{config.nightscout.merge}}">Werte zusammenfassen, die innerhalb von</paper-checkbox>
