@@ -1216,10 +1216,11 @@ treatments {"_id":"5a6655c831eb7e982c64ef07",
       begDate.setSeconds(59);
       var endTime = begDate.toISOString();
       var field = "";
+      var sort = "";
       switch(type)
       {
-        case "entries": field = "dateString";break;
-        case "treatments": field = "created_at";break;
+        case "entries": field = "dateString";sort="date";break;
+        case "treatments": field = "created_at";sort="boluscalc.eventtime";break;
         default: return;
       }
 
