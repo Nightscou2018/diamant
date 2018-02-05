@@ -22,7 +22,7 @@
 <dom-module id="diamant-daydata">
   <template>
     <style include="responsive-table-style"></style>
-    <style _is="custom-style">
+    <style>
     :host
     {
       @apply(hidden);
@@ -1036,7 +1036,7 @@
           data = _.self.findData(saveData,item.dateString);
           data.gluclibre = item.sgv;
           data.device = item.device;
-          if(item.device != src && src != "")
+          if(item.device.startsWith("glimp://libre/") && item.device != src && src != "")
             data.sensor = true;
           src = data.device;
           switch(item.direction)
@@ -1160,7 +1160,7 @@
       _.self.set("times",saveData);
       _.$.pages.selectedItem.activated();
       _.saveDayData(saveData);
-      _.debug({url:srcData.url,src:list,times:saveData});
+      _.debug({url:srcData.url,src:list,times:saveData},_.config.nightscout.debug);
       _.self.notifyPath("times", saveData, true);
     },
     importFromNightscout: function(data,type,callback)

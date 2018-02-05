@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/responsive-table/responsive-table.html">
 <link rel="import" href="../../bower_components/zreptil-date-picker/zreptil-date-picker.html">
+<link rel="import" href="../../bower_components/zreptil-time-picker/zreptil-time-picker.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animation.html">
 <dom-module id="dlg-config">
   <template>
@@ -140,6 +141,14 @@
       @apply(--layout-horizontal);
       @apply(--layout-center);
     }
+    .wrap
+    {
+      @apply(--layout-wrap);
+    }
+    .start
+    {
+      @apply(--layout-start);
+    }
     paper-input
     {
       padding-right: 1em;
@@ -206,15 +215,27 @@
     {
       padding-bottom: 0;
     }
-    #chkMerge
+    #tabNS .bottom
     {
-      padding-right: 1em;
+      padding-bottom: 1em;
+    }
+    #tabNS .right
+    {
+      padding-right: 0.75em;
     }
     paper-input#mergetime
     {
       width: 4em;
       text-align: right;
     }
+    .table-ns
+    {
+      width: 100%;
+    }
+    .table-ns tr:not(:first-child) td
+    {
+      border-top: 1px solid black;
+    }    
     </style>
     <paper-dialog id="dlg" on-iron-overlay-closed="dlgClosed" modal entry-animation="scale-up-animation" exit-animation="scale-down-animation">
       <div id="pnlTitle" class="title">
@@ -335,16 +356,52 @@
               </paper-checkbox>
               <div class="subarea" hidden$="{{isNSActive(rnd)}}">
                 <div>Import Einstellungen</div>
-                <paper-checkbox checked="{{config.nightscout.askimp}}">Vor dem Import nachfragen</paper-checkbox>
-                <paper-checkbox checked="{{config.nightscout.maydelimp}}">Löschen importierter Daten ermöglichen</paper-checkbox>
-                <div class="horz">
-                  <paper-checkbox id="chkMerge" checked="{{config.nightscout.merge}}">Werte zusammenfassen, die innerhalb von</paper-checkbox>
-                  <paper-input id="mergetime" no-label-float="true" type="number" min="2" max="15" value="{{config.nightscout.mergetime}}"></paper-input>
-                  Minuten erfasst wurden
-                </div>
-                <paper-checkbox checked="{{config.nightscout.importfirst}}">Ersten Wert immer importieren</paper-checkbox>
-                <paper-checkbox checked="{{config.nightscout.importlast}}">Letzten Wert immer importieren</paper-checkbox>
-                <paper-checkbox checked="{{config.nightscout.importchanging}}">Nur Werte importieren, deren Tendenz sich ändert</paper-checkbox>
+                <table class="table-ns" cellspacing="0">
+                  <tbody>
+                    <tr>
+                      <td><paper-checkbox checked="{{config.nightscout.askimp}}"></paper-checkbox></td>
+                      <td>Vor dem Import nachfragen</td>
+                    </tr>
+                    <tr>
+                      <td><paper-checkbox checked="{{config.nightscout.debug}}"></paper-checkbox></td>
+                      <td>Nach dem Import Datenfenster anzeigen</td>
+                    </tr>
+                    <tr>
+                      <td><paper-checkbox checked="{{config.nightscout.maydelimp}}"></paper-checkbox></td>
+                      <td>Löschen importierter Daten ermöglichen</td>
+                    </tr>
+                    <tr>
+                      <td><paper-checkbox checked="{{config.nightscout.merge}}"></paper-checkbox></td>
+                      <td>
+                        Werte zusammenfassen, die innerhalb von
+                        <paper-input id="mergetime" no-label-float="true" type="number" min="2" max="15" value="{{config.nightscout.mergetime}}"></paper-input>
+                        Minuten erfasst wurden
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><paper-checkbox checked="{{config.nightscout.interval}}"></paper-checkbox></td>
+                      <td>
+                        Werte im Abstand von
+                        <zreptil-time-picker value="{{config.nightscout.intervaltime}}" unit="Stunden"></zreptil-time-picker>
+                        beginnend um 
+                        <zreptil-time-picker value="{{config.nightscout.intervalstart}}" unit="Uhr"></zreptil-time-picker>
+                        importieren
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><paper-checkbox checked="{{nsimportfirst}}"></paper-checkbox></td>
+                      <td>Ersten Wert immer importieren</td>
+                    </tr>
+                    <tr>
+                      <td><paper-checkbox checked="{{nsimportlast}}"></paper-checkbox></td>
+                      <td>Letzten Wert immer importieren</td>
+                    </tr>
+                    <tr>
+                      <td><paper-checkbox checked="{{config.nightscout.importchanging}}"></paper-checkbox></td>
+                      <td>Nur Werte importieren, deren Tendenz sich ändert</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </iron-pages>
@@ -368,6 +425,8 @@
      ,config: {type:Object,value:{}}
      ,calendarList: {type:Array,value:[]}
      ,nsactive: {type:String,value:""}
+     ,nsimportfirst: {type:String,value:""}
+     ,nsimportlast: {type:String,value:""}
      ,rnd: {type:Number,value:0}
     },
     show: function()
@@ -390,7 +449,12 @@
     },
     isNSActive: function(rnd)
     {
-      return !this.config || !this.config.nightscout || !this.config.nightscout.active;
+      if(!this.config || !this.config.nightscout)
+        return true;
+        
+      this.nsimportfirst = this.config.nightscout.importfirst;
+      this.nsimportlast = this.config.nightscout.importlast;
+      return !this.config.nightscout.active;
     },
     tapCalendar: function(e)
     {
