@@ -627,17 +627,14 @@
       this.driveData.isDebug = this.$.localcfg.isDebug;
       this.driveData.showControl = this;
     },
-    debug: function(obj,json=false)
+    debug: function(obj,force=false)
     {
-      if(!this.driveData.isDebug)
+      if(!this.driveData.isDebug && !force)
         return;
       var win = window.open("","_blank","left=1000,top=0,height=900,width=700");
       var urlCreator = window.URL || window.webkitURL;
       var blob;
-      if(json)
-        blob = new Blob([obj],{type:"application/json"});
-      else
-        blob = new Blob([JSON.stringify(obj,null,2)],{type:"text/plain"});
+      blob = new Blob([JSON.stringify(obj,null,2)],{type:"text/plain"});
       win.location.href = urlCreator.createObjectURL(blob);
     },
     changeFlagDisplay: function(flag,ctrl)
@@ -685,7 +682,7 @@
         config.times[i].values = v;
       }
       config.zeiten[config.zeiten.length-1].time = "1439";
-      if(!config.nightscout)config.nightscout = {url:"",api:"",active:false,askimp:false,merge:true,mergetime:2};
+      if(!config.nightscout)config.nightscout = {url:"",api:"",active:false,askimp:false,merge:true,mergetime:2,interval:true,intervaltime:"0100",intervalstart:"0000"};
       config.nightscout.mergetime = Number(config.nightscout.mergetime);
 
       return config;

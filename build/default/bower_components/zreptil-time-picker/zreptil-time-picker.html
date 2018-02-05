@@ -8,7 +8,7 @@
   <template>
     <style is="custom-style">section{display:flex;}.btn{display:flex;margin:0;align-items:flex-start;flex-direction:column;@apply (--time-button);}.label{font-size:0.5em;color:#555;align-self:start;padding-right:1em;text-transform:none;@apply (--time-label);}paper-button[hour],paper-button[minute]{padding:0.4em;min-width:3em;margin:0.3em;border:1px solid transparent;}paper-button[active]{border:1px solid black;}#hours{font-size:1em;max-width:23em;justify-content:center;}#minutes{font-size:0.75em;max-width:37em;}#hours,#minutes{display:flex;flex-direction:row;flex-wrap:wrap;}#display{display:flex;justify-content:center;font-size:4em;}#footer{@apply (--layout-horizontal);@apply (--layout-end-justified);}</style>
     <section>
-      <paper-button class="btn" on-tap="showDialog"><div class="label">{{label}}</div><div>{{display}} Uhr</div></paper-button>
+      <paper-button class="btn" on-tap="showDialog"><div class="label">{{label}}</div><div>{{display}} {{unit}}</div></paper-button>
       <paper-dialog id="dialog" modal="" on-iron-overlay-closed="dismissDialog">
         <div id="hours">
           <template is="dom-repeat" items="{{hours}}">
@@ -16,7 +16,7 @@
           </template>
         </div>
         <div id="display">
-          {{hour}}:{{minute}} Uhr
+          {{hour}}:{{minute}} {{unit}}
         </div>
         <paper-dialog-scrollable>
           <div id="minutes">
@@ -43,6 +43,7 @@
       label: {type: String},
       time: {type: String, value: undefined, observer: "timeChanged"},
       display: {type: String, value: ""},
+      unit: {type: String, value: "Uhr"},
       hour: {type: String},
       minute: {type: String},
       hours: {type: Array, value: []},
@@ -50,6 +51,8 @@
     },
     ready: function()
     {
+      this.hours = [];
+      this.minutes = [];
       for(var i=0; i<24; i++)
         this.push("hours", i);
       for(var i=0; i<60; i++)

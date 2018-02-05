@@ -4,10 +4,10 @@
 <link rel="import" href="../iron-overlay-behavior/iron-overlay-behavior.html">
 
 <link rel="prefetch" href="../polymer/polymer-mini.html"><link rel="prefetch" href="../polymer/polymer-micro.html"><link rel="prefetch" href="../iron-flex-layout/iron-flex-layout.html"><link rel="prefetch" href="../paper-behaviors/paper-button-behavior.html"><link rel="prefetch" href="../iron-behaviors/iron-button-state.html"><link rel="prefetch" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html"><link rel="prefetch" href="../iron-behaviors/iron-control-state.html"><link rel="prefetch" href="../paper-behaviors/paper-ripple-behavior.html"><link rel="prefetch" href="../paper-ripple/paper-ripple.html"><link rel="prefetch" href="../paper-material/paper-material-shared-styles.html"><link rel="prefetch" href="../paper-styles/shadow.html"><link rel="prefetch" href="../iron-fit-behavior/iron-fit-behavior.html"><link rel="prefetch" href="../iron-resizable-behavior/iron-resizable-behavior.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-overlay-manager.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-overlay-backdrop.html"><link rel="prefetch" href="../iron-overlay-behavior/iron-focusables-helper.html"></head><body><dom-module id="cloud-data-overlay">
-  <style is="custom-style">:host{z-index:1000;background:white;}#cont{padding:2em;}.btnCancel{background:red;padding:20em;}</style>
   <template>
+    <style>:host{z-index:1000;background:white;}#content{padding:2em;}.btnCancel{background:red;padding:20em;}</style>
     <paper-material elevation="4">
-      <div id="cont"></div>
+      <div id="content"></div>
       <paper-button id="btnCancel" on-tap="_cancelClick">Cancel</paper-button>
     </paper-material>
   </template>
@@ -76,7 +76,7 @@
        */
       _textChanged: function()
       {
-        this.$.cont.innerHTML = this.text;
+        this.$.content.innerHTML = this.text;
         if(!this.showCancelButton)
           this.$.btnCancel.setAttribute("hidden","");
         else
